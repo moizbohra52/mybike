@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/routes/app_router.dart';
@@ -8,11 +9,15 @@ import 'core/routes/app_router.dart';
 /// MYBIKE Application Entry Point
 ///
 /// Initializes:
+/// - Supabase Database & Auth client
 /// - Theme management (BLoC)
 /// - GoRouter navigation
 /// - Material 3 with Inter font
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase (with fallback for dev/offline mode)
+  await SupabaseConfig.initialize();
 
   runApp(const MyBikeApp());
 }

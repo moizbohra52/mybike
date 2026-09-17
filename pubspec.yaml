@@ -43,6 +43,11 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # Supabase SDK — supabase_flutter
+  # Why: Direct PostgreSQL access, Auth, Storage, and Realtime synchronization.
+  # Platforms: All (Android, iOS, Web, Windows)
+  supabase_flutter: ^2.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
