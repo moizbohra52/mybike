@@ -4,12 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'route_names.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/showroom_selection_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
-///
-/// Uses GoRouter for declarative, deep-link-friendly routing.
-/// Route guards (auth, permission) will be added in Phase 5.
 class AppRouter {
   AppRouter._();
 
@@ -19,9 +18,17 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     routes: _routes,
-    errorBuilder: (context, state) => _ErrorPage(error: state.error),
+    errorBuilder: (context, state) => Scaffold(
+      body: AppErrorState(
+        title: 'Page Not Found',
+        message: 'The requested route "${state.uri.path}" could not be found.',
+        onBack: () => context.goNamed(RouteNames.dashboard),
+        retryLabel: 'Go to Dashboard',
+        onRetry: () => context.goNamed(RouteNames.dashboard),
+      ),
+    ),
   );
 
   static final List<RouteBase> _routes = [
@@ -39,59 +46,18 @@ class AppRouter {
       builder: (context, state) => const LoginScreen(),
     ),
 
-    // ─── Dashboard (will become ShellRoute in Phase 5) ───
+    // ─── Showroom Selection (Multi-showroom authorized staff) ───
+    GoRoute(
+      path: '/showroom-selection',
+      name: RouteNames.showroomSelection,
+      builder: (context, state) => const ShowroomSelectionScreen(),
+    ),
+
+    // ─── Dashboard ───
     GoRoute(
       path: '/dashboard',
       name: RouteNames.dashboard,
       builder: (context, state) => const DashboardScreen(),
     ),
   ];
-}
-
-/// Fallback error page for unknown routes
-class _ErrorPage extends StatelessWidget {
-  final Exception? error;
-
-  const _ErrorPage({this.error});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline_rounded,
-                size: 64,
-                color: theme.colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Page Not Found',
-                style: theme.textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'The page you are looking for does not exist.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => context.goNamed(RouteNames.dashboard),
-                child: const Text('Go to Dashboard'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

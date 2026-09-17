@@ -5,14 +5,9 @@ import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/routes/app_router.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 
 /// MYBIKE Application Entry Point
-///
-/// Initializes:
-/// - Supabase Database & Auth client
-/// - Theme management (BLoC)
-/// - GoRouter navigation
-/// - Material 3 with Inter font
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -27,8 +22,15 @@ class MyBikeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ThemeCubit()..loadTheme(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(
+          create: (_) => ThemeCubit()..loadTheme(),
+        ),
+        BlocProvider<AuthCubit>(
+          create: (_) => AuthCubit(),
+        ),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
           return MaterialApp.router(
