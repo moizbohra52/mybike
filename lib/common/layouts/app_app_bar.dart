@@ -1,0 +1,276 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/routes/route_names.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimensions.dart';
+import '../../core/theme/app_typography.dart';
+import '../../core/theme/theme_cubit.dart';
+import '../../core/extensions/context_extensions.dart';
+
+/// MYBIKE Top Header Bar
+class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String? title;
+  final Widget? titleWidget;
+  final List<Widget>? actions;
+  final bool showShowroomSelector;
+  final String currentShowroomName;
+  final VoidCallback? onShowroomSwitchTap;
+  final VoidCallback? onNotificationTap;
+  final int unreadNotificationsCount;
+  final VoidCallback? onMenuTap;
+
+  const AppAppBar({
+    super.key,
+    this.title,
+    this.titleWidget,
+    this.actions,
+    this.showShowroomSelector = true,
+    this.currentShowroomName = 'Central Showroom',
+    this.onShowroomSwitchTap,
+    this.onNotificationTap,
+    this.unreadNotificationsCount = 2,
+    this.onMenuTap,
+  });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(AppDimensions.appBarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
+
+    return Container(
+      height: AppDimensions.appBarHeight,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing24,
+      ),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        border: Border(
+          bottom: BorderSide(
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+            width: AppDimensions.borderWidth,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          if (onMenuTap != null) ...[
+            IconButton(
+              icon: const Icon(Icons.menu_rounded),
+              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+              onPressed: onMenuTap,
+              tooltip: 'Navigation Menu',
+            ),
+            const SizedBox(width: AppDimensions.spacing8),
+          ],
+          if (titleWidget != null)
+            Expanded(child: titleWidget!)
+          else if (title != null)
+            Expanded(
+              child: Text(
+                title!,
+                style: AppTypography.titleLarge.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                ),
+              ),
+            )
+          else
+            const Spacer(),
+          // Showroom Selector
+          if (showShowroomSelector) ...[
+            InkWell(
+              onTap: onShowroomSwitchTap ??
+                  () {
+                    context.showSnackBar('Showroom switcher active: $currentShowroomName');
+                  },
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.spacing12,
+                  vertical: AppDimensions.spacing6,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkCard : AppColors.lightBackground,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                  border: Border.all(
+                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                    width: AppDimensions.borderWidth,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.storefront_outlined,
+                      size: AppDimensions.iconSm,
+                      color: isDark ? AppColors.primaryYellowLight : AppColors.primaryYellowDark,
+                    ),
+                    if (!isMobile) ...[
+                      const SizedBox(width: AppDimensions.spacing8),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 160),
+                        child: Text(
+                          currentShowroomName,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.captionMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.spacing4),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 16,
+                        color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: AppDimensions.spacing12),
+          ],
+          // Theme Toggle
+          BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              final isThemeDark = state.themeMode == ThemeMode.dark;
+              return IconButton(
+                icon: Icon(
+                  isThemeDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  size: AppDimensions.iconMd,
+                ),
+                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                tooltip: isThemeDark ? 'Switch to light mode' : 'Switch to dark mode',
+                onPressed: () {
+                  context.read<ThemeCubit>().toggleTheme();
+                },
+              );
+            },
+          ),
+          // Notifications
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_none_rounded),
+                iconSize: AppDimensions.iconMd,
+                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                tooltip: 'Notifications',
+                onPressed: onNotificationTap ??
+                    () {
+                      context.showSnackBar('You have $unreadNotificationsCount unread notifications');
+                    },
+              ),
+              if (unreadNotificationsCount > 0)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Center(
+                      child: Text(
+                        unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: AppDimensions.spacing8),
+          // User Avatar & Menu
+          PopupMenuButton<String>(
+            tooltip: 'User profile',
+            offset: const Offset(0, 48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+              side: BorderSide(
+                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              ),
+            ),
+            color: isDark ? AppColors.darkCard : AppColors.lightCard,
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                enabled: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Admin User',
+                      style: AppTypography.titleSmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                      ),
+                    ),
+                    Text(
+                      'admin@mybike.com',
+                      style: AppTypography.captionMedium.copyWith(
+                        color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_outlined, size: 18),
+                    SizedBox(width: 12),
+                    Text('Settings'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
+                    SizedBox(width: 12),
+                    Text('Sign Out', style: TextStyle(color: AppColors.error)),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (val) {
+              if (val == 'logout') {
+                context.goNamed(RouteNames.login);
+              } else if (val == 'settings') {
+                context.showSnackBar('Settings opened');
+              }
+            },
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.primaryYellow,
+              child: const Text(
+                'MB',
+                style: TextStyle(
+                  color: AppColors.primaryBlack,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ),
+          ...?actions,
+        ],
+      ),
+    );
+  }
+}
