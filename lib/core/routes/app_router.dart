@@ -14,6 +14,9 @@ import '../../features/users/presentation/screens/user_form_screen.dart';
 import '../../features/users/presentation/screens/user_detail_screen.dart';
 import '../../features/users/presentation/screens/role_list_screen.dart';
 import '../../features/users/presentation/screens/role_form_screen.dart';
+import '../../features/vehicles/presentation/screens/vehicle_list_screen.dart';
+import '../../features/vehicles/presentation/screens/vehicle_form_screen.dart';
+import '../../features/vehicles/presentation/screens/vehicle_detail_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -130,6 +133,36 @@ class AppRouter {
         }
 
         return const RoleListScreen();
+      },
+    ),
+
+    // ─── Vehicle Master ───
+    GoRoute(
+      path: '/vehicles',
+      name: RouteNames.vehicles,
+      builder: (context, state) => const VehicleListScreen(),
+    ),
+    GoRoute(
+      path: '/vehicles/create',
+      name: RouteNames.vehicleCreate,
+      builder: (context, state) {
+        final editId = state.uri.queryParameters['editId'];
+        return VehicleFormScreen(modelId: editId);
+      },
+    ),
+    GoRoute(
+      path: '/vehicles/:vehicleId',
+      name: RouteNames.vehicleDetail,
+      builder: (context, state) {
+        final vehicleId = state.pathParameters['vehicleId']!;
+        return VehicleDetailScreen(modelId: vehicleId);
+      },
+    ),
+    GoRoute(
+      path: '/vehicles/:vehicleId/edit',
+      builder: (context, state) {
+        final vehicleId = state.pathParameters['vehicleId']!;
+        return VehicleFormScreen(modelId: vehicleId);
       },
     ),
   ];
