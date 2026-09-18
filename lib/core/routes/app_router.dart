@@ -17,6 +17,10 @@ import '../../features/users/presentation/screens/role_form_screen.dart';
 import '../../features/vehicles/presentation/screens/vehicle_list_screen.dart';
 import '../../features/vehicles/presentation/screens/vehicle_form_screen.dart';
 import '../../features/vehicles/presentation/screens/vehicle_detail_screen.dart';
+import '../../features/inventory/presentation/screens/inventory_list_screen.dart';
+import '../../features/inventory/presentation/screens/stock_inward_screen.dart';
+import '../../features/inventory/presentation/screens/stock_transfer_screen.dart';
+import '../../features/inventory/presentation/screens/vehicle_inventory_detail_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -163,6 +167,29 @@ class AppRouter {
       builder: (context, state) {
         final vehicleId = state.pathParameters['vehicleId']!;
         return VehicleFormScreen(modelId: vehicleId);
+      },
+    ),
+
+    // ─── Inventory Management ───
+    GoRoute(
+      path: '/inventory',
+      name: RouteNames.inventory,
+      builder: (context, state) => const InventoryListScreen(),
+    ),
+    GoRoute(
+      path: '/inventory/inward',
+      builder: (context, state) => const StockInwardScreen(),
+    ),
+    GoRoute(
+      path: '/inventory/transfer',
+      name: RouteNames.stockTransfer,
+      builder: (context, state) => const StockTransferScreen(),
+    ),
+    GoRoute(
+      path: '/inventory/:vehicleId',
+      builder: (context, state) {
+        final vehicleId = state.pathParameters['vehicleId']!;
+        return VehicleInventoryDetailScreen(vehicleId: vehicleId);
       },
     ),
   ];
