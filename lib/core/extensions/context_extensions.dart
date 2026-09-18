@@ -25,9 +25,6 @@ extension ContextExtensions on BuildContext {
   bool get isDesktop => ResponsiveUtils.isDesktop(this);
   bool get isTabletOrDesktop => ResponsiveUtils.isTabletOrDesktop(this);
 
-  // ─── Navigation ───
-  void pop<T>([T? result]) => Navigator.of(this).pop(result);
-  bool get canPop => Navigator.of(this).canPop();
 
   // ─── Snackbar ───
   void showSnackBar(

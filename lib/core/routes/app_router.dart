@@ -6,6 +6,11 @@ import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/showroom_selection_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/users/presentation/screens/user_list_screen.dart';
+import '../../features/users/presentation/screens/user_form_screen.dart';
+import '../../features/users/presentation/screens/user_detail_screen.dart';
+import '../../features/users/presentation/screens/role_list_screen.dart';
+import '../../features/users/presentation/screens/role_form_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -58,6 +63,48 @@ class AppRouter {
       path: '/dashboard',
       name: RouteNames.dashboard,
       builder: (context, state) => const DashboardScreen(),
+    ),
+
+    // ─── User Management ───
+    GoRoute(
+      path: '/users',
+      name: RouteNames.users,
+      builder: (context, state) => const UserListScreen(),
+    ),
+    GoRoute(
+      path: '/users/create',
+      name: RouteNames.userCreate,
+      builder: (context, state) {
+        final editId = state.uri.queryParameters['editId'];
+        return UserFormScreen(editUserId: editId);
+      },
+    ),
+    GoRoute(
+      path: '/users/:userId',
+      name: RouteNames.userDetail,
+      builder: (context, state) {
+        final userId = state.pathParameters['userId']!;
+        return UserDetailScreen(userId: userId);
+      },
+    ),
+
+    // ─── Role Management ───
+    GoRoute(
+      path: '/roles',
+      name: RouteNames.roles,
+      builder: (context, state) {
+        final action = state.uri.queryParameters['action'];
+        final roleId = state.uri.queryParameters['roleId'];
+
+        if (action == 'create') {
+          return const RoleFormScreen();
+        }
+        if (action == 'edit' && roleId != null) {
+          return RoleFormScreen(editRoleId: roleId);
+        }
+
+        return const RoleListScreen();
+      },
     ),
   ];
 }
