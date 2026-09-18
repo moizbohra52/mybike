@@ -6,6 +6,9 @@ import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/showroom_selection_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/showroom/presentation/screens/showroom_list_screen.dart';
+import '../../features/showroom/presentation/screens/showroom_form_screen.dart';
+import '../../features/showroom/presentation/screens/showroom_detail_screen.dart';
 import '../../features/users/presentation/screens/user_list_screen.dart';
 import '../../features/users/presentation/screens/user_form_screen.dart';
 import '../../features/users/presentation/screens/user_detail_screen.dart';
@@ -63,6 +66,29 @@ class AppRouter {
       path: '/dashboard',
       name: RouteNames.dashboard,
       builder: (context, state) => const DashboardScreen(),
+    ),
+
+    // ─── Showroom Management ───
+    GoRoute(
+      path: '/showrooms',
+      name: RouteNames.showrooms,
+      builder: (context, state) => const ShowroomListScreen(),
+    ),
+    GoRoute(
+      path: '/showrooms/create',
+      name: RouteNames.showroomCreate,
+      builder: (context, state) {
+        final editId = state.uri.queryParameters['editId'];
+        return ShowroomFormScreen(editShowroomId: editId);
+      },
+    ),
+    GoRoute(
+      path: '/showrooms/:showroomId',
+      name: RouteNames.showroomDetail,
+      builder: (context, state) {
+        final showroomId = state.pathParameters['showroomId']!;
+        return ShowroomDetailScreen(showroomId: showroomId);
+      },
     ),
 
     // ─── User Management ───

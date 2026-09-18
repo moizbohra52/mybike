@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/routes/route_names.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/extensions/context_extensions.dart';
 import 'app_app_bar.dart';
@@ -60,9 +62,28 @@ class _AppScaffoldState extends State<AppScaffold> {
     setState(() {
       _currentNavId = id;
     });
-    widget.onNavigationChanged?.call(id);
     if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
       _scaffoldKey.currentState?.closeDrawer();
+    }
+    if (widget.onNavigationChanged != null) {
+      widget.onNavigationChanged!(id);
+    } else {
+      switch (id) {
+        case 'dashboard':
+          context.goNamed(RouteNames.dashboard);
+          break;
+        case 'showrooms':
+          context.goNamed(RouteNames.showrooms);
+          break;
+        case 'users':
+          context.goNamed(RouteNames.users);
+          break;
+        case 'roles':
+          context.goNamed(RouteNames.roles);
+          break;
+        default:
+          break;
+      }
     }
   }
 

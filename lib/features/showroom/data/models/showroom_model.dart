@@ -78,4 +78,29 @@ class ShowroomModel extends ShowroomEntity {
       'updated_at': updatedAt.toIso8601String(),
     };
   }
+
+  factory ShowroomModel.fromEntity(ShowroomEntity entity) {
+    return ShowroomModel(
+      id: entity.id,
+      name: entity.name,
+      code: entity.code,
+      address: entity.address,
+      city: entity.city,
+      state: entity.state,
+      pincode: entity.pincode,
+      phone: entity.phone,
+      email: entity.email,
+      gstin: entity.gstin,
+      pan: entity.pan,
+      logoUrl: entity.logoUrl,
+      bankName: entity.bankName,
+      bankAccountNumber: entity.bankAccountNumber,
+      bankIfsc: entity.bankIfsc,
+      bankBranch: entity.bankBranch,
+      invoicePrefix: entity.invoicePrefix,
+      isActive: entity.isActive,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    );
+  }
 }
