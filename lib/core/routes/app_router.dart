@@ -21,6 +21,11 @@ import '../../features/inventory/presentation/screens/inventory_list_screen.dart
 import '../../features/inventory/presentation/screens/stock_inward_screen.dart';
 import '../../features/inventory/presentation/screens/stock_transfer_screen.dart';
 import '../../features/inventory/presentation/screens/vehicle_inventory_detail_screen.dart';
+import '../../features/customers/presentation/screens/customer_list_screen.dart';
+import '../../features/customers/presentation/screens/customer_form_screen.dart';
+import '../../features/customers/presentation/screens/customer_detail_screen.dart';
+import '../../features/customers/presentation/screens/lead_pipeline_screen.dart';
+import '../../features/customers/presentation/screens/booking_list_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -191,6 +196,42 @@ class AppRouter {
         final vehicleId = state.pathParameters['vehicleId']!;
         return VehicleInventoryDetailScreen(vehicleId: vehicleId);
       },
+    ),
+
+    // ─── Customer Management ───
+    GoRoute(
+      path: '/customers',
+      name: RouteNames.customers,
+      builder: (context, state) => const CustomerListScreen(),
+    ),
+    GoRoute(
+      path: '/customers/create',
+      name: RouteNames.customerCreate,
+      builder: (context, state) {
+        final editId = state.uri.queryParameters['editId'];
+        return CustomerFormScreen(editCustomerId: editId);
+      },
+    ),
+    GoRoute(
+      path: '/customers/:customerId',
+      name: RouteNames.customerDetail,
+      builder: (context, state) {
+        final customerId = state.pathParameters['customerId']!;
+        return CustomerDetailScreen(customerId: customerId);
+      },
+    ),
+
+    // ─── Lead Pipeline ───
+    GoRoute(
+      path: '/leads',
+      builder: (context, state) => const LeadPipelineScreen(),
+    ),
+
+    // ─── Bookings ───
+    GoRoute(
+      path: '/bookings',
+      name: RouteNames.bookings,
+      builder: (context, state) => const BookingListScreen(),
     ),
   ];
 }

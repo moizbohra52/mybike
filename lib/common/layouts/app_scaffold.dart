@@ -87,6 +87,12 @@ class _AppScaffoldState extends State<AppScaffold> {
         case 'inventory':
           context.goNamed(RouteNames.inventory);
           break;
+        case 'customers':
+          context.goNamed(RouteNames.customers);
+          break;
+        case 'bookings':
+          context.goNamed(RouteNames.bookings);
+          break;
         default:
           break;
       }
