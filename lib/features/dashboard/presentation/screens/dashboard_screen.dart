@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../common/common.dart';
+import '../../../../core/routes/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -162,13 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             trailing: AppButton.primary(
               label: 'New Booking',
               leadingIcon: Icons.add_rounded,
-              onPressed: () {
-                AppInfoDialog.show(
-                  context,
-                  title: 'New Booking Flow',
-                  message: 'Booking wizard will be integrated in Phase 11.',
-                );
-              },
+              onPressed: () => context.goNamed(RouteNames.saleCreate),
             ),
           ),
           const SizedBox(height: AppDimensions.spacing8),

@@ -26,6 +26,10 @@ import '../../features/customers/presentation/screens/customer_form_screen.dart'
 import '../../features/customers/presentation/screens/customer_detail_screen.dart';
 import '../../features/customers/presentation/screens/lead_pipeline_screen.dart';
 import '../../features/customers/presentation/screens/booking_list_screen.dart';
+import '../../features/sales/presentation/screens/sales_invoice_list_screen.dart';
+import '../../features/sales/presentation/screens/sales_invoice_detail_screen.dart';
+import '../../features/sales/presentation/screens/booking_wizard_screen.dart';
+import '../../features/sales/presentation/screens/delivery_challan_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -232,6 +236,33 @@ class AppRouter {
       path: '/bookings',
       name: RouteNames.bookings,
       builder: (context, state) => const BookingListScreen(),
+    ),
+
+    // ─── Sales & Invoicing ───
+    GoRoute(
+      path: '/sales',
+      name: RouteNames.sales,
+      builder: (context, state) => const SalesInvoiceListScreen(),
+    ),
+    GoRoute(
+      path: '/sales/create',
+      name: RouteNames.saleCreate,
+      builder: (context, state) => const BookingWizardScreen(),
+    ),
+    GoRoute(
+      path: '/sales/:invoiceId',
+      name: RouteNames.saleDetail,
+      builder: (context, state) {
+        final invoiceId = state.pathParameters['invoiceId']!;
+        return SalesInvoiceDetailScreen(invoiceId: invoiceId);
+      },
+    ),
+    GoRoute(
+      path: '/sales/:invoiceId/delivery',
+      builder: (context, state) {
+        final invoiceId = state.pathParameters['invoiceId']!;
+        return DeliveryChallanScreen(invoiceId: invoiceId);
+      },
     ),
   ];
 }
