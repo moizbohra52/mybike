@@ -77,6 +77,12 @@ abstract final class RouteNames {
   // ─── Reports ───
   static const String reports = 'reports';
 
+  // ─── GST & Tax ───
+  static const String gstDashboard = 'gst-dashboard';
+  static const String gstRates = 'gst-rates';
+  static const String gstr1Report = 'gstr-1';
+  static const String gstr3bReport = 'gstr-3b';
+
   // ─── Notifications ───
   static const String notifications = 'notifications';
 

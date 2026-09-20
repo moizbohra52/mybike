@@ -1,0 +1,383 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../common/common.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_dimensions.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/extensions/context_extensions.dart';
+import '../../domain/entities/gstr3b_report_entity.dart';
+import '../cubit/gstr3b_report_cubit.dart';
+import '../cubit/gstr3b_report_state.dart';
+
+/// Statutory GSTR-3B Monthly Return Screen
+class Gstr3bReportScreen extends StatelessWidget {
+  const Gstr3bReportScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => Gstr3bReportCubit()..loadReport(),
+      child: const _Gstr3bReportView(),
+    );
+  }
+}
+
+class _Gstr3bReportView extends StatelessWidget {
+  const _Gstr3bReportView();
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = context.isDesktop;
+    final isDark = context.isDarkMode;
+    final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 2);
+
+    return AppScaffold(
+      title: 'GSTR-3B Monthly Summary Return',
+      activeNavigationId: 'gst',
+      actions: [
+        IconButton(
+          tooltip: 'Back to GST Hub',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        const SizedBox(width: AppDimensions.spacing8),
+        IconButton(
+          tooltip: 'Copy Form 3B Summary',
+          icon: const Icon(Icons.copy_rounded),
+          onPressed: () => _copyForm3bSummary(context),
+        ),
+        IconButton(
+          tooltip: 'Refresh',
+          icon: const Icon(Icons.refresh_rounded),
+          onPressed: () => context.read<Gstr3bReportCubit>().loadReport(),
+        ),
+      ],
+      body: BlocBuilder<Gstr3bReportCubit, Gstr3bReportState>(
+        builder: (context, state) {
+          if (state.status == Gstr3bReportStatus.loading && state.report == null) {
+            return const Center(child: AppLoading(message: 'Compiling Form GSTR-3B statutory tables...'));
+          }
+
+          if (state.status == Gstr3bReportStatus.failure && state.report == null) {
+            return AppErrorState(
+              title: 'Failed to Compile GSTR-3B',
+              message: state.errorMessage ?? 'An error occurred while compiling return tables.',
+              onRetry: () => context.read<Gstr3bReportCubit>().loadReport(),
+            );
+          }
+
+          final report = state.report;
+          if (report == null) {
+            return const Center(child: Text('No data available'));
+          }
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(isDesktop ? AppDimensions.spacing24 : AppDimensions.spacing16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Banner
+                _buildHeader(context, state, report, isDark),
+                const SizedBox(height: AppDimensions.spacing20),
+
+                // Table 3.1 Outward Supplies
+                _buildTable31OutwardSupplies(report, currencyFormat, isDesktop, isDark),
+                const SizedBox(height: AppDimensions.spacing24),
+
+                // Table 4 Eligible ITC
+                _buildTable4EligibleItc(report, currencyFormat, isDesktop, isDark),
+                const SizedBox(height: AppDimensions.spacing24),
+
+                // Table 6.1 Payment of Tax
+                _buildTable61TaxPayment(report, currencyFormat, isDesktop, isDark),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ─── Header Banner ───
+  Widget _buildHeader(
+    BuildContext context,
+    Gstr3bReportState state,
+    Gstr3bReportEntity report,
+    bool isDark,
+  ) {
+    const periods = ['2026-09', '2026-08', '2026-07'];
+
+    return AppCard(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryYellow.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                ),
+                child: Icon(Icons.assignment_outlined, color: AppColors.primaryYellow, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FORM GSTR-3B [See rule 61(5)]',
+                    style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'GSTIN: ${report.gstin} • Legal Name: MYBIKE DEALERSHIPS PVT LTD',
+                    style: AppTypography.captionSmall.copyWith(
+                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Text('Return Period: ', style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(width: 8),
+              Wrap(
+                spacing: 6,
+                children: periods.map((p) {
+                  final isSelected = state.selectedPeriod == p;
+                  return ChoiceChip(
+                    label: Text(p, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : null)),
+                    selected: isSelected,
+                    selectedColor: AppColors.primaryYellow,
+                    onSelected: (selected) {
+                      if (selected) context.read<Gstr3bReportCubit>().changePeriod(p);
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Table 3.1: Outward Supplies ───
+  Widget _buildTable31OutwardSupplies(
+    Gstr3bReportEntity report,
+    NumberFormat currency,
+    bool isDesktop,
+    bool isDark,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '3.1 Details of Outward Supplies and inward supplies liable to reverse charge',
+          style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              // Header Row
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                color: isDark ? Colors.white10 : Colors.grey.shade100,
+                child: const Row(
+                  children: [
+                    Expanded(flex: 4, child: Text('Nature of Supplies', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Total Taxable Value', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Integrated Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Central Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('State/UT Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  ],
+                ),
+              ),
+              ...report.outwardSupplies.map((row) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 4, child: Text(row.natureOfSupplies, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.totalTaxableValue), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.integratedTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.centralTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.stateTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─── Table 4: Eligible ITC ───
+  Widget _buildTable4EligibleItc(
+    Gstr3bReportEntity report,
+    NumberFormat currency,
+    bool isDesktop,
+    bool isDark,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '4. Eligible Input Tax Credit (ITC)',
+          style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                color: isDark ? Colors.white10 : Colors.grey.shade100,
+                child: const Row(
+                  children: [
+                    Expanded(flex: 5, child: Text('Details of ITC', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Integrated Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Central Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('State/UT Tax', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Total ITC', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  ],
+                ),
+              ),
+              ...report.eligibleItc.map((row) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 5, child: Text(row.details, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.integratedTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.centralTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.stateTax), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.totalItc), textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.success))),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─── Table 6.1: Payment of Tax ───
+  Widget _buildTable61TaxPayment(
+    Gstr3bReportEntity report,
+    NumberFormat currency,
+    bool isDesktop,
+    bool isDark,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '6.1 Payment of Tax (Net Cash Challan vs ITC Utilization)',
+              style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryYellow.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Net Cash Payable: ${currency.format(report.netCashPayable)}',
+                style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryYellow, fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                color: isDark ? Colors.white10 : Colors.grey.shade100,
+                child: const Row(
+                  children: [
+                    Expanded(flex: 3, child: Text('Tax Description', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Tax Payable', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Paid Through ITC', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                    Expanded(flex: 2, child: Text('Tax Paid in Cash', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                  ],
+                ),
+              ),
+              ...report.taxPayments.map((row) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 3, child: Text(row.description, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.taxPayable), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12))),
+                      Expanded(flex: 2, child: Text(currency.format(row.paidThroughItc), textAlign: TextAlign.right, style: const TextStyle(fontSize: 12, color: AppColors.success))),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          currency.format(row.taxPaidCash),
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: row.taxPaidCash > 0 ? AppColors.primaryYellow : AppColors.success,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _copyForm3bSummary(BuildContext context) {
+    final report = context.read<Gstr3bReportCubit>().state.report;
+    if (report == null) return;
+
+    final text = 'FORM GSTR-3B Summary\n'
+        'Filing Period: ${report.filingPeriod}\n'
+        'GSTIN: ${report.gstin}\n'
+        'Total Outward Tax: ₹${report.totalOutwardTax}\n'
+        'Total Eligible ITC: ₹${report.totalEligibleItc}\n'
+        'Net Cash Payable: ₹${report.netCashPayable}\n';
+
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Form GSTR-3B summary copied to clipboard!'), backgroundColor: AppColors.success),
+    );
+  }
+}

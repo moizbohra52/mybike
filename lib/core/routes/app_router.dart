@@ -38,6 +38,10 @@ import '../../features/finance/presentation/screens/finance_dashboard_screen.dar
 import '../../features/finance/presentation/screens/voucher_list_screen.dart';
 import '../../features/finance/presentation/screens/voucher_form_screen.dart';
 import '../../features/finance/presentation/screens/outstanding_ledger_screen.dart';
+import '../../features/gst/presentation/screens/gst_dashboard_screen.dart';
+import '../../features/gst/presentation/screens/gst_rate_config_screen.dart';
+import '../../features/gst/presentation/screens/gstr1_report_screen.dart';
+import '../../features/gst/presentation/screens/gstr3b_report_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -341,6 +345,28 @@ class AppRouter {
       path: '/finance/expenses',
       name: RouteNames.expenses,
       builder: (context, state) => const VoucherListScreen(initialType: 'expense'),
+    ),
+
+    // ─── GST & Tax Module ───
+    GoRoute(
+      path: '/gst',
+      name: RouteNames.gstDashboard,
+      builder: (context, state) => const GstDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/gst/rates',
+      name: RouteNames.gstRates,
+      builder: (context, state) => const GstRateConfigScreen(),
+    ),
+    GoRoute(
+      path: '/gst/gstr-1',
+      name: RouteNames.gstr1Report,
+      builder: (context, state) => const Gstr1ReportScreen(),
+    ),
+    GoRoute(
+      path: '/gst/gstr-3b',
+      name: RouteNames.gstr3bReport,
+      builder: (context, state) => const Gstr3bReportScreen(),
     ),
   ];
 }
