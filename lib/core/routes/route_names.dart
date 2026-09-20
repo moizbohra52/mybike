@@ -62,6 +62,9 @@ abstract final class RouteNames {
   static const String payments = 'payments';
   static const String receipts = 'receipts';
   static const String expenses = 'expenses';
+  static const String vouchers = 'vouchers';
+  static const String voucherCreate = 'voucher-create';
+  static const String outstandings = 'outstandings';
 
   // ─── Accounting ───
   static const String accounting = 'accounting';

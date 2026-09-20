@@ -34,6 +34,10 @@ import '../../features/accounting/presentation/screens/chart_of_accounts_screen.
 import '../../features/accounting/presentation/screens/journal_entry_list_screen.dart';
 import '../../features/accounting/presentation/screens/journal_entry_form_screen.dart';
 import '../../features/accounting/presentation/screens/trial_balance_screen.dart';
+import '../../features/finance/presentation/screens/finance_dashboard_screen.dart';
+import '../../features/finance/presentation/screens/voucher_list_screen.dart';
+import '../../features/finance/presentation/screens/voucher_form_screen.dart';
+import '../../features/finance/presentation/screens/outstanding_ledger_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -294,6 +298,49 @@ class AppRouter {
       path: '/accounting/trial-balance',
       name: RouteNames.trialBalance,
       builder: (context, state) => const TrialBalanceScreen(),
+    ),
+
+    // ─── Finance Module ───
+    GoRoute(
+      path: '/finance',
+      name: RouteNames.finance,
+      builder: (context, state) => const FinanceDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/finance/vouchers',
+      name: RouteNames.vouchers,
+      builder: (context, state) {
+        final type = state.uri.queryParameters['type'];
+        return VoucherListScreen(initialType: type);
+      },
+    ),
+    GoRoute(
+      path: '/finance/vouchers/create',
+      name: RouteNames.voucherCreate,
+      builder: (context, state) {
+        final type = state.uri.queryParameters['type'];
+        return VoucherFormScreen(initialType: type);
+      },
+    ),
+    GoRoute(
+      path: '/finance/outstandings',
+      name: RouteNames.outstandings,
+      builder: (context, state) => const OutstandingLedgerScreen(),
+    ),
+    GoRoute(
+      path: '/finance/payments',
+      name: RouteNames.payments,
+      builder: (context, state) => const VoucherListScreen(initialType: 'payment'),
+    ),
+    GoRoute(
+      path: '/finance/receipts',
+      name: RouteNames.receipts,
+      builder: (context, state) => const VoucherListScreen(initialType: 'receipt'),
+    ),
+    GoRoute(
+      path: '/finance/expenses',
+      name: RouteNames.expenses,
+      builder: (context, state) => const VoucherListScreen(initialType: 'expense'),
     ),
   ];
 }

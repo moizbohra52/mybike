@@ -94,6 +94,7 @@ class _AppSidebarState extends State<AppSidebar> {
         groupTitle: 'ACCOUNTING & FINANCE',
         items: [
           AppSidebarItem(id: 'accounts', title: 'Chart of Accounts', icon: Icons.account_balance_outlined),
+          AppSidebarItem(id: 'finance', title: 'Finance & Vouchers', icon: Icons.account_balance_wallet_outlined),
           AppSidebarItem(id: 'expenses', title: 'Expenses', icon: Icons.payments_outlined),
           AppSidebarItem(id: 'gst', title: 'GST & Tax', icon: Icons.calculate_outlined),
         ],
