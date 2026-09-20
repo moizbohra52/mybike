@@ -42,6 +42,8 @@ import '../../features/gst/presentation/screens/gst_dashboard_screen.dart';
 import '../../features/gst/presentation/screens/gst_rate_config_screen.dart';
 import '../../features/gst/presentation/screens/gstr1_report_screen.dart';
 import '../../features/gst/presentation/screens/gstr3b_report_screen.dart';
+import '../../features/reports/presentation/screens/reports_hub_screen.dart';
+import '../../features/reports/presentation/screens/report_viewer_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -367,6 +369,21 @@ class AppRouter {
       path: '/gst/gstr-3b',
       name: RouteNames.gstr3bReport,
       builder: (context, state) => const Gstr3bReportScreen(),
+    ),
+
+    // ─── Reports & Statements Module ───
+    GoRoute(
+      path: '/reports',
+      name: RouteNames.reports,
+      builder: (context, state) => const ReportsHubScreen(),
+    ),
+    GoRoute(
+      path: '/reports/:reportType',
+      name: 'report-viewer',
+      builder: (context, state) {
+        final reportType = state.pathParameters['reportType']!;
+        return ReportViewerScreen(reportType: reportType);
+      },
     ),
   ];
 }

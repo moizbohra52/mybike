@@ -108,6 +108,9 @@ class _AppScaffoldState extends State<AppScaffold> {
         case 'gst':
           context.goNamed(RouteNames.gstDashboard);
           break;
+        case 'reports':
+          context.goNamed(RouteNames.reports);
+          break;
         default:
           break;
       }
