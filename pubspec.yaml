@@ -47,6 +47,9 @@ dependencies:
   # Why: Direct PostgreSQL access, Auth, Storage, and Realtime synchronization.
   # Platforms: All (Android, iOS, Web, Windows)
   supabase_flutter: ^2.8.0
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  csv: ^8.0.0
 
 dev_dependencies:
   flutter_test:

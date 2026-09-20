@@ -8,6 +8,10 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../core/services/document_export_service.dart';
+import '../../domain/entities/sales_invoice_entity.dart';
+import '../../../reports/presentation/screens/document_preview_screen.dart';
+import '../../../reports/presentation/widgets/export_action_modal.dart';
 import '../cubit/sales_invoice_detail_cubit.dart';
 import '../cubit/sales_invoice_detail_state.dart';
 
@@ -43,6 +47,14 @@ class _SalesInvoiceDetailView extends StatelessWidget {
           activeNavigationId: 'sales',
           title: invoice != null ? 'Tax Invoice: ${invoice.invoiceNumber}' : 'Tax Invoice',
           actions: [
+            if (invoice != null) ...[
+              OutlinedButton.icon(
+                onPressed: () => _showPrintOptions(context, invoice),
+                icon: const Icon(Icons.print_rounded, size: 18),
+                label: const Text('Print / PDF Invoice'),
+              ),
+              const SizedBox(width: 8),
+            ],
             if (invoice != null && invoice.status == 'issued')
               FilledButton.icon(
                 onPressed: () => context.go('/sales/${invoice.id}/delivery'),
@@ -381,4 +393,32 @@ class _SalesInvoiceDetailView extends StatelessWidget {
       ),
     );
   }
+
+  void _showPrintOptions(BuildContext context, SalesInvoiceEntity invoice) {
+    const exportService = DocumentExportService();
+    ExportActionModal.show(
+      context,
+      title: 'Tax Invoice: ${invoice.invoiceNumber}',
+      subtitle: '${invoice.modelName ?? "Vehicle"} • ₹ ${invoice.totalOnRoadPrice.toStringAsFixed(2)}',
+      onGeneratePdf: () => exportService.generateInvoicePdf(invoice: invoice),
+      onPreviewPdf: (bytes) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DocumentPreviewScreen(
+              title: 'Invoice ${invoice.invoiceNumber}',
+              pdfBytes: bytes,
+            ),
+          ),
+        );
+      },
+      onPrint: () async {
+        final bytes = await exportService.generateInvoicePdf(invoice: invoice);
+        await exportService.printDocument(
+          bytes: bytes,
+          name: 'Invoice-${invoice.invoiceNumber}',
+        );
+      },
+    );
+  }
 }
+

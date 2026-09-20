@@ -10,6 +10,10 @@ import '../../../../core/theme/app_typography.dart';
 import '../cubit/report_viewer_cubit.dart';
 import '../cubit/report_viewer_state.dart';
 
+import '../../../../core/services/document_export_service.dart';
+import '../widgets/export_action_modal.dart';
+import 'document_preview_screen.dart';
+
 /// Detailed Statement & Register Viewer Screen
 class ReportViewerScreen extends StatelessWidget {
   final String reportType;
@@ -46,15 +50,10 @@ class _ReportViewerContent extends StatelessWidget {
             // Export Shortcut
             IconButton(
               icon: const Icon(Icons.download_rounded),
-              tooltip: 'Export Statement (Phase 17)',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Document export engine activates in Phase 17.'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
+              tooltip: 'Export Statement (PDF, Excel, CSV, Print)',
+              onPressed: state.rows.isEmpty
+                  ? null
+                  : () => _showExportModal(context, state),
             ),
             IconButton(
               icon: const Icon(Icons.refresh_rounded),
@@ -410,4 +409,69 @@ class _ReportViewerContent extends StatelessWidget {
       ),
     );
   }
+
+  void _showExportModal(BuildContext context, ReportViewerState state) {
+    const exportService = DocumentExportService();
+
+    ExportActionModal.show(
+      context,
+      title: 'Export ${state.title}',
+      subtitle: '${state.rows.length} rows • Filtered by active criteria',
+      onGeneratePdf: () => exportService.generateReportPdf(
+        title: state.title,
+        subtitle: 'MYBIKE ERP • Official Statement',
+        columns: state.columns,
+        rows: state.rows,
+      ),
+      onPreviewPdf: (bytes) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DocumentPreviewScreen(
+              title: state.title,
+              pdfBytes: bytes,
+            ),
+          ),
+        );
+      },
+      onExportExcel: () async {
+        exportService.generateReportExcelXml(
+          sheetName: state.title,
+          title: state.title,
+          columns: state.columns,
+          rows: state.rows,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Excel spreadsheet generated for ${state.title} (${state.rows.length} rows)'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      },
+      onExportCsv: () async {
+        exportService.generateReportCsvString(
+          columns: state.columns,
+          rows: state.rows,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('CSV data generated for ${state.title} (${state.rows.length} rows)'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      },
+      onPrint: () async {
+        final pdfBytes = await exportService.generateReportPdf(
+          title: state.title,
+          subtitle: 'MYBIKE ERP • Official Statement',
+          columns: state.columns,
+          rows: state.rows,
+        );
+        await exportService.printDocument(
+          bytes: pdfBytes,
+          name: state.title,
+        );
+      },
+    );
+  }
 }
+

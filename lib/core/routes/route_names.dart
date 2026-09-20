@@ -74,8 +74,9 @@ abstract final class RouteNames {
   static const String ledger = 'ledger';
   static const String trialBalance = 'trial-balance';
 
-  // ─── Reports ───
+  // ─── Reports & Documents ───
   static const String reports = 'reports';
+  static const String documentPreview = 'document-preview';
 
   // ─── GST & Tax ───
   static const String gstDashboard = 'gst-dashboard';

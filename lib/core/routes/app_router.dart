@@ -44,6 +44,7 @@ import '../../features/gst/presentation/screens/gstr1_report_screen.dart';
 import '../../features/gst/presentation/screens/gstr3b_report_screen.dart';
 import '../../features/reports/presentation/screens/reports_hub_screen.dart';
 import '../../features/reports/presentation/screens/report_viewer_screen.dart';
+import '../../features/reports/presentation/screens/document_preview_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -383,6 +384,21 @@ class AppRouter {
       builder: (context, state) {
         final reportType = state.pathParameters['reportType']!;
         return ReportViewerScreen(reportType: reportType);
+      },
+    ),
+    GoRoute(
+      path: '/document/preview',
+      name: RouteNames.documentPreview,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final title = extra?['title'] as String? ?? 'Document Preview';
+        final filename = extra?['filename'] as String?;
+        final pdfBytes = extra?['pdfBytes'];
+        return DocumentPreviewScreen(
+          title: title,
+          filename: filename,
+          pdfBytes: pdfBytes,
+        );
       },
     ),
   ];
