@@ -45,6 +45,7 @@ import '../../features/gst/presentation/screens/gstr3b_report_screen.dart';
 import '../../features/reports/presentation/screens/reports_hub_screen.dart';
 import '../../features/reports/presentation/screens/report_viewer_screen.dart';
 import '../../features/reports/presentation/screens/document_preview_screen.dart';
+import '../../features/notifications/presentation/screens/notification_center_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -400,6 +401,11 @@ class AppRouter {
           pdfBytes: pdfBytes,
         );
       },
+    ),
+    GoRoute(
+      path: '/notifications',
+      name: RouteNames.notifications,
+      builder: (context, state) => const NotificationCenterScreen(),
     ),
   ];
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/route_names.dart';
+import '../../core/services/notification_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_typography.dart';
@@ -153,44 +154,48 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
             },
           ),
           // Notifications
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none_rounded),
-                iconSize: AppDimensions.iconMd,
-                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                tooltip: 'Notifications',
-                onPressed: onNotificationTap ??
-                    () {
-                      context.showSnackBar('You have $unreadNotificationsCount unread notifications');
-                    },
-              ),
-              if (unreadNotificationsCount > 0)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
-                      color: AppColors.error,
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    child: Center(
-                      child: Text(
-                        unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
+          StreamBuilder<int>(
+            stream: NotificationService.instance.unreadCountStream,
+            initialData: NotificationService.instance.unreadCount,
+            builder: (context, snapshot) {
+              final count = snapshot.data ?? unreadNotificationsCount;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_none_rounded),
+                    iconSize: AppDimensions.iconMd,
+                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                    tooltip: 'Notifications',
+                    onPressed: onNotificationTap ?? () => context.push('/notifications'),
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          color: AppColors.error,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                        child: Center(
+                          child: Text(
+                            count > 9 ? '9+' : count.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              height: 1,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-            ],
+                ],
+              );
+            },
           ),
           const SizedBox(width: AppDimensions.spacing8),
           // User Avatar & Menu
