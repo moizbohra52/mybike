@@ -30,6 +30,10 @@ import '../../features/sales/presentation/screens/sales_invoice_list_screen.dart
 import '../../features/sales/presentation/screens/sales_invoice_detail_screen.dart';
 import '../../features/sales/presentation/screens/booking_wizard_screen.dart';
 import '../../features/sales/presentation/screens/delivery_challan_screen.dart';
+import '../../features/accounting/presentation/screens/chart_of_accounts_screen.dart';
+import '../../features/accounting/presentation/screens/journal_entry_list_screen.dart';
+import '../../features/accounting/presentation/screens/journal_entry_form_screen.dart';
+import '../../features/accounting/presentation/screens/trial_balance_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -263,6 +267,33 @@ class AppRouter {
         final invoiceId = state.pathParameters['invoiceId']!;
         return DeliveryChallanScreen(invoiceId: invoiceId);
       },
+    ),
+
+    // ─── Accounting Foundation ───
+    GoRoute(
+      path: '/accounting',
+      name: RouteNames.accounting,
+      builder: (context, state) => const ChartOfAccountsScreen(),
+    ),
+    GoRoute(
+      path: '/accounting/chart-of-accounts',
+      name: RouteNames.chartOfAccounts,
+      builder: (context, state) => const ChartOfAccountsScreen(),
+    ),
+    GoRoute(
+      path: '/accounting/journals',
+      name: RouteNames.journal,
+      builder: (context, state) => const JournalEntryListScreen(),
+    ),
+    GoRoute(
+      path: '/accounting/journals/create',
+      name: RouteNames.journalCreate,
+      builder: (context, state) => const JournalEntryFormScreen(),
+    ),
+    GoRoute(
+      path: '/accounting/trial-balance',
+      name: RouteNames.trialBalance,
+      builder: (context, state) => const TrialBalanceScreen(),
     ),
   ];
 }

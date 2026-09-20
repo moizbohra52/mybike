@@ -67,7 +67,9 @@ abstract final class RouteNames {
   static const String accounting = 'accounting';
   static const String chartOfAccounts = 'chart-of-accounts';
   static const String journal = 'journal';
+  static const String journalCreate = 'journal-create';
   static const String ledger = 'ledger';
+  static const String trialBalance = 'trial-balance';
 
   // ─── Reports ───
   static const String reports = 'reports';
