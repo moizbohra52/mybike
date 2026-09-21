@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/route_names.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/extensions/context_extensions.dart';
+import '../components/search_filters/global_search_modal.dart';
 import 'app_app_bar.dart';
 import 'app_sidebar.dart';
 import 'app_bottom_navigation.dart';
@@ -143,9 +145,11 @@ class _AppScaffoldState extends State<AppScaffold> {
       onMenuTap: !isDesktop ? () => _scaffoldKey.currentState?.openDrawer() : null,
     );
 
+    Widget scaffoldContent;
+
     // Desktop Layout (Sidebar + Top App Bar + Main Content)
     if (isDesktop && widget.showSidebarOnDesktop) {
-      return Scaffold(
+      scaffoldContent = Scaffold(
         key: _scaffoldKey,
         backgroundColor: backgroundColor,
         body: Row(
@@ -166,11 +170,8 @@ class _AppScaffoldState extends State<AppScaffold> {
         ),
         floatingActionButton: widget.floatingActionButton,
       );
-    }
-
-    // Tablet Layout (Collapsible sidebar or drawer)
-    if (isTablet && widget.showSidebarOnDesktop) {
-      return Scaffold(
+    } else if (isTablet && widget.showSidebarOnDesktop) {
+      scaffoldContent = Scaffold(
         key: _scaffoldKey,
         backgroundColor: backgroundColor,
         body: Row(
@@ -192,27 +193,42 @@ class _AppScaffoldState extends State<AppScaffold> {
         ),
         floatingActionButton: widget.floatingActionButton,
       );
+    } else {
+      // Mobile Layout (Drawer + Top App Bar + Body + Bottom Nav)
+      scaffoldContent = Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: backgroundColor,
+        appBar: appBar,
+        drawer: Drawer(
+          child: AppSidebar(
+            activeItemId: _currentNavId,
+            onItemTap: _handleNavigation,
+          ),
+        ),
+        body: widget.body,
+        bottomNavigationBar: widget.showBottomNavOnMobile
+            ? AppBottomNavigation(
+                activeId: _currentNavId,
+                onTabSelected: _handleNavigation,
+              )
+            : null,
+        floatingActionButton: widget.floatingActionButton,
+      );
     }
 
-    // Mobile Layout (Drawer + Top App Bar + Body + Bottom Nav)
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: backgroundColor,
-      appBar: appBar,
-      drawer: Drawer(
-        child: AppSidebar(
-          activeItemId: _currentNavId,
-          onItemTap: _handleNavigation,
-        ),
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyK, control: true): () {
+          GlobalSearchModal.show(context);
+        },
+        const SingleActivator(LogicalKeyboardKey.keyK, meta: true): () {
+          GlobalSearchModal.show(context);
+        },
+      },
+      child: Focus(
+        autofocus: true,
+        child: scaffoldContent,
       ),
-      body: widget.body,
-      bottomNavigationBar: widget.showBottomNavOnMobile
-          ? AppBottomNavigation(
-              activeId: _currentNavId,
-              onTabSelected: _handleNavigation,
-            )
-          : null,
-      floatingActionButton: widget.floatingActionButton,
     );
   }
 }

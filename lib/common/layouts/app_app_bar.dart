@@ -8,6 +8,7 @@ import '../../core/theme/app_dimensions.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/theme/theme_cubit.dart';
 import '../../core/extensions/context_extensions.dart';
+import '../components/search_filters/global_search_modal.dart';
 
 /// MYBIKE Top Header Bar
 class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -136,6 +137,64 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(width: AppDimensions.spacing12),
           ],
+          // Global Search Trigger (Ctrl+K)
+          InkWell(
+            onTap: () => GlobalSearchModal.show(context),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.spacing10,
+                vertical: AppDimensions.spacing6,
+              ),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkCard : AppColors.lightBackground,
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                  width: AppDimensions.borderWidth,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: AppDimensions.iconSm,
+                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                  ),
+                  if (!isMobile) ...[
+                    const SizedBox(width: AppDimensions.spacing8),
+                    Text(
+                      'Search ERP...',
+                      style: AppTypography.captionMedium.copyWith(
+                        color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                      ),
+                    ),
+                    const SizedBox(width: AppDimensions.spacing8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(
+                          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                        ),
+                      ),
+                      child: Text(
+                        'Ctrl+K',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: AppDimensions.spacing12),
           // Theme Toggle
           BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
