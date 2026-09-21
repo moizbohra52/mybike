@@ -151,11 +151,13 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
             ),
             const Divider(height: 1),
 
-            // Content Area
+            // Content Area with Paint Isolation
             Expanded(
-              child: _controller.text.trim().isEmpty
-                  ? _buildEmptyOrRecentView(context, recent, isDark)
-                  : _buildResultsList(context, isDark),
+              child: RepaintBoundary(
+                child: _controller.text.trim().isEmpty
+                    ? _buildEmptyOrRecentView(context, recent, isDark)
+                    : _buildResultsList(context, isDark),
+              ),
             ),
 
             // Footer hint

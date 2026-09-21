@@ -5,11 +5,15 @@ import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/routes/app_router.dart';
+import 'core/utils/performance_optimizer.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 
 /// MYBIKE Application Entry Point
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize performance optimizations & ImageCache memory bounds
+  await PerformanceOptimizer.initialize();
 
   // Initialize Supabase (with fallback for dev/offline mode)
   await SupabaseConfig.initialize();
