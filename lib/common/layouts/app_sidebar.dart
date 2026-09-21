@@ -88,6 +88,7 @@ class _AppSidebarState extends State<AppSidebar> {
           AppSidebarItem(id: 'purchases', title: 'Purchases', icon: Icons.shopping_bag_outlined),
           AppSidebarItem(id: 'sales', title: 'Sales & Invoices', icon: Icons.receipt_long_outlined),
           AppSidebarItem(id: 'bookings', title: 'Bookings', icon: Icons.bookmark_border_rounded, badge: 'NEW'),
+          AppSidebarItem(id: 'approvals', title: 'Approvals', icon: Icons.verified_user_outlined),
           AppSidebarItem(id: 'documents', title: 'Document Hub', icon: Icons.folder_shared_outlined),
         ],
       ),

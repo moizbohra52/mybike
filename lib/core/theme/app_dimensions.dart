@@ -24,6 +24,13 @@ abstract final class AppDimensions {
   static const double spacing80 = 80;
   static const double spacing96 = 96;
 
+  // Semantic Spacing Aliases
+  static const double spacingXs = spacing4;
+  static const double spacingSm = spacing8;
+  static const double spacingMd = spacing16;
+  static const double spacingLg = spacing24;
+  static const double spacingXl = spacing32;
+
   // ─── Border Radius ───
   static const double radiusNone = 0;
   static const double radiusXs = 4;

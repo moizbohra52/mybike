@@ -93,4 +93,7 @@ abstract final class RouteNames {
 
   // ─── Audit ───
   static const String auditLogs = 'audit-logs';
+
+  // ─── Approvals ───
+  static const String approvals = 'approvals';
 }

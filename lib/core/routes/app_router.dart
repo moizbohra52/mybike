@@ -48,6 +48,7 @@ import '../../features/reports/presentation/screens/document_preview_screen.dart
 import '../../features/notifications/presentation/screens/notification_center_screen.dart';
 import '../../features/documents/presentation/screens/document_dms_hub_screen.dart';
 import '../../features/audit/presentation/screens/audit_trail_screen.dart';
+import '../../features/approvals/presentation/screens/approval_hub_screen.dart';
 import '../../common/components/app_error_state.dart';
 
 /// MYBIKE Router Configuration
@@ -418,6 +419,11 @@ class AppRouter {
       path: '/audit-logs',
       name: RouteNames.auditLogs,
       builder: (context, state) => const AuditTrailScreen(),
+    ),
+    GoRoute(
+      path: '/approvals',
+      name: RouteNames.approvals,
+      builder: (context, state) => const ApprovalHubScreen(),
     ),
   ];
 }
