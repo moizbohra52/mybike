@@ -111,6 +111,9 @@ class _AppScaffoldState extends State<AppScaffold> {
         case 'reports':
           context.goNamed(RouteNames.reports);
           break;
+        case 'documents':
+          context.goNamed(RouteNames.documents);
+          break;
         default:
           break;
       }

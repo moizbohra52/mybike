@@ -76,6 +76,7 @@ abstract final class RouteNames {
 
   // ─── Reports & Documents ───
   static const String reports = 'reports';
+  static const String documents = 'documents';
   static const String documentPreview = 'document-preview';
 
   // ─── GST & Tax ───
