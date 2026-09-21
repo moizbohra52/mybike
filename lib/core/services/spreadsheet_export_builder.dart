@@ -39,6 +39,15 @@ class SpreadsheetExportBuilder {
     return Csv().encode(csvData);
   }
 
+  /// Generates CSV from raw headers and rows
+  static String buildCsv({
+    required List<String> headers,
+    required List<List<dynamic>> rows,
+  }) {
+    final List<List<dynamic>> csvData = [headers, ...rows];
+    return Csv().encode(csvData);
+  }
+
   /// Generates CSV as byte array (UTF-8 with optional BOM for seamless Excel opening)
   static Uint8List buildCsvBytes({
     required List<ReportColumnDef> columns,

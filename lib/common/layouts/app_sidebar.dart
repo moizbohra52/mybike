@@ -111,6 +111,7 @@ class _AppSidebarState extends State<AppSidebar> {
         items: [
           AppSidebarItem(id: 'users', title: 'Users', icon: Icons.people_outline_rounded),
           AppSidebarItem(id: 'roles', title: 'Roles & Permissions', icon: Icons.admin_panel_settings_outlined),
+          AppSidebarItem(id: 'audit-logs', title: 'Audit Trail', icon: Icons.history_rounded),
           AppSidebarItem(id: 'settings', title: 'Settings', icon: Icons.settings_outlined),
         ],
       ),
