@@ -139,7 +139,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: AppDimensions.spacing12),
           ],
           // Global Search Trigger
-          if (!isMobile)
+          if (context.isDesktop)
             InkWell(
               onTap: () => GlobalSearchModal.show(context),
               borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
@@ -194,15 +194,15 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             )
-          else if (actions == null || actions!.isEmpty)
+          else if (!isMobile)
             IconButton(
               icon: const Icon(Icons.search_rounded),
               iconSize: AppDimensions.iconMd,
               color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-              tooltip: 'Search ERP',
+              tooltip: 'Search ERP (Ctrl+K)',
               onPressed: () => GlobalSearchModal.show(context),
             ),
-          if (!isMobile) const SizedBox(width: AppDimensions.spacing12),
+          if (!isMobile) const SizedBox(width: AppDimensions.spacing8),
           // Theme Toggle (Desktop only; on mobile accessible via User Profile menu)
           if (!isMobile)
             BlocBuilder<ThemeCubit, ThemeState>(
