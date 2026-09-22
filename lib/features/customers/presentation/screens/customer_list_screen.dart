@@ -32,25 +32,37 @@ class _CustomerListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
 
     return AppScaffold(
       title: 'Customers',
       activeNavigationId: 'customers',
       actions: [
-        FilledButton.icon(
-          onPressed: () => context.goNamed(RouteNames.customerCreate),
-          icon: const Icon(Icons.person_add_rounded, size: 18),
-          label: const Text('Add Customer'),
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primaryYellow,
-            foregroundColor: AppColors.primaryBlack,
+        if (isMobile)
+          IconButton(
+            onPressed: () => context.goNamed(RouteNames.customerCreate),
+            icon: const Icon(Icons.person_add_rounded),
+            tooltip: 'Add Customer',
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.primaryYellow,
+              foregroundColor: AppColors.primaryBlack,
+            ),
+          )
+        else
+          FilledButton.icon(
+            onPressed: () => context.goNamed(RouteNames.customerCreate),
+            icon: const Icon(Icons.person_add_rounded, size: 18),
+            label: const Text('Add Customer'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primaryYellow,
+              foregroundColor: AppColors.primaryBlack,
+            ),
           ),
-        ),
-        const SizedBox(width: AppDimensions.spacing12),
+        if (!isMobile) const SizedBox(width: AppDimensions.spacing12),
       ],
       body: BlocBuilder<CustomerListCubit, CustomerListState>(
         builder: (context, state) {
+          final isDark = context.isDarkMode;
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator(color: AppColors.primaryYellow));
           }

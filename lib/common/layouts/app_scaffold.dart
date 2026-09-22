@@ -152,21 +152,23 @@ class _AppScaffoldState extends State<AppScaffold> {
       scaffoldContent = Scaffold(
         key: _scaffoldKey,
         backgroundColor: backgroundColor,
-        body: Row(
-          children: [
-            AppSidebar(
-              activeItemId: _currentNavId,
-              onItemTap: _handleNavigation,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  appBar,
-                  Expanded(child: widget.body),
-                ],
+        body: SafeArea(
+          child: Row(
+            children: [
+              AppSidebar(
+                activeItemId: _currentNavId,
+                onItemTap: _handleNavigation,
               ),
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    appBar,
+                    Expanded(child: widget.body),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: widget.floatingActionButton,
       );
@@ -174,22 +176,24 @@ class _AppScaffoldState extends State<AppScaffold> {
       scaffoldContent = Scaffold(
         key: _scaffoldKey,
         backgroundColor: backgroundColor,
-        body: Row(
-          children: [
-            AppSidebar(
-              activeItemId: _currentNavId,
-              onItemTap: _handleNavigation,
-              initialCollapsed: true,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  appBar,
-                  Expanded(child: widget.body),
-                ],
+        body: SafeArea(
+          child: Row(
+            children: [
+              AppSidebar(
+                activeItemId: _currentNavId,
+                onItemTap: _handleNavigation,
+                initialCollapsed: true,
               ),
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    appBar,
+                    Expanded(child: widget.body),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: widget.floatingActionButton,
       );
@@ -200,12 +204,19 @@ class _AppScaffoldState extends State<AppScaffold> {
         backgroundColor: backgroundColor,
         appBar: appBar,
         drawer: Drawer(
+          backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
           child: AppSidebar(
             activeItemId: _currentNavId,
             onItemTap: _handleNavigation,
           ),
         ),
-        body: widget.body,
+        body: SafeArea(
+          top: false,
+          bottom: widget.showBottomNavOnMobile ? false : true,
+          left: true,
+          right: true,
+          child: widget.body,
+        ),
         bottomNavigationBar: widget.showBottomNavOnMobile
             ? AppBottomNavigation(
                 activeId: _currentNavId,

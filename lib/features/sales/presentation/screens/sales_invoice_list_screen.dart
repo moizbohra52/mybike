@@ -33,26 +33,38 @@ class _SalesInvoiceListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = context.isMobile;
     final isDark = context.isDarkMode;
 
     return AppScaffold(
       activeNavigationId: 'sales',
       title: 'Sales & Invoices',
       actions: [
-        FilledButton.icon(
-          onPressed: () => context.goNamed(RouteNames.saleCreate),
-          icon: const Icon(Icons.add_shopping_cart_rounded, size: 18),
-          label: const Text('New Sale / Booking'),
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primaryYellow,
-            foregroundColor: AppColors.primaryBlack,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        if (isMobile)
+          IconButton(
+            onPressed: () => context.goNamed(RouteNames.saleCreate),
+            icon: const Icon(Icons.add_shopping_cart_rounded),
+            tooltip: 'New Sale / Booking',
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.primaryYellow,
+              foregroundColor: AppColors.primaryBlack,
+            ),
+          )
+        else
+          FilledButton.icon(
+            onPressed: () => context.goNamed(RouteNames.saleCreate),
+            icon: const Icon(Icons.add_shopping_cart_rounded, size: 18),
+            label: const Text('New Sale / Booking'),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primaryYellow,
+              foregroundColor: AppColors.primaryBlack,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 16),
+        if (!isMobile) const SizedBox(width: 16),
       ],
       body: BlocBuilder<SalesInvoiceListCubit, SalesInvoiceListState>(
         builder: (context, state) {
@@ -438,92 +450,174 @@ class _SalesInvoiceListView extends StatelessWidget {
               ],
             ),
             const Divider(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Column(
+            if (context.isMobile)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Customer',
-                        style: AppTypography.captionSmall.copyWith(
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Customer',
+                              style: AppTypography.captionSmall.copyWith(
+                                color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              invoice.customerName ?? 'Customer',
+                              style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            if (invoice.customerMobile != null)
+                              Text(
+                                invoice.customerMobile!,
+                                style: AppTypography.captionSmall.copyWith(
+                                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        invoice.customerName ?? 'Customer',
-                        style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'On-Road Total',
+                            style: AppTypography.captionSmall.copyWith(
+                              color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            currencyFormat.format(invoice.totalOnRoadPrice),
+                            style: AppTypography.titleMedium.copyWith(
+                              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            invoice.isPaid ? 'Paid in Full' : 'Bal: ${currencyFormat.format(invoice.balanceAmount)}',
+                            style: AppTypography.captionSmall.copyWith(
+                              color: invoice.isPaid ? AppColors.success : AppColors.warning,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                      if (invoice.customerMobile != null)
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(Icons.two_wheeler_outlined, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${invoice.modelName ?? ""} ${invoice.variantName ?? ""} • VIN: ${invoice.vin}',
+                          style: AppTypography.captionMedium.copyWith(
+                            color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          invoice.customerMobile!,
+                          'Customer',
                           style: AppTypography.captionSmall.copyWith(
                             color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                           ),
                         ),
-                    ],
+                        const SizedBox(height: 2),
+                        Text(
+                          invoice.customerName ?? 'Customer',
+                          style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        if (invoice.customerMobile != null)
+                          Text(
+                            invoice.customerMobile!,
+                            style: AppTypography.captionSmall.copyWith(
+                              color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Vehicle & VIN',
-                        style: AppTypography.captionSmall.copyWith(
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Vehicle & VIN',
+                          style: AppTypography.captionSmall.copyWith(
+                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${invoice.modelName ?? ""} ${invoice.variantName ?? ""}',
-                        style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        'VIN: ${invoice.vin}',
-                        style: AppTypography.captionSmall.copyWith(
-                          fontFamily: 'monospace',
-                          color: AppColors.info,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 2),
+                        Text(
+                          '${invoice.modelName ?? ""} ${invoice.variantName ?? ""}',
+                          style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
                         ),
-                      ),
-                    ],
+                        Text(
+                          'VIN: ${invoice.vin}',
+                          style: AppTypography.captionSmall.copyWith(
+                            fontFamily: 'monospace',
+                            color: AppColors.info,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'On-Road Total',
-                        style: AppTypography.captionSmall.copyWith(
-                          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'On-Road Total',
+                          style: AppTypography.captionSmall.copyWith(
+                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        currencyFormat.format(invoice.totalOnRoadPrice),
-                        style: AppTypography.headlineSmall.copyWith(
-                          color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 2),
+                        Text(
+                          currencyFormat.format(invoice.totalOnRoadPrice),
+                          style: AppTypography.headlineSmall.copyWith(
+                            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        invoice.isPaid ? 'Paid in Full' : 'Bal: ${currencyFormat.format(invoice.balanceAmount)}',
-                        style: AppTypography.captionSmall.copyWith(
-                          color: invoice.isPaid ? AppColors.success : AppColors.warning,
-                          fontWeight: FontWeight.w600,
+                        Text(
+                          invoice.isPaid ? 'Paid in Full' : 'Bal: ${currencyFormat.format(invoice.balanceAmount)}',
+                          style: AppTypography.captionSmall.copyWith(
+                            color: invoice.isPaid ? AppColors.success : AppColors.warning,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

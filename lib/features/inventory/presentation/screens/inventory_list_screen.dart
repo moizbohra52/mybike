@@ -75,8 +75,9 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                     title: 'Vehicle Stock & Asset Tracking',
                     countBadge: state.totalUnits,
                     subtitle: 'Real-time VIN chassis tracking, multi-branch stock levels, inwarding (GRN), and transfer logistics',
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    trailing: Wrap(
+                      spacing: AppDimensions.spacing8,
+                      runSpacing: AppDimensions.spacing8,
                       children: [
                         AppButton.secondary(
                           label: 'Branch Transfer',
@@ -86,7 +87,6 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
                             _cubit.loadInventory();
                           },
                         ),
-                        const SizedBox(width: AppDimensions.spacing8),
                         AppButton.primary(
                           label: 'Inward Stock (GRN)',
                           leadingIcon: Icons.add_box_rounded,
@@ -130,7 +130,60 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
   Widget _buildKpiMetrics(BuildContext context, InventoryListState state) {
     final isDesktop = ResponsiveUtils.isDesktop(context);
     final isTablet = ResponsiveUtils.isTablet(context);
-    final crossAxisCount = isDesktop ? 5 : (isTablet ? 3 : 2);
+
+    final cards = [
+      AppStatCard(
+        title: 'Total Units',
+        value: '${state.totalUnits}',
+        icon: Icons.two_wheeler_rounded,
+        iconColor: AppColors.primaryYellow,
+      ),
+      AppStatCard(
+        title: 'In-Stock (Available)',
+        value: '${state.availableUnits}',
+        icon: Icons.check_circle_outline_rounded,
+        iconColor: const Color(0xFF10B981),
+      ),
+      AppStatCard(
+        title: 'Booked / Allocated',
+        value: '${state.bookedUnits}',
+        icon: Icons.bookmark_added_outlined,
+        iconColor: const Color(0xFF3B82F6),
+      ),
+      AppStatCard(
+        title: 'In-Transit',
+        value: '${state.inTransitUnits}',
+        icon: Icons.local_shipping_outlined,
+        iconColor: const Color(0xFFF59E0B),
+      ),
+      AppStatCard(
+        title: 'Total Stock Value',
+        value: _formatInr(state.totalValuationInr),
+        icon: Icons.currency_rupee_rounded,
+        iconColor: const Color(0xFF8B5CF6),
+      ),
+    ];
+
+    if (!isDesktop && !isTablet) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: cards.asMap().entries.map((entry) {
+            return Padding(
+              padding: EdgeInsets.only(
+                right: entry.key == cards.length - 1 ? 0 : AppDimensions.spacing12,
+              ),
+              child: SizedBox(
+                width: 170,
+                child: entry.value,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    final crossAxisCount = isDesktop ? 5 : 3;
 
     return GridView.count(
       crossAxisCount: crossAxisCount,
@@ -138,44 +191,14 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: AppDimensions.spacing16,
       crossAxisSpacing: AppDimensions.spacing16,
-      childAspectRatio: isDesktop ? 2.1 : (isTablet ? 2.3 : 2.0),
-      children: [
-        AppStatCard(
-          title: 'Total Units',
-          value: '${state.totalUnits}',
-          icon: Icons.two_wheeler_rounded,
-          iconColor: AppColors.primaryYellow,
-        ),
-        AppStatCard(
-          title: 'In-Stock (Available)',
-          value: '${state.availableUnits}',
-          icon: Icons.check_circle_outline_rounded,
-          iconColor: const Color(0xFF10B981),
-        ),
-        AppStatCard(
-          title: 'Booked / Allocated',
-          value: '${state.bookedUnits}',
-          icon: Icons.bookmark_added_outlined,
-          iconColor: const Color(0xFF3B82F6),
-        ),
-        AppStatCard(
-          title: 'In-Transit',
-          value: '${state.inTransitUnits}',
-          icon: Icons.local_shipping_outlined,
-          iconColor: const Color(0xFFF59E0B),
-        ),
-        AppStatCard(
-          title: 'Total Stock Value',
-          value: _formatInr(state.totalValuationInr),
-          icon: Icons.currency_rupee_rounded,
-          iconColor: const Color(0xFF8B5CF6),
-        ),
-      ],
+      childAspectRatio: isDesktop ? 2.1 : 2.0,
+      children: cards,
     );
   }
 
   Widget _buildFilterBar(BuildContext context, InventoryListState state) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
 
     return Container(
       padding: const EdgeInsets.all(AppDimensions.spacing16),
@@ -190,34 +213,54 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: AppTextField(
-                  controller: _searchController,
-                  hint: 'Search by VIN, Engine No, Motor No, Key Tag...',
-                  prefixIcon: Icons.search_rounded,
-                  onChanged: (val) => _cubit.search(val),
+          if (isMobile) ...[
+            AppTextField(
+              controller: _searchController,
+              hint: 'Search by VIN, Engine, Motor, Key...',
+              prefixIcon: Icons.search_rounded,
+              onChanged: (val) => _cubit.search(val),
+            ),
+            const SizedBox(height: AppDimensions.spacing12),
+            AppDropdown<String?>(
+              label: 'Showroom Branch',
+              value: state.selectedShowroomId,
+              items: [null, ...state.showrooms.map((s) => s.showroom.id)],
+              itemLabel: (id) {
+                if (id == null) return 'All Showrooms';
+                final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
+                return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'All Showrooms';
+              },
+              onChanged: (id) => _cubit.filterByShowroom(id),
+            ),
+          ] else
+            Row(
+              children: [
+                Expanded(
+                  child: AppTextField(
+                    controller: _searchController,
+                    hint: 'Search by VIN, Engine No, Motor No, Key Tag...',
+                    prefixIcon: Icons.search_rounded,
+                    onChanged: (val) => _cubit.search(val),
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppDimensions.spacing12),
-              // Showroom selector
-              SizedBox(
-                width: 240,
-                child: AppDropdown<String?>(
-                  label: 'Showroom Branch',
-                  value: state.selectedShowroomId,
-                  items: [null, ...state.showrooms.map((s) => s.showroom.id)],
-                  itemLabel: (id) {
-                    if (id == null) return 'All Showrooms';
-                    final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
-                    return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'All Showrooms';
-                  },
-                  onChanged: (id) => _cubit.filterByShowroom(id),
+                const SizedBox(width: AppDimensions.spacing12),
+                // Showroom selector
+                SizedBox(
+                  width: 240,
+                  child: AppDropdown<String?>(
+                    label: 'Showroom Branch',
+                    value: state.selectedShowroomId,
+                    items: [null, ...state.showrooms.map((s) => s.showroom.id)],
+                    itemLabel: (id) {
+                      if (id == null) return 'All Showrooms';
+                      final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
+                      return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'All Showrooms';
+                    },
+                    onChanged: (id) => _cubit.filterByShowroom(id),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           const SizedBox(height: AppDimensions.spacing12),
           Wrap(
             spacing: AppDimensions.spacing8,
@@ -276,7 +319,21 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
   Widget _buildInventoryGrid(BuildContext context, InventoryListState state) {
     final isDesktop = ResponsiveUtils.isDesktop(context);
     final isTablet = ResponsiveUtils.isTablet(context);
-    final crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
+
+    if (!isDesktop && !isTablet) {
+      return ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: state.items.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppDimensions.spacing16),
+        itemBuilder: (context, index) {
+          final item = state.items[index];
+          return _buildVehicleCard(context, item);
+        },
+      );
+    }
+
+    final crossAxisCount = isDesktop ? 3 : 2;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -285,7 +342,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
         crossAxisCount: crossAxisCount,
         mainAxisSpacing: AppDimensions.spacing16,
         crossAxisSpacing: AppDimensions.spacing16,
-        childAspectRatio: isDesktop ? 1.25 : (isTablet ? 1.2 : 1.35),
+        childAspectRatio: isDesktop ? 1.25 : 1.15,
       ),
       itemCount: state.items.length,
       itemBuilder: (context, index) {
@@ -445,7 +502,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
               ],
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: AppDimensions.spacing16),
 
           // Showroom Location & PDI
           Row(

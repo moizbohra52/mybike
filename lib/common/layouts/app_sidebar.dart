@@ -141,8 +141,13 @@ class _AppSidebarState extends State<AppSidebar> {
           ),
         ),
       ),
-      child: Column(
-        children: [
+      child: SafeArea(
+        top: true,
+        bottom: true,
+        left: false,
+        right: false,
+        child: Column(
+          children: [
           // Sidebar Header (Logo)
           Container(
             height: AppDimensions.appBarHeight,
@@ -367,6 +372,7 @@ class _AppSidebarState extends State<AppSidebar> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -97,33 +97,36 @@ class _DashboardView extends StatelessWidget {
       {'id': 'year', 'label': 'FY 2026-27'},
     ];
 
+    final dropdown = DropdownButtonHideUnderline(
+      child: DropdownButton<String?>(
+        value: state.selectedShowroomId,
+        icon: const Icon(Icons.arrow_drop_down),
+        isExpanded: !isDesktop,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.bold,
+          color: isDark ? Colors.white : Colors.black87,
+        ),
+        dropdownColor: isDark ? const Color(0xFF242832) : Colors.white,
+        items: const [
+          DropdownMenuItem(value: null, child: Text('All Showrooms (Enterprise)')),
+          DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship — Central')),
+          DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub — Deccan')),
+          DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro — Indiranagar')),
+        ],
+        onChanged: (val) => context.read<DashboardCubit>().filterByShowroom(val),
+      ),
+    );
+
     final showroomSelector = Row(
+      mainAxisSize: isDesktop ? MainAxisSize.min : MainAxisSize.max,
       children: [
         const Icon(Icons.storefront_outlined, size: 20, color: AppColors.primaryYellow),
         const SizedBox(width: 8),
-        Expanded(
-          flex: isDesktop ? 0 : 1,
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String?>(
-              value: state.selectedShowroomId,
-              icon: const Icon(Icons.arrow_drop_down),
-              isExpanded: !isDesktop,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-              dropdownColor: isDark ? const Color(0xFF242832) : Colors.white,
-              items: const [
-                DropdownMenuItem(value: null, child: Text('All Showrooms (Enterprise)')),
-                DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship — Central')),
-                DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub — Deccan')),
-                DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro — Indiranagar')),
-              ],
-              onChanged: (val) => context.read<DashboardCubit>().filterByShowroom(val),
-            ),
-          ),
-        ),
+        if (isDesktop)
+          dropdown
+        else
+          Expanded(child: dropdown),
       ],
     );
 

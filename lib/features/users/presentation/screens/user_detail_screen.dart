@@ -95,7 +95,6 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
 
     final user = _user!;
     final isDark = context.isDarkMode;
-    final crossAxisCount = ResponsiveUtils.gridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 2);
 
     final initials = (user.profile.fullName ?? user.profile.email)
         .split(' ')
@@ -169,130 +168,24 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           const SizedBox(height: AppDimensions.spacing24),
 
           // ─── Roles & Showrooms Grid ───
-          GridView.count(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: AppDimensions.spacing16,
-            mainAxisSpacing: AppDimensions.spacing16,
-            childAspectRatio: context.isDesktop ? 2.2 : (context.isTablet ? 1.8 : 1.5),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              // Roles Card
-              AppCard(
-                title: 'Assigned Roles',
-                subtitle: '${user.roles.length} role${user.roles.length == 1 ? '' : 's'} assigned',
-                child: user.roles.isEmpty
-                    ? Text('No roles', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
-                    : Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: user.roles.map((role) {
-                          final color = _roleColor(role.name);
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: color.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                              border: Border.all(color: color.withValues(alpha: 0.3)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.shield_outlined, size: 16, color: color),
-                                const SizedBox(width: 8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      role.displayName,
-                                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
-                                    ),
-                                    if (role.isSystemRole)
-                                      Text(
-                                        'System Role',
-                                        style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.7)),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
-              ),
-
-              // Showrooms Card
-              AppCard(
-                title: 'Showroom Access',
-                subtitle: '${user.showrooms.length} showroom${user.showrooms.length == 1 ? '' : 's'} assigned',
-                child: user.showrooms.isEmpty
-                    ? Text('No showrooms', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: user.showrooms.map((showroom) {
-                          final isDefault = showroom.id == user.defaultShowroomId;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Container(
-                              padding: const EdgeInsets.all(AppDimensions.spacing12),
-                              decoration: BoxDecoration(
-                                color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                                border: Border.all(
-                                  color: isDefault
-                                      ? AppColors.primaryYellow.withValues(alpha: 0.5)
-                                      : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryYellow.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      showroom.code,
-                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primaryYellowDark),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(showroom.name, style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
-                                        Text('${showroom.city}, ${showroom.state}', style: AppTypography.captionMedium.copyWith(color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
-                                      ],
-                                    ),
-                                  ),
-                                  if (isDefault)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryYellow.withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.star_rounded, size: 12, color: AppColors.primaryYellow),
-                                          SizedBox(width: 3),
-                                          Text('Default', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primaryYellow)),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-              ),
-            ],
-          ),
+          if (context.isMobile)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildRolesCard(user),
+                const SizedBox(height: AppDimensions.spacing16),
+                _buildShowroomsCard(user, isDark),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _buildRolesCard(user)),
+                const SizedBox(width: AppDimensions.spacing16),
+                Expanded(child: _buildShowroomsCard(user, isDark)),
+              ],
+            ),
           const SizedBox(height: AppDimensions.spacing24),
 
           // ─── Account Info ───
@@ -350,6 +243,123 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           const SizedBox(height: AppDimensions.spacing40),
         ],
       ),
+    );
+  }
+
+  Widget _buildRolesCard(ManagedUser user) {
+    return AppCard(
+      title: 'Assigned Roles',
+      subtitle: '${user.roles.length} role${user.roles.length == 1 ? '' : 's'} assigned',
+      child: user.roles.isEmpty
+          ? Text('No roles', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
+          : Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: user.roles.map((role) {
+                final color = _roleColor(role.name);
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                    border: Border.all(color: color.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.shield_outlined, size: 16, color: color),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            role.displayName,
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+                          ),
+                          if (role.isSystemRole)
+                            Text(
+                              'System Role',
+                              style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.7)),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+    );
+  }
+
+  Widget _buildShowroomsCard(ManagedUser user, bool isDark) {
+    return AppCard(
+      title: 'Showroom Access',
+      subtitle: '${user.showrooms.length} showroom${user.showrooms.length == 1 ? '' : 's'} assigned',
+      child: user.showrooms.isEmpty
+          ? Text('No showrooms', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: user.showrooms.map((showroom) {
+                final isDefault = showroom.id == user.defaultShowroomId;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    padding: const EdgeInsets.all(AppDimensions.spacing12),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                      border: Border.all(
+                        color: isDefault
+                            ? AppColors.primaryYellow.withValues(alpha: 0.5)
+                            : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryYellow.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            showroom.code,
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primaryYellowDark),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(showroom.name, style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+                              Text('${showroom.city}, ${showroom.state}', style: AppTypography.captionMedium.copyWith(color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
+                            ],
+                          ),
+                        ),
+                        if (isDefault)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryYellow.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.star_rounded, size: 12, color: AppColors.primaryYellow),
+                                SizedBox(width: 3),
+                                Text('Default', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primaryYellow)),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
     );
   }
 

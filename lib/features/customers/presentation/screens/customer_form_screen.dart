@@ -71,50 +71,38 @@ class _CustomerFormView extends StatelessWidget {
                       title: 'Personal Details',
                       icon: Icons.person_outline_rounded,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                label: 'First Name *',
-                                initialValue: state.firstName,
-                                onChanged: cubit.updateFirstName,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _FormField(
-                                label: 'Last Name *',
-                                initialValue: state.lastName,
-                                onChanged: cubit.updateLastName,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _FormField(
+                            label: 'First Name *',
+                            initialValue: state.firstName,
+                            onChanged: cubit.updateFirstName,
+                            isDark: isDark,
+                          ),
+                          second: _FormField(
+                            label: 'Last Name *',
+                            initialValue: state.lastName,
+                            onChanged: cubit.updateLastName,
+                            isDark: isDark,
+                          ),
                         ),
                         const SizedBox(height: AppDimensions.spacing12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _DropdownField(
-                                label: 'Gender',
-                                value: state.gender,
-                                items: const {'male': 'Male', 'female': 'Female', 'other': 'Other'},
-                                onChanged: cubit.updateGender,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _DropdownField(
-                                label: 'Customer Type',
-                                value: state.customerType,
-                                items: const {'individual': 'Individual', 'corporate': 'Corporate', 'fleet': 'Fleet'},
-                                onChanged: cubit.updateCustomerType,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _DropdownField(
+                            label: 'Gender',
+                            value: state.gender,
+                            items: const {'male': 'Male', 'female': 'Female', 'other': 'Other'},
+                            onChanged: cubit.updateGender,
+                            isDark: isDark,
+                          ),
+                          second: _DropdownField(
+                            label: 'Customer Type',
+                            value: state.customerType,
+                            items: const {'individual': 'Individual', 'corporate': 'Corporate', 'fleet': 'Fleet'},
+                            onChanged: cubit.updateCustomerType,
+                            isDark: isDark,
+                          ),
                         ),
                       ],
                     ),
@@ -126,53 +114,41 @@ class _CustomerFormView extends StatelessWidget {
                       title: 'Contact Information',
                       icon: Icons.phone_outlined,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                label: 'Mobile Primary * (10 digits)',
-                                initialValue: state.mobilePrimary,
-                                onChanged: cubit.updateMobilePrimary,
-                                keyboardType: TextInputType.phone,
-                                maxLength: 10,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _FormField(
-                                label: 'Mobile Secondary',
-                                initialValue: state.mobileSecondary ?? '',
-                                onChanged: cubit.updateMobileSecondary,
-                                keyboardType: TextInputType.phone,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _FormField(
+                            label: 'Mobile Primary * (10 digits)',
+                            initialValue: state.mobilePrimary,
+                            onChanged: cubit.updateMobilePrimary,
+                            keyboardType: TextInputType.phone,
+                            maxLength: 10,
+                            isDark: isDark,
+                          ),
+                          second: _FormField(
+                            label: 'Mobile Secondary',
+                            initialValue: state.mobileSecondary ?? '',
+                            onChanged: cubit.updateMobileSecondary,
+                            keyboardType: TextInputType.phone,
+                            isDark: isDark,
+                          ),
                         ),
                         const SizedBox(height: AppDimensions.spacing12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                label: 'Email',
-                                initialValue: state.email ?? '',
-                                onChanged: cubit.updateEmail,
-                                keyboardType: TextInputType.emailAddress,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _DropdownField(
-                                label: 'Preferred Contact',
-                                value: state.preferredContactMethod,
-                                items: const {'phone': 'Phone', 'whatsapp': 'WhatsApp', 'email': 'Email', 'sms': 'SMS'},
-                                onChanged: cubit.updatePreferredContact,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _FormField(
+                            label: 'Email',
+                            initialValue: state.email ?? '',
+                            onChanged: cubit.updateEmail,
+                            keyboardType: TextInputType.emailAddress,
+                            isDark: isDark,
+                          ),
+                          second: _DropdownField(
+                            label: 'Preferred Contact',
+                            value: state.preferredContactMethod,
+                            items: const {'phone': 'Phone', 'whatsapp': 'WhatsApp', 'email': 'Email', 'sms': 'SMS'},
+                            onChanged: cubit.updatePreferredContact,
+                            isDark: isDark,
+                          ),
                         ),
                       ],
                     ),
@@ -198,50 +174,38 @@ class _CustomerFormView extends StatelessWidget {
                           isDark: isDark,
                         ),
                         const SizedBox(height: AppDimensions.spacing12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                label: 'City',
-                                initialValue: state.city ?? '',
-                                onChanged: cubit.updateCity,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _FormField(
-                                label: 'State',
-                                initialValue: state.state ?? '',
-                                onChanged: cubit.updateState,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _FormField(
+                            label: 'City',
+                            initialValue: state.city ?? '',
+                            onChanged: cubit.updateCity,
+                            isDark: isDark,
+                          ),
+                          second: _FormField(
+                            label: 'State',
+                            initialValue: state.state ?? '',
+                            onChanged: cubit.updateState,
+                            isDark: isDark,
+                          ),
                         ),
                         const SizedBox(height: AppDimensions.spacing12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                label: 'PIN Code (6 digits)',
-                                initialValue: state.pinCode ?? '',
-                                onChanged: cubit.updatePinCode,
-                                keyboardType: TextInputType.number,
-                                maxLength: 6,
-                                isDark: isDark,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spacing12),
-                            Expanded(
-                              child: _FormField(
-                                label: 'Landmark',
-                                initialValue: state.landmark ?? '',
-                                onChanged: cubit.updateLandmark,
-                                isDark: isDark,
-                              ),
-                            ),
-                          ],
+                        _FormRow(
+                          isMobile: context.isMobile,
+                          first: _FormField(
+                            label: 'PIN Code (6 digits)',
+                            initialValue: state.pinCode ?? '',
+                            onChanged: cubit.updatePinCode,
+                            keyboardType: TextInputType.number,
+                            maxLength: 6,
+                            isDark: isDark,
+                          ),
+                          second: _FormField(
+                            label: 'Landmark',
+                            initialValue: state.landmark ?? '',
+                            onChanged: cubit.updateLandmark,
+                            isDark: isDark,
+                          ),
                         ),
                       ],
                     ),
@@ -444,6 +408,40 @@ class _DropdownField extends StatelessWidget {
           borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
         ),
       ),
+    );
+  }
+}
+
+class _FormRow extends StatelessWidget {
+  final bool isMobile;
+  final Widget first;
+  final Widget second;
+
+  const _FormRow({
+    required this.isMobile,
+    required this.first,
+    required this.second,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          first,
+          const SizedBox(height: AppDimensions.spacing12),
+          second,
+        ],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: first),
+        const SizedBox(width: AppDimensions.spacing12),
+        Expanded(child: second),
+      ],
     );
   }
 }

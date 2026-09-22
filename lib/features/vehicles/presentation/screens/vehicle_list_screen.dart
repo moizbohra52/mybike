@@ -115,7 +115,54 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
   Widget _buildKpiMetrics(BuildContext context, VehicleCatalogState state) {
     final isDesktop = ResponsiveUtils.isDesktop(context);
     final isTablet = ResponsiveUtils.isTablet(context);
-    final crossAxisCount = isDesktop ? 4 : (isTablet ? 2 : 1);
+
+    final cards = [
+      AppStatCard(
+        title: 'Total Models',
+        value: '${state.totalModels}',
+        icon: Icons.two_wheeler_rounded,
+        iconColor: AppColors.primaryYellow,
+      ),
+      AppStatCard(
+        title: 'Petrol Bikes',
+        value: '${state.petrolCount}',
+        icon: Icons.local_gas_station_rounded,
+        iconColor: const Color(0xFFF97316),
+      ),
+      AppStatCard(
+        title: 'Electric EV',
+        value: '${state.electricCount}',
+        icon: Icons.electric_bolt_rounded,
+        iconColor: const Color(0xFF10B981),
+      ),
+      AppStatCard(
+        title: 'Total Variants',
+        value: '${state.totalVariants}',
+        icon: Icons.layers_rounded,
+        iconColor: const Color(0xFF8B5CF6),
+      ),
+    ];
+
+    if (!isDesktop && !isTablet) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: cards.asMap().entries.map((entry) {
+            return Padding(
+              padding: EdgeInsets.only(
+                right: entry.key == cards.length - 1 ? 0 : AppDimensions.spacing12,
+              ),
+              child: SizedBox(
+                width: 170,
+                child: entry.value,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    final crossAxisCount = isDesktop ? 4 : 2;
 
     return GridView.count(
       crossAxisCount: crossAxisCount,
@@ -123,33 +170,8 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: AppDimensions.spacing16,
       crossAxisSpacing: AppDimensions.spacing16,
-      childAspectRatio: isDesktop ? 2.3 : (isTablet ? 2.5 : 2.8),
-      children: [
-        AppStatCard(
-          title: 'Total Models',
-          value: '${state.totalModels}',
-          icon: Icons.two_wheeler_rounded,
-          iconColor: AppColors.primaryYellow,
-        ),
-        AppStatCard(
-          title: 'Petrol Bikes',
-          value: '${state.petrolCount}',
-          icon: Icons.local_gas_station_rounded,
-          iconColor: const Color(0xFFF97316),
-        ),
-        AppStatCard(
-          title: 'Electric EV',
-          value: '${state.electricCount}',
-          icon: Icons.electric_bolt_rounded,
-          iconColor: const Color(0xFF10B981),
-        ),
-        AppStatCard(
-          title: 'Total Variants',
-          value: '${state.totalVariants}',
-          icon: Icons.layers_rounded,
-          iconColor: const Color(0xFF8B5CF6),
-        ),
-      ],
+      childAspectRatio: isDesktop ? 2.3 : 2.0,
+      children: cards,
     );
   }
 
@@ -288,7 +310,21 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
   Widget _buildCatalogGrid(BuildContext context, VehicleCatalogState state) {
     final isDesktop = ResponsiveUtils.isDesktop(context);
     final isTablet = ResponsiveUtils.isTablet(context);
-    final crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
+
+    if (!isDesktop && !isTablet) {
+      return ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: state.items.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppDimensions.spacing16),
+        itemBuilder: (context, index) {
+          final item = state.items[index];
+          return _buildModelCard(context, item);
+        },
+      );
+    }
+
+    final crossAxisCount = isDesktop ? 3 : 2;
 
     return GridView.builder(
       shrinkWrap: true,
@@ -297,7 +333,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
         crossAxisCount: crossAxisCount,
         mainAxisSpacing: AppDimensions.spacing16,
         crossAxisSpacing: AppDimensions.spacing16,
-        childAspectRatio: isDesktop ? 1.05 : (isTablet ? 1.0 : 1.15),
+        childAspectRatio: isDesktop ? 1.05 : 1.0,
       ),
       itemCount: state.items.length,
       itemBuilder: (context, index) {
@@ -366,15 +402,13 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
           const SizedBox(height: AppDimensions.spacing8),
 
           // Description
-          Expanded(
-            child: Text(
-              item.model.description ?? 'No description provided.',
-              style: AppTypography.bodySmall.copyWith(
-                color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            item.model.description ?? 'No description provided.',
+            style: AppTypography.bodySmall.copyWith(
+              color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: AppDimensions.spacing12),
 

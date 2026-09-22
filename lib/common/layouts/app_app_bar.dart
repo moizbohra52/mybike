@@ -87,8 +87,9 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
               onPressed: onMenuTap,
               tooltip: 'Navigation Menu',
+              visualDensity: isMobile ? VisualDensity.compact : VisualDensity.standard,
             ),
-            const SizedBox(width: AppDimensions.spacing8),
+            SizedBox(width: isMobile ? AppDimensions.spacing4 : AppDimensions.spacing8),
           ],
           if (titleWidget != null)
             Expanded(child: titleWidget!)
@@ -257,6 +258,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                     iconSize: AppDimensions.iconMd,
                     color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                     tooltip: 'Notifications',
+                    visualDensity: isMobile ? VisualDensity.compact : VisualDensity.standard,
                     onPressed: onNotificationTap ?? () => context.push('/notifications'),
                   ),
                   if (count > 0)
@@ -403,21 +405,35 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
               }
             },
             child: CircleAvatar(
-              radius: 18,
+              radius: isMobile ? 15 : 18,
               backgroundColor: AppColors.primaryYellow,
-              child: const Text(
+              child: Text(
                 'MB',
                 style: TextStyle(
                   color: AppColors.primaryBlack,
                   fontWeight: FontWeight.w700,
-                  fontSize: 12,
+                  fontSize: isMobile ? 10 : 12,
                 ),
               ),
             ),
           ),
           if (actions != null && actions!.isNotEmpty) ...[
-            const SizedBox(width: AppDimensions.spacing8),
-            ...actions!,
+            SizedBox(width: isMobile ? AppDimensions.spacing4 : AppDimensions.spacing8),
+            ...actions!.map((action) {
+              if (isMobile && (action is FilledButton || action is ElevatedButton)) {
+                return IconButton(
+                  icon: const Icon(Icons.add_rounded),
+                  tooltip: 'Action',
+                  visualDensity: VisualDensity.compact,
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primaryYellow,
+                    foregroundColor: AppColors.primaryBlack,
+                  ),
+                  onPressed: (action as dynamic).onPressed,
+                );
+              }
+              return action;
+            }),
           ],
         ],
       ),

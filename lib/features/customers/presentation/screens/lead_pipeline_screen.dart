@@ -116,24 +116,21 @@ class _KpiCardsRow extends StatelessWidget {
       _KpiData('Avg Days to Close', '${state.avgDaysToClose}d', Icons.timer_outlined, AppColors.warning),
     ];
 
-    if (isDesktop) {
-      return Row(
-        children: cards.map((kpi) => Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacing6),
-                child: _KpiCard(data: kpi, isDark: isDark),
-              ),
-            )).toList(),
-      );
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = isDesktop
+            ? (constraints.maxWidth - (cards.length - 1) * 12) / cards.length
+            : (constraints.maxWidth - AppDimensions.spacing12) / 2;
 
-    return Wrap(
-      spacing: AppDimensions.spacing12,
-      runSpacing: AppDimensions.spacing12,
-      children: cards.map((kpi) => SizedBox(
-            width: (MediaQuery.of(context).size.width - 64) / 2,
-            child: _KpiCard(data: kpi, isDark: isDark),
-          )).toList(),
+        return Wrap(
+          spacing: AppDimensions.spacing12,
+          runSpacing: AppDimensions.spacing12,
+          children: cards.map((kpi) => SizedBox(
+                width: cardWidth,
+                child: _KpiCard(data: kpi, isDark: isDark),
+              )).toList(),
+        );
+      },
     );
   }
 }
@@ -352,15 +349,17 @@ class _LeadCard extends StatelessWidget {
               Icon(Icons.two_wheeler_outlined, size: 14,
                   color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
               const SizedBox(width: 4),
-              Text(lead.interestedModelName ?? 'N/A',
+              Expanded(
+                child: Text(
+                  '${lead.interestedModelName ?? "N/A"}${lead.interestedVariantName != null ? " • ${lead.interestedVariantName}" : ""}',
                   style: AppTypography.captionLarge.copyWith(
-                    color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText)),
-              if (lead.interestedVariantName != null) ...[
-                Text(' • ${lead.interestedVariantName}',
-                    style: AppTypography.captionLarge.copyWith(
-                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
-              ],
-              const Spacer(),
+                    color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -373,25 +372,36 @@ class _LeadCard extends StatelessWidget {
           ),
           const SizedBox(height: AppDimensions.spacing8),
           // Assigned to + follow up info
-          Row(
+          Wrap(
+            spacing: AppDimensions.spacing8,
+            runSpacing: AppDimensions.spacing4,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               if (lead.assignedToName != null) ...[
-                Icon(Icons.person_outline_rounded, size: 14,
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
-                const SizedBox(width: 4),
-                Text(lead.assignedToName!,
-                    style: AppTypography.captionLarge.copyWith(
-                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText)),
-                const SizedBox(width: AppDimensions.spacing12),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.person_outline_rounded, size: 14,
+                        color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                    const SizedBox(width: 4),
+                    Text(lead.assignedToName!,
+                        style: AppTypography.captionLarge.copyWith(
+                          color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText)),
+                  ],
+                ),
               ],
-              Icon(Icons.schedule_rounded, size: 14,
-                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
-              const SizedBox(width: 4),
-              Text('${lead.daysOpen}d open',
-                  style: AppTypography.captionLarge.copyWith(
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule_rounded, size: 14,
+                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                  const SizedBox(width: 4),
+                  Text('${lead.daysOpen}d open',
+                      style: AppTypography.captionLarge.copyWith(
+                        color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
+                ],
+              ),
               if (lead.nextFollowUpAt != null) ...[
-                const SizedBox(width: AppDimensions.spacing8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(

@@ -127,13 +127,18 @@ class _KpiCardsRow extends StatelessWidget {
       );
     }
 
-    return Wrap(
-      spacing: AppDimensions.spacing12,
-      runSpacing: AppDimensions.spacing12,
-      children: cards.map((kpi) => SizedBox(
-            width: (MediaQuery.of(context).size.width - 64) / 2,
-            child: _KpiCard(data: kpi, isDark: isDark),
-          )).toList(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth - AppDimensions.spacing12) / 2;
+        return Wrap(
+          spacing: AppDimensions.spacing12,
+          runSpacing: AppDimensions.spacing12,
+          children: cards.map((kpi) => SizedBox(
+                width: cardWidth,
+                child: _KpiCard(data: kpi, isDark: isDark),
+              )).toList(),
+        );
+      },
     );
   }
 }
@@ -364,7 +369,11 @@ class _BookingCard extends StatelessWidget {
           const SizedBox(height: AppDimensions.spacing12),
 
           // Financials
-          Row(
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: AppDimensions.spacing8,
+            runSpacing: AppDimensions.spacing6,
             children: [
               // Token amount
               Container(
@@ -382,7 +391,6 @@ class _BookingCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: AppDimensions.spacing8),
               if (booking.paymentMode != null)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -393,7 +401,6 @@ class _BookingCard extends StatelessWidget {
                   child: Text(booking.paymentModeLabel,
                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
                 ),
-              const Spacer(),
               Text('On-road: ${BookingEntity.formatInr(booking.onRoadPrice)}',
                   style: AppTypography.captionLarge.copyWith(
                     fontWeight: FontWeight.w600,

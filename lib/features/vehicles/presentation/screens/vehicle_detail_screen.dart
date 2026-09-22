@@ -612,6 +612,17 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
             title: 'No Colors Configured',
             description: 'Add paint options and color codes for this model.',
           )
+        else if (context.isMobile)
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: item.colors.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppDimensions.spacing12),
+            itemBuilder: (context, index) {
+              final color = item.colors[index];
+              return _buildColorCard(context, item, color);
+            },
+          )
         else
           GridView.builder(
             shrinkWrap: true,
@@ -620,7 +631,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
               crossAxisCount: ResponsiveUtils.gridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
               mainAxisSpacing: AppDimensions.spacing16,
               crossAxisSpacing: AppDimensions.spacing16,
-              childAspectRatio: context.isMobile ? 4.0 : 2.8,
+              childAspectRatio: 2.8,
             ),
             itemCount: item.colors.length,
             itemBuilder: (context, index) {
