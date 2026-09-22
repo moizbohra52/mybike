@@ -1,138 +1,88 @@
-/// Data Masking and PII Redaction Service for statutory Indian compliance (Aadhaar, PAN, Bank, Phone).
 class DataMaskingService {
-  DataMaskingService._();
-
-  static const Set<String> _sensitiveKeys = {
-    'password',
-    'pass',
-    'secret',
-    'token',
-    'access_token',
-    'refresh_token',
-    'jwt',
-    'authorization',
-    'api_key',
-    'pin',
-    'cvv',
-    'auth_code',
-    'private_key',
-  };
-
-  /// Mask a 12-digit Indian Aadhaar number.
-  ///
-  /// Example: "123456789012" -> "•••• •••• 9012"
+  /// Masks a 12-digit Aadhaar number as XXXX-XXXX-1234 or •••• •••• 1234
   static String maskAadhaar(String? aadhaar) {
-    if (aadhaar == null || aadhaar.trim().isEmpty) return '';
-    final cleaned = aadhaar.replaceAll(RegExp(r'\D'), '');
-    if (cleaned.length != 12) {
-      // Fallback for non-standard lengths
-      if (cleaned.length <= 4) return '••••';
-      final last4 = cleaned.substring(cleaned.length - 4);
-      return '•••• •••• $last4';
-    }
-    final last4 = cleaned.substring(8);
-    return '•••• •••• $last4';
+    if (aadhaar == null || aadhaar.isEmpty) return '';
+    final clean = aadhaar.replaceAll(RegExp(r'\D'), '');
+    if (clean.length != 12) return aadhaar; // Return as is if invalid length
+    return '•••• •••• ${clean.substring(8)}';
   }
 
-  /// Mask an Indian Permanent Account Number (PAN).
-  ///
-  /// Example: "ABCDE1234F" -> "••••• 1234F"
+  /// Masks a 10-character PAN number as ••••• 1234X
   static String maskPan(String? pan) {
-    if (pan == null || pan.trim().isEmpty) return '';
-    final cleaned = pan.trim().replaceAll(' ', '').toUpperCase();
-    if (cleaned.length < 5) return '•••••';
-    if (cleaned.length == 10) {
-      final suffix = cleaned.substring(5);
-      return '••••• $suffix';
-    }
-    final visibleCount = (cleaned.length * 0.4).ceil();
-    final suffix = cleaned.substring(cleaned.length - visibleCount);
-    return '${'•' * (cleaned.length - visibleCount)} $suffix';
+    if (pan == null || pan.isEmpty) return '';
+    final clean = pan.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    if (clean.length != 10) return pan;
+    return '••••• ${clean.substring(5)}';
   }
 
-  /// Mask a Bank Account Number revealing only the trailing digits.
-  ///
-  /// Example: "12345678901234" -> "••••••••••••1234"
-  static String maskBankAccount(String? accountNumber) {
-    if (accountNumber == null || accountNumber.trim().isEmpty) return '';
-    final cleaned = accountNumber.trim().replaceAll(RegExp(r'\s+|-'), '');
-    if (cleaned.length <= 4) return '••••';
-    final last4 = cleaned.substring(cleaned.length - 4);
-    return '${'•' * (cleaned.length - 4)}$last4';
+  /// Masks a bank account number revealing only the last 4 digits
+  static String maskBankAccount(String? accNo) {
+    if (accNo == null || accNo.isEmpty) return '';
+    final clean = accNo.replaceAll(RegExp(r'\s+'), '');
+    if (clean.length <= 4) return clean;
+    final maskedLength = clean.length - 4;
+    return '${'•' * maskedLength}${clean.substring(maskedLength)}';
   }
 
-  /// Mask a Phone Number showing country code and trailing digits.
-  ///
-  /// Example: "+919820012345" -> "+91 98200 •••45"
+  /// Masks a phone number (assumes Indian +91 format or 10 digits)
   static String maskPhone(String? phone) {
-    if (phone == null || phone.trim().isEmpty) return '';
-    final cleaned = phone.trim().replaceAll(RegExp(r'\s+|-'), '');
-    if (cleaned.length <= 4) return '••••';
-
-    if (cleaned.length >= 10) {
-      final last2 = cleaned.substring(cleaned.length - 2);
-      final firstPart = cleaned.substring(0, cleaned.length - 5);
-      return '$firstPart •••$last2';
+    if (phone == null || phone.isEmpty) return '';
+    final clean = phone.replaceAll(RegExp(r'\D'), '');
+    if (clean.length < 10) return phone;
+    
+    // Support 10 digit or 12 digit (with 91 prefix)
+    final isWithPrefix = clean.length > 10;
+    final last4 = clean.substring(clean.length - 4);
+    
+    if (isWithPrefix) {
+      final prefix = clean.substring(0, clean.length - 10); // e.g. 91
+      return '+$prefix ••••• •$last4';
     }
-    final last2 = cleaned.substring(cleaned.length - 2);
-    return '${'•' * (cleaned.length - 2)}$last2';
+    
+    return '••••• •$last4';
   }
 
-  /// Mask an Email address preserving first letter, domain, and TLD.
-  ///
-  /// Example: "john.doe@example.com" -> "j•••e@example.com"
+  /// Obfuscates an email address
   static String maskEmail(String? email) {
-    if (email == null || email.trim().isEmpty) return '';
-    final parts = email.trim().split('@');
-    if (parts.length != 2) return '••••@••••';
-
+    if (email == null || email.isEmpty || !email.contains('@')) return email ?? '';
+    final parts = email.split('@');
     final name = parts[0];
     final domain = parts[1];
-
+    
     if (name.length <= 2) {
-      return '${name[0]}•@$domain';
+      return '${name[0]}•••@$domain';
     }
-
-    final first = name[0];
-    final last = name[name.length - 1];
-    return '$first•••$last@$domain';
+    
+    return '${name[0]}${'•' * (name.length - 2)}${name[name.length - 1]}@$domain';
   }
 
-  /// Recursively sanitizes JSON map payload, redacting passwords, secrets, and auth tokens.
-  static Map<String, dynamic> sanitizePayload(Map<String, dynamic>? payload) {
-    if (payload == null || payload.isEmpty) return {};
-
-    final result = <String, dynamic>{};
-
-    for (final entry in payload.entries) {
-      final keyLower = entry.key.toLowerCase();
-
-      // Check if key is in sensitive list
-      if (_sensitiveKeys.contains(keyLower) ||
-          keyLower.contains('password') ||
-          keyLower.contains('secret') ||
-          keyLower.contains('token')) {
-        result[entry.key] = '[REDACTED]';
-      } else if (entry.value is Map<String, dynamic>) {
-        result[entry.key] = sanitizePayload(entry.value as Map<String, dynamic>);
-      } else if (entry.value is List) {
-        result[entry.key] = _sanitizeList(entry.value as List);
+  /// Recursively sanitizes a JSON payload by masking or removing sensitive keys
+  static Map<String, dynamic> sanitizePayload(Map<String, dynamic> payload) {
+    final sensitiveKeys = {
+      'password', 'token', 'secret', 'access_token', 'refresh_token',
+      'pin', 'cvv', 'card_number', 'authorization'
+    };
+    
+    Map<String, dynamic> sanitized = {};
+    
+    payload.forEach((key, value) {
+      final lowerKey = key.toLowerCase();
+      bool isSensitive = sensitiveKeys.any((s) => lowerKey.contains(s));
+      
+      if (isSensitive) {
+        sanitized[key] = '********';
+      } else if (value is Map<String, dynamic>) {
+        sanitized[key] = sanitizePayload(value);
+      } else if (value is List) {
+        sanitized[key] = value.map((item) {
+          if (item is Map<String, dynamic>) return sanitizePayload(item);
+          return item;
+        }).toList();
       } else {
-        result[entry.key] = entry.value;
+        sanitized[key] = value;
       }
-    }
-
-    return result;
-  }
-
-  static List<dynamic> _sanitizeList(List<dynamic> list) {
-    return list.map((item) {
-      if (item is Map<String, dynamic>) {
-        return sanitizePayload(item);
-      } else if (item is List) {
-        return _sanitizeList(item);
-      }
-      return item;
-    }).toList();
+    });
+    
+    return sanitized;
   }
 }

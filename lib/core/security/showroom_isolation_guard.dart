@@ -1,112 +1,74 @@
-import 'package:flutter/foundation.dart';
-import '../services/showroom_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/permission_service.dart';
 
-/// Thrown when a multi-tenant security boundary violation or unauthorized cross-showroom access is attempted.
 class SecurityViolationException implements Exception {
   final String message;
-  final String? operation;
-  final String? attemptedShowroomId;
-  final String? userId;
-
-  const SecurityViolationException(
-    this.message, {
-    this.operation,
-    this.attemptedShowroomId,
-    this.userId,
-  });
-
+  final String? code;
+  
+  SecurityViolationException(this.message, {this.code});
+  
   @override
-  String toString() =>
-      'SecurityViolationException: $message (Operation: ${operation ?? "N/A"}, Showroom: ${attemptedShowroomId ?? "N/A"})';
+  String toString() => 'SecurityViolationException: $message ${code != null ? '($code)' : ''}';
 }
 
-/// Multi-tenant Showroom Data Isolation Guard.
-///
-/// Ensures database queries, storage uploads, and record mutations are strictly
-/// bound to showrooms the authenticated user has explicit rights to access.
 class ShowroomIsolationGuard {
-  ShowroomIsolationGuard._();
+  static final ShowroomIsolationGuard _instance = ShowroomIsolationGuard._internal();
+  static ShowroomIsolationGuard get instance => _instance;
+  
+  ShowroomIsolationGuard._internal();
 
-  /// Asserts that the authenticated user has authorization to access [showroomId].
-  ///
-  /// Throws a [SecurityViolationException] if access is denied.
-  static void validateAccess(String showroomId, {String? operation}) {
-    final hasAccess = ShowroomService.instance.canAccess(showroomId) ||
-        PermissionService.instance.isSuperAdmin;
-
-    if (!hasAccess) {
-      final msg = 'Access denied: User not assigned to showroom "$showroomId"';
-      if (kDebugMode) {
-        debugPrint('🚨 [SECURITY ALERT] $msg (Operation: $operation)');
-      }
-      throw SecurityViolationException(
-        msg,
-        operation: operation,
-        attemptedShowroomId: showroomId,
-        userId: PermissionService.instance.currentProfile?.id,
-      );
+  /// Asserts current user has explicit assignment to the target showroom 
+  /// or is a super_admin. Throws [SecurityViolationException] on violation.
+  Future<void> validateAccess(String showroomId) async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      throw SecurityViolationException('Unauthenticated user cannot access showroom data', code: 'UNAUTHENTICATED');
+    }
+    
+    final isAuthorized = _checkAuthorization(showroomId);
+    if (!isAuthorized) {
+      throw SecurityViolationException('User lacks permission to access showroom data: $showroomId', code: 'UNAUTHORIZED_TENANT');
     }
   }
 
-  /// Asserts that an active showroom context matches the expected [targetShowroomId].
-  ///
-  /// Super admins are exempted from single-active showroom restrictions.
-  static void assertCurrentTenant(String targetShowroomId, {String? operation}) {
-    if (PermissionService.instance.isSuperAdmin) {
-      return;
+  /// Cross-checks active showroom context to eliminate cross-showroom data leakage.
+  /// Throws [SecurityViolationException] if the requested targetShowroomId does not match
+  /// the active isolated context (unless user is super_admin).
+  Future<void> assertTenantIntegrity(String targetShowroomId, String activeShowroomId) async {
+    if (targetShowroomId == activeShowroomId) return;
+    
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      throw SecurityViolationException('Unauthenticated access attempt during tenant integrity check');
     }
-
-    final active = ShowroomService.instance.activeShowroom?.id;
-    if (active != null && active != targetShowroomId) {
-      final msg =
-          'Multi-tenant mismatch: Operation targeted showroom "$targetShowroomId", but active session is bound to "$active"';
-      if (kDebugMode) {
-        debugPrint('🚨 [SECURITY ALERT] $msg');
-      }
-      throw SecurityViolationException(
-        msg,
-        operation: operation,
-        attemptedShowroomId: targetShowroomId,
-        userId: PermissionService.instance.currentProfile?.id,
-      );
-    }
+    
+    // Allow super admins to cross contexts
+    if (PermissionService.instance.isSuperAdmin) return;
+    
+    throw SecurityViolationException(
+      'Tenant integrity violation: Attempted to operate on showroom $targetShowroomId while active context is $activeShowroomId',
+      code: 'TENANT_LEAKAGE_PREVENTED'
+    );
   }
 
-  /// Validates whether a cross-showroom stock transfer is permitted.
-  static bool isTransferPermitted(
-    String sourceShowroomId,
-    String destinationShowroomId,
-  ) {
-    if (PermissionService.instance.isSuperAdmin) {
-      return true;
-    }
-
-    final canAccessSource = ShowroomService.instance.canAccess(sourceShowroomId);
-    final hasTransferPermission =
-        PermissionService.instance.hasPermission('inventory', 'transfer');
-
-    return canAccessSource && hasTransferPermission;
+  /// Validates if the current user can authorize an inter-branch transfer 
+  /// between source and destination showrooms.
+  Future<bool> isCrossShowroomAuthorized(String sourceId, String destinationId) async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return false;
+    
+    if (PermissionService.instance.isSuperAdmin) return true;
+    
+    // User must have access to at least the source showroom
+    final hasSourceAccess = _checkAuthorization(sourceId);
+    if (!hasSourceAccess) return false;
+    
+    // And must have inventory transfer permissions
+    final hasTransferPerm = PermissionService.instance.hasPermission('inventory', 'transfer');
+    return hasTransferPerm;
   }
-
-  /// Validates that a storage upload path is strictly quarantined within the showroom's folder.
-  ///
-  /// Storage paths MUST be structured as: `{showroomId}/{category}/{filename}`.
-  static void validateStoragePath(String path, String expectedShowroomId) {
-    final normalized = path.replaceAll('\\', '/').trim();
-    final parts = normalized.split('/').where((p) => p.isNotEmpty).toList();
-
-    if (parts.isEmpty || parts[0] != expectedShowroomId) {
-      final msg =
-          'Storage security breach: Attempted to upload file to path "$path" outside showroom quarantine "$expectedShowroomId"';
-      if (kDebugMode) {
-        debugPrint('🚨 [STORAGE SECURITY BREACH] $msg');
-      }
-      throw SecurityViolationException(
-        msg,
-        operation: 'storage_upload',
-        attemptedShowroomId: expectedShowroomId,
-      );
-    }
+  
+  bool _checkAuthorization(String showroomId) {
+    return PermissionService.instance.currentProfile?.hasShowroomAccess(showroomId) ?? false;
   }
 }
