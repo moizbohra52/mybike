@@ -140,29 +140,50 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                                 style: AppTypography.labelMedium.copyWith(fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: AppDimensions.spacing8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildPowertrainOption(
+                              if (context.isMobile)
+                                Column(
+                                  children: [
+                                    _buildPowertrainOption(
                                       label: 'Petrol / Internal Combustion',
                                       value: 'petrol',
                                       icon: Icons.local_gas_station_rounded,
                                       isSelected: state.type == 'petrol',
                                       onTap: () => _cubit.typeChanged('petrol'),
                                     ),
-                                  ),
-                                  const SizedBox(width: AppDimensions.spacing16),
-                                  Expanded(
-                                    child: _buildPowertrainOption(
+                                    const SizedBox(height: AppDimensions.spacing16),
+                                    _buildPowertrainOption(
                                       label: 'Electric Vehicle (EV)',
                                       value: 'electric',
                                       icon: Icons.electric_bolt_rounded,
                                       isSelected: state.type == 'electric',
                                       onTap: () => _cubit.typeChanged('electric'),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                )
+                              else
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildPowertrainOption(
+                                        label: 'Petrol / Internal Combustion',
+                                        value: 'petrol',
+                                        icon: Icons.local_gas_station_rounded,
+                                        isSelected: state.type == 'petrol',
+                                        onTap: () => _cubit.typeChanged('petrol'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppDimensions.spacing16),
+                                    Expanded(
+                                      child: _buildPowertrainOption(
+                                        label: 'Electric Vehicle (EV)',
+                                        value: 'electric',
+                                        icon: Icons.electric_bolt_rounded,
+                                        isSelected: state.type == 'electric',
+                                        onTap: () => _cubit.typeChanged('electric'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               const SizedBox(height: AppDimensions.spacing16),
 
                               // Body Type

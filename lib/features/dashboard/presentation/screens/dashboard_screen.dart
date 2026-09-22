@@ -97,68 +97,85 @@ class _DashboardView extends StatelessWidget {
       {'id': 'year', 'label': 'FY 2026-27'},
     ];
 
+    final showroomSelector = Row(
+      children: [
+        const Icon(Icons.storefront_outlined, size: 20, color: AppColors.primaryYellow),
+        const SizedBox(width: 8),
+        Expanded(
+          flex: isDesktop ? 0 : 1,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String?>(
+              value: state.selectedShowroomId,
+              icon: const Icon(Icons.arrow_drop_down),
+              isExpanded: !isDesktop,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+              dropdownColor: isDark ? const Color(0xFF242832) : Colors.white,
+              items: const [
+                DropdownMenuItem(value: null, child: Text('All Showrooms (Enterprise)')),
+                DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship — Central')),
+                DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub — Deccan')),
+                DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro — Indiranagar')),
+              ],
+              onChanged: (val) => context.read<DashboardCubit>().filterByShowroom(val),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    final periodPills = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: periods.map((p) {
+          final isSelected = state.selectedPeriod == p['id'];
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: ChoiceChip(
+              label: Text(
+                p['label'] as String,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                ),
+              ),
+              selected: isSelected,
+              selectedColor: AppColors.primaryYellow,
+              onSelected: (selected) {
+                if (selected) context.read<DashboardCubit>().filterByPeriod(p['id'] as String);
+              },
+            ),
+          );
+        }).toList(),
+      ),
+    );
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A1D24) : Colors.white,
         border: Border(bottom: BorderSide(color: isDark ? Colors.white12 : Colors.grey.shade200)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Showroom Selector
-          Row(
-            children: [
-              Icon(Icons.storefront_outlined, size: 20, color: AppColors.primaryYellow),
-              const SizedBox(width: 8),
-              DropdownButtonHideUnderline(
-                child: DropdownButton<String?>(
-                  value: state.selectedShowroomId,
-                  icon: const Icon(Icons.arrow_drop_down),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                  dropdownColor: isDark ? const Color(0xFF242832) : Colors.white,
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('All Showrooms (Enterprise)')),
-                    DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship — Central')),
-                    DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub — Deccan')),
-                    DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro — Indiranagar')),
-                  ],
-                  onChanged: (val) => context.read<DashboardCubit>().filterByShowroom(val),
-                ),
-              ),
-            ],
-          ),
-
-          // Date Range Pills
-          Row(
-            children: periods.map((p) {
-              final isSelected = state.selectedPeriod == p['id'];
-              return Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: ChoiceChip(
-                  label: Text(
-                    p['label'] as String,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
-                    ),
-                  ),
-                  selected: isSelected,
-                  selectedColor: AppColors.primaryYellow,
-                  onSelected: (selected) {
-                    if (selected) context.read<DashboardCubit>().filterByPeriod(p['id'] as String);
-                  },
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+      child: isDesktop
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                showroomSelector,
+                periodPills,
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                showroomSelector,
+                const SizedBox(height: 8),
+                periodPills,
+              ],
+            ),
     );
   }
 
@@ -760,10 +777,15 @@ class _DashboardView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -777,14 +799,19 @@ class _DashboardView extends StatelessWidget {
           const SizedBox(height: AppDimensions.spacing12),
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.titleMedium.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: -0.5,
+              fontSize: width < 170 ? 15 : null,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.captionSmall.copyWith(color: AppColors.lightSecondaryText),
           ),
         ],

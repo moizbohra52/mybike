@@ -219,7 +219,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                 ),
               ),
               // Header actions
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   AppButton.secondary(
                     label: 'Edit Model',
@@ -229,7 +231,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                       _cubit.loadDetails();
                     },
                   ),
-                  const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
                     tooltip: 'Delete Model',
@@ -321,16 +322,20 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Variant Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 8,
             children: [
-              Row(
+              Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
                     variant.name,
                     style: AppTypography.titleLarge.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
@@ -351,6 +356,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                 ],
               ),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.edit_outlined, size: 20),
@@ -466,18 +472,45 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                   ],
                 ),
                 const SizedBox(height: AppDimensions.spacing12),
-                Row(
-                  children: [
-                    Expanded(child: _buildPriceItem('Ex-Showroom Price', _formatInr(variant.exShowroomPrice))),
-                    Expanded(child: _buildPriceItem('GST Rate', '${variant.gstRate}%')),
-                    if (variant.cessRate > 0)
-                      Expanded(child: _buildPriceItem('CESS Rate', '${variant.cessRate}%')),
-                    Expanded(child: _buildPriceItem('RTO Charges', _formatInr(variant.rtoCharges))),
-                    Expanded(child: _buildPriceItem('Insurance (1+5 Yr)', _formatInr(variant.insuranceCharges))),
-                    if (variant.otherCharges > 0)
-                      Expanded(child: _buildPriceItem('Other / Handling', _formatInr(variant.otherCharges))),
-                  ],
-                ),
+                context.isMobile
+                    ? Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(child: _buildPriceItem('Ex-Showroom Price', _formatInr(variant.exShowroomPrice))),
+                              Expanded(child: _buildPriceItem('GST Rate', '${variant.gstRate}%')),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              if (variant.cessRate > 0)
+                                Expanded(child: _buildPriceItem('CESS Rate', '${variant.cessRate}%')),
+                              Expanded(child: _buildPriceItem('RTO Charges', _formatInr(variant.rtoCharges))),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: _buildPriceItem('Insurance (1+5 Yr)', _formatInr(variant.insuranceCharges))),
+                              if (variant.otherCharges > 0)
+                                Expanded(child: _buildPriceItem('Other / Handling', _formatInr(variant.otherCharges))),
+                            ],
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: _buildPriceItem('Ex-Showroom Price', _formatInr(variant.exShowroomPrice))),
+                          Expanded(child: _buildPriceItem('GST Rate', '${variant.gstRate}%')),
+                          if (variant.cessRate > 0)
+                            Expanded(child: _buildPriceItem('CESS Rate', '${variant.cessRate}%')),
+                          Expanded(child: _buildPriceItem('RTO Charges', _formatInr(variant.rtoCharges))),
+                          Expanded(child: _buildPriceItem('Insurance (1+5 Yr)', _formatInr(variant.insuranceCharges))),
+                          if (variant.otherCharges > 0)
+                            Expanded(child: _buildPriceItem('Other / Handling', _formatInr(variant.otherCharges))),
+                        ],
+                      ),
               ],
             ),
           ),
@@ -583,11 +616,11 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: ResponsiveUtils.gridCrossAxisCount(context, mobile: 1, tablet: 2, desktop: 3),
               mainAxisSpacing: AppDimensions.spacing16,
               crossAxisSpacing: AppDimensions.spacing16,
-              childAspectRatio: 2.8,
+              childAspectRatio: context.isMobile ? 4.0 : 2.8,
             ),
             itemCount: item.colors.length,
             itemBuilder: (context, index) {

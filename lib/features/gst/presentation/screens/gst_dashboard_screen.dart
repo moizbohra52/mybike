@@ -119,76 +119,97 @@ class _GstDashboardView extends StatelessWidget {
   Widget _buildHeaderBar(BuildContext context, GstDashboardState state, bool isDark) {
     const periods = ['2026-09', '2026-08', '2026-07'];
 
-    return AppCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppDimensions.spacing20,
-        vertical: AppDimensions.spacing16,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppDimensions.spacing10),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryYellow.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                ),
-                child: const Icon(Icons.account_balance_outlined, color: AppColors.primaryYellow, size: 24),
-              ),
-              const SizedBox(width: AppDimensions.spacing16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'GSTIN: 27AABCU9603R1ZM',
-                    style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Regular Dealership Taxpayer • Maharashtra (27)',
-                    style: AppTypography.captionMedium.copyWith(
-                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+    final isMobile = context.isMobile;
+
+    final gstinInfo = Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(AppDimensions.spacing10),
+          decoration: BoxDecoration(
+            color: AppColors.primaryYellow.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
           ),
-          Row(
+          child: const Icon(Icons.account_balance_outlined, color: AppColors.primaryYellow, size: 24),
+        ),
+        const SizedBox(width: AppDimensions.spacing16),
+        Expanded(
+          flex: isMobile ? 1 : 0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Filing Period: ',
-                style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                'GSTIN: 27AABCU9603R1ZM',
+                style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(width: AppDimensions.spacing8),
-              Wrap(
-                spacing: AppDimensions.spacing8,
-                children: periods.map((p) {
-                  final isSelected = state.selectedPeriod == p;
-                  return ChoiceChip(
-                    label: Text(
-                      _formatPeriodName(p),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    selected: isSelected,
-                    selectedColor: AppColors.primaryYellow,
-                    onSelected: (selected) {
-                      if (selected) {
-                        context.read<GstDashboardCubit>().changePeriod(p);
-                      }
-                    },
-                  );
-                }).toList(),
+              const SizedBox(height: 2),
+              Text(
+                'Regular Dealership Taxpayer • Maharashtra (27)',
+                style: AppTypography.captionMedium.copyWith(
+                  color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                ),
               ),
             ],
           ),
+        ),
+      ],
+    );
+
+    final periodSelector = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Text(
+            'Filing Period: ',
+            style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: AppDimensions.spacing8),
+          ...periods.map((p) {
+            final isSelected = state.selectedPeriod == p;
+            return Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: ChoiceChip(
+                label: Text(
+                  _formatPeriodName(p),
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                selected: isSelected,
+                selectedColor: AppColors.primaryYellow,
+                onSelected: (selected) {
+                  if (selected) {
+                    context.read<GstDashboardCubit>().changePeriod(p);
+                  }
+                },
+              ),
+            );
+          }),
         ],
       ),
+    );
+
+    return AppCard(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDimensions.spacing16 : AppDimensions.spacing20,
+        vertical: AppDimensions.spacing16,
+      ),
+      child: isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                gstinInfo,
+                const SizedBox(height: 12),
+                periodSelector,
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                gstinInfo,
+                periodSelector,
+              ],
+            ),
     );
   }
 
@@ -275,10 +296,15 @@ class _GstDashboardView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -292,14 +318,19 @@ class _GstDashboardView extends StatelessWidget {
           const SizedBox(height: AppDimensions.spacing12),
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.titleMedium.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: -0.5,
+              fontSize: cardWidth < 170 ? 15 : null,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.captionSmall.copyWith(color: AppColors.lightSecondaryText),
           ),
         ],

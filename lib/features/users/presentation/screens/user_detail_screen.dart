@@ -129,13 +129,15 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: AppDimensions.spacing12,
+                        runSpacing: AppDimensions.spacing4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             user.profile.fullName ?? 'Unnamed',
                             style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
                           ),
-                          const SizedBox(width: AppDimensions.spacing12),
                           AppStatusBadge(
                             label: user.profile.isActive ? 'Active' : 'Inactive',
                             color: user.profile.isActive ? AppColors.success : AppColors.error,
@@ -296,31 +298,54 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           // ─── Account Info ───
           AppCard(
             title: 'Account Information',
-            child: Row(
-              children: [
-                Expanded(
-                  child: _InfoItem(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Created',
-                    value: _formatDate(user.profile.createdAt),
+            child: context.isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _InfoItem(
+                        icon: Icons.calendar_today_outlined,
+                        label: 'Created',
+                        value: _formatDate(user.profile.createdAt),
+                      ),
+                      const SizedBox(height: AppDimensions.spacing16),
+                      _InfoItem(
+                        icon: Icons.update_outlined,
+                        label: 'Last Updated',
+                        value: _formatDate(user.profile.updatedAt),
+                      ),
+                      const SizedBox(height: AppDimensions.spacing16),
+                      _InfoItem(
+                        icon: Icons.fingerprint_rounded,
+                        label: 'User ID',
+                        value: user.profile.id.length > 12 ? '${user.profile.id.substring(0, 12)}...' : user.profile.id,
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: _InfoItem(
+                          icon: Icons.calendar_today_outlined,
+                          label: 'Created',
+                          value: _formatDate(user.profile.createdAt),
+                        ),
+                      ),
+                      Expanded(
+                        child: _InfoItem(
+                          icon: Icons.update_outlined,
+                          label: 'Last Updated',
+                          value: _formatDate(user.profile.updatedAt),
+                        ),
+                      ),
+                      Expanded(
+                        child: _InfoItem(
+                          icon: Icons.fingerprint_rounded,
+                          label: 'User ID',
+                          value: user.profile.id.length > 12 ? '${user.profile.id.substring(0, 12)}...' : user.profile.id,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Expanded(
-                  child: _InfoItem(
-                    icon: Icons.update_outlined,
-                    label: 'Last Updated',
-                    value: _formatDate(user.profile.updatedAt),
-                  ),
-                ),
-                Expanded(
-                  child: _InfoItem(
-                    icon: Icons.fingerprint_rounded,
-                    label: 'User ID',
-                    value: user.profile.id.length > 12 ? '${user.profile.id.substring(0, 12)}...' : user.profile.id,
-                  ),
-                ),
-              ],
-            ),
           ),
           const SizedBox(height: AppDimensions.spacing40),
         ],

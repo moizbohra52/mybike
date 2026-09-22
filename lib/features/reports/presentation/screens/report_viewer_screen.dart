@@ -100,58 +100,62 @@ class _ReportViewerContent extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          // Back Button to Reports Hub
-          IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            tooltip: 'Back to Reports Hub',
-            onPressed: () => context.pop(),
-          ),
-          const SizedBox(width: AppDimensions.spacing8),
-
-          // Showroom Branch Filter Dropdown
-          SizedBox(
-            width: 220,
-            child: DropdownButtonFormField<String?>(
-              initialValue: state.criteria.showroomId,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                labelText: 'Showroom Branch',
-              ),
-              items: const [
-                DropdownMenuItem(value: null, child: Text('All Showrooms')),
-                DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship')),
-                DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub')),
-                DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro')),
-              ],
-              onChanged: (newShowroomId) {
-                final showroomName = newShowroomId == 'showroom-mumbai-main'
-                    ? 'Mumbai Flagship'
-                    : (newShowroomId == 'showroom-pune-west'
-                        ? 'Pune West Hub'
-                        : (newShowroomId == 'showroom-bangalore-metro' ? 'Bangalore Metro' : 'All Showrooms'));
-                cubit.updateCriteria(state.criteria.copyWith(
-                  showroomId: newShowroomId,
-                  clearShowroom: newShowroomId == null,
-                  showroomName: showroomName,
-                ));
-              },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            // Back Button to Reports Hub
+            IconButton(
+              icon: const Icon(Icons.arrow_back_rounded),
+              tooltip: 'Back to Reports Hub',
+              onPressed: () => context.pop(),
             ),
-          ),
-          const SizedBox(width: AppDimensions.spacing16),
+            const SizedBox(width: AppDimensions.spacing8),
 
-          // Period Filter Pills
-          Wrap(
-            spacing: 8,
-            children: [
-              _buildPeriodChip(context, 'This Month', 'month', state, cubit),
-              _buildPeriodChip(context, 'This Quarter', 'quarter', state, cubit),
-              _buildPeriodChip(context, 'FY 2025-26', 'year', state, cubit),
-            ],
-          ),
-        ],
+            // Showroom Branch Filter Dropdown
+            SizedBox(
+              width: 200,
+              child: DropdownButtonFormField<String?>(
+                initialValue: state.criteria.showroomId,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  labelText: 'Showroom Branch',
+                ),
+                items: const [
+                  DropdownMenuItem(value: null, child: Text('All Showrooms')),
+                  DropdownMenuItem(value: 'showroom-mumbai-main', child: Text('Mumbai Flagship')),
+                  DropdownMenuItem(value: 'showroom-pune-west', child: Text('Pune West Hub')),
+                  DropdownMenuItem(value: 'showroom-bangalore-metro', child: Text('Bangalore Metro')),
+                ],
+                onChanged: (newShowroomId) {
+                  final showroomName = newShowroomId == 'showroom-mumbai-main'
+                      ? 'Mumbai Flagship'
+                      : (newShowroomId == 'showroom-pune-west'
+                          ? 'Pune West Hub'
+                          : (newShowroomId == 'showroom-bangalore-metro' ? 'Bangalore Metro' : 'All Showrooms'));
+                  cubit.updateCriteria(state.criteria.copyWith(
+                    showroomId: newShowroomId,
+                    clearShowroom: newShowroomId == null,
+                    showroomName: showroomName,
+                  ));
+                },
+              ),
+            ),
+            const SizedBox(width: AppDimensions.spacing16),
+
+            // Period Filter Pills
+            Row(
+              children: [
+                _buildPeriodChip(context, 'This Month', 'month', state, cubit),
+                const SizedBox(width: 8),
+                _buildPeriodChip(context, 'This Quarter', 'quarter', state, cubit),
+                const SizedBox(width: 8),
+                _buildPeriodChip(context, 'FY 2025-26', 'year', state, cubit),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

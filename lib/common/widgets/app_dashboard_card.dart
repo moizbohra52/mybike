@@ -53,12 +53,8 @@ class AppDashboardCard extends StatelessWidget {
               AppDimensions.spacing16,
               AppDimensions.spacing12,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
+            child: context.isMobile && headerAction != null
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -77,12 +73,40 @@ class AppDashboardCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      const SizedBox(height: AppDimensions.spacing12),
+                      headerAction!,
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: AppTypography.titleMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                              ),
+                            ),
+                            if (subtitle != null) ...[
+                              const SizedBox(height: AppDimensions.spacing2),
+                              Text(
+                                subtitle!,
+                                style: AppTypography.captionMedium.copyWith(
+                                  color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      ?headerAction,
                     ],
                   ),
-                ),
-                ?headerAction,
-              ],
-            ),
           ),
           Divider(
             height: 1,

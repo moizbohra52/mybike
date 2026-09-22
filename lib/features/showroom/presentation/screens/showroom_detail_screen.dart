@@ -82,12 +82,148 @@ class _ShowroomDetailScreenState extends State<ShowroomDetailScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildProfile(BuildContext context, ShowroomDetailLoaded state) {
+  }  Widget _buildProfile(BuildContext context, ShowroomDetailLoaded state) {
     final showroom = state.showroom;
     final isCurrentOperating =
         ShowroomService.instance.activeShowroom?.id == showroom.id;
+    final isMobile = context.isMobile;
+
+    final branchIcon = Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: AppColors.primaryYellow.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.storefront_rounded,
+          size: 32,
+          color: AppColors.primaryYellowDark,
+        ),
+      ),
+    );
+
+    final branchInfo = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            Text(
+              showroom.name,
+              style: AppTypography.headlineSmall.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: isMobile ? 18 : null,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryYellow.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+              ),
+              child: Text(
+                showroom.code,
+                style: AppTypography.captionLarge.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryYellowDark,
+                ),
+              ),
+            ),
+            AppStatusBadge.fromStatus(
+              showroom.isActive ? 'active' : 'inactive',
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          showroom.fullAddress,
+          style: AppTypography.bodyMedium,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Phone: ${showroom.phone} • Email: ${showroom.email ?? 'Not provided'}',
+          style: AppTypography.captionLarge,
+        ),
+      ],
+    );
+
+    final quickActions = [
+      if (!isCurrentOperating && showroom.isActive)
+        AppButton.secondary(
+          label: 'Set as Active Branch',
+          leadingIcon: Icons.swap_horiz_rounded,
+          onPressed: () async {
+            await _cubit.switchOperatingShowroom(showroom.id);
+            if (context.mounted) {
+              context.showSuccessSnackBar('Switched active branch to ${showroom.name}');
+              setState(() {});
+            }
+          },
+        ),
+      AppButton.primary(
+        label: 'Edit Showroom',
+        leadingIcon: Icons.edit_outlined,
+        onPressed: () async {
+          await context.pushNamed(
+            RouteNames.showroomCreate,
+            queryParameters: {'editId': showroom.id},
+          );
+          _cubit.loadShowroomDetail(widget.showroomId);
+        },
+      ),
+    ];
+
+    final taxCard = AppCard(
+      padding: const EdgeInsets.all(AppDimensions.spacing16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.receipt_long_outlined, size: 20, color: AppColors.primaryYellowDark),
+              const SizedBox(width: 8),
+              Text(
+                'Tax & Compliance',
+                style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimensions.spacing12),
+          _DetailRow(label: 'GSTIN', value: showroom.gstin ?? 'Not provided'),
+          _DetailRow(label: 'PAN', value: showroom.pan ?? 'Not provided'),
+          _DetailRow(label: 'Invoice Prefix', value: showroom.invoicePrefix),
+          _DetailRow(label: 'State Jurisdiction', value: showroom.state),
+        ],
+      ),
+    );
+
+    final bankCard = AppCard(
+      padding: const EdgeInsets.all(AppDimensions.spacing16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.account_balance_outlined, size: 20, color: AppColors.info),
+              const SizedBox(width: 8),
+              Text(
+                'Bank Account Coordinates',
+                style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppDimensions.spacing12),
+          _DetailRow(label: 'Bank Name', value: showroom.bankName ?? 'Not provided'),
+          _DetailRow(label: 'Account Number', value: showroom.bankAccountNumber ?? 'Not provided'),
+          _DetailRow(label: 'IFSC Code', value: showroom.bankIfsc ?? 'Not provided'),
+          _DetailRow(label: 'Branch Name', value: showroom.bankBranch ?? 'Not provided'),
+        ],
+      ),
+    );
 
     return SingleChildScrollView(
       padding: ResponsiveUtils.contentPadding(context),
@@ -96,103 +232,45 @@ class _ShowroomDetailScreenState extends State<ShowroomDetailScreen> {
         children: [
           // ─── Top Branch Header Card ───
           AppCard(
-            padding: const EdgeInsets.all(AppDimensions.spacing24),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryYellow.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.storefront_rounded,
-                      size: 32,
-                      color: AppColors.primaryYellowDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppDimensions.spacing16),
-                Expanded(
-                  child: Column(
+            padding: EdgeInsets.all(isMobile ? AppDimensions.spacing16 : AppDimensions.spacing24),
+            child: isMobile
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            showroom.name,
-                            style: AppTypography.headlineSmall.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(width: AppDimensions.spacing12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryYellow.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                            ),
-                            child: Text(
-                              showroom.code,
-                              style: AppTypography.captionLarge.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primaryYellowDark,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: AppDimensions.spacing8),
-                          AppStatusBadge.fromStatus(
-                            showroom.isActive ? 'active' : 'inactive',
-                          ),
+                          branchIcon,
+                          const SizedBox(width: AppDimensions.spacing16),
+                          Expanded(child: branchInfo),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        showroom.fullAddress,
-                        style: AppTypography.bodyMedium,
+                      const SizedBox(height: AppDimensions.spacing16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: quickActions,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Phone: ${showroom.phone} • Email: ${showroom.email ?? 'Not provided'}',
-                        style: AppTypography.captionLarge,
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      branchIcon,
+                      const SizedBox(width: AppDimensions.spacing16),
+                      Expanded(child: branchInfo),
+                      Row(
+                        children: [
+                          if (quickActions.length > 1) ...[
+                            quickActions[0],
+                            const SizedBox(width: AppDimensions.spacing8),
+                            quickActions[1],
+                          ] else
+                            quickActions.first,
+                        ],
                       ),
                     ],
                   ),
-                ),
-                // Quick Actions
-                Row(
-                  children: [
-                    if (!isCurrentOperating && showroom.isActive)
-                      AppButton.secondary(
-                        label: 'Set as Active Branch',
-                        leadingIcon: Icons.swap_horiz_rounded,
-                        onPressed: () async {
-                          await _cubit.switchOperatingShowroom(showroom.id);
-                          if (context.mounted) {
-                            context.showSuccessSnackBar('Switched active branch to ${showroom.name}');
-                            setState(() {});
-                          }
-                        },
-                      ),
-                    const SizedBox(width: AppDimensions.spacing8),
-                    AppButton.primary(
-                      label: 'Edit Showroom',
-                      leadingIcon: Icons.edit_outlined,
-                      onPressed: () async {
-                        await context.pushNamed(
-                          RouteNames.showroomCreate,
-                          queryParameters: {'editId': showroom.id},
-                        );
-                        _cubit.loadShowroomDetail(widget.showroomId);
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ),
           const SizedBox(height: AppDimensions.spacing24),
 
@@ -203,62 +281,21 @@ class _ShowroomDetailScreenState extends State<ShowroomDetailScreen> {
             children: [
               LayoutBuilder(
                 builder: (context, constraints) {
+                  if (constraints.maxWidth < 650) {
+                    return Column(
+                      children: [
+                        taxCard,
+                        const SizedBox(height: AppDimensions.spacing16),
+                        bankCard,
+                      ],
+                    );
+                  }
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Tax Card
-                      Expanded(
-                        child: AppCard(
-                          padding: const EdgeInsets.all(AppDimensions.spacing16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.receipt_long_outlined, size: 20, color: AppColors.primaryYellowDark),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Tax & Compliance',
-                                    style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: AppDimensions.spacing12),
-                              _DetailRow(label: 'GSTIN', value: showroom.gstin ?? 'Not provided'),
-                              _DetailRow(label: 'PAN', value: showroom.pan ?? 'Not provided'),
-                              _DetailRow(label: 'Invoice Prefix', value: showroom.invoicePrefix),
-                              _DetailRow(label: 'State Jurisdiction', value: showroom.state),
-                            ],
-                          ),
-                        ),
-                      ),
+                      Expanded(child: taxCard),
                       const SizedBox(width: AppDimensions.spacing16),
-                      // Bank Card
-                      Expanded(
-                        child: AppCard(
-                          padding: const EdgeInsets.all(AppDimensions.spacing16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.account_balance_outlined, size: 20, color: AppColors.info),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Bank Account Coordinates',
-                                    style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: AppDimensions.spacing12),
-                              _DetailRow(label: 'Bank Name', value: showroom.bankName ?? 'Not provided'),
-                              _DetailRow(label: 'Account Number', value: showroom.bankAccountNumber ?? 'Not provided'),
-                              _DetailRow(label: 'IFSC Code', value: showroom.bankIfsc ?? 'Not provided'),
-                              _DetailRow(label: 'Branch Name', value: showroom.bankBranch ?? 'Not provided'),
-                            ],
-                          ),
-                        ),
-                      ),
+                      Expanded(child: bankCard),
                     ],
                   );
                 },

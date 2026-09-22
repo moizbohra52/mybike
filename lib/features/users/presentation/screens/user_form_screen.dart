@@ -132,11 +132,11 @@ class _UserFormScreenState extends State<UserFormScreen> {
                   ? 'Update user profile information'
                   : 'Enter new staff member credentials and profile',
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: AppTextField(
+                if (context.isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextField(
                         controller: _emailController,
                         label: 'Email Address',
                         hint: 'e.g. john.doe@mybike.com',
@@ -149,11 +149,9 @@ class _UserFormScreenState extends State<UserFormScreen> {
                           return null;
                         },
                       ),
-                    ),
-                    if (!isEditMode) ...[
-                      const SizedBox(width: AppDimensions.spacing16),
-                      Expanded(
-                        child: AppTextField(
+                      if (!isEditMode) ...[
+                        const SizedBox(height: AppDimensions.spacing16),
+                        AppTextField(
                           controller: _passwordController,
                           label: 'Password',
                           hint: 'Min 6 characters',
@@ -166,15 +164,53 @@ class _UserFormScreenState extends State<UserFormScreen> {
                             return null;
                           },
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: AppTextField(
+                  )
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: AppTextField(
+                          controller: _emailController,
+                          label: 'Email Address',
+                          hint: 'e.g. john.doe@mybike.com',
+                          isRequired: true,
+                          prefixIcon: Icons.email_outlined,
+                          enabled: !isEditMode,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Email is required';
+                            if (!val.contains('@') || !val.contains('.')) return 'Enter a valid email';
+                            return null;
+                          },
+                        ),
+                      ),
+                      if (!isEditMode) ...[
+                        const SizedBox(width: AppDimensions.spacing16),
+                        Expanded(
+                          child: AppTextField(
+                            controller: _passwordController,
+                            label: 'Password',
+                            hint: 'Min 6 characters',
+                            isRequired: true,
+                            isPassword: true,
+                            prefixIcon: Icons.lock_outline_rounded,
+                            validator: (val) {
+                              if (val == null || val.isEmpty) return 'Password is required';
+                              if (val.length < 6) return 'Must be at least 6 characters';
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                if (context.isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextField(
                         controller: _fullNameController,
                         label: 'Full Name',
                         hint: 'e.g. Rajesh Kumar',
@@ -185,18 +221,43 @@ class _UserFormScreenState extends State<UserFormScreen> {
                           return null;
                         },
                       ),
-                    ),
-                    const SizedBox(width: AppDimensions.spacing16),
-                    Expanded(
-                      child: AppTextField(
+                      const SizedBox(height: AppDimensions.spacing16),
+                      AppTextField(
                         controller: _phoneController,
                         label: 'Phone Number',
                         hint: '+91 XXXXX XXXXX',
                         prefixIcon: Icons.phone_outlined,
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: AppTextField(
+                          controller: _fullNameController,
+                          label: 'Full Name',
+                          hint: 'e.g. Rajesh Kumar',
+                          isRequired: true,
+                          prefixIcon: Icons.person_outline_rounded,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Name is required';
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.spacing16),
+                      Expanded(
+                        child: AppTextField(
+                          controller: _phoneController,
+                          label: 'Phone Number',
+                          hint: '+91 XXXXX XXXXX',
+                          prefixIcon: Icons.phone_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
             const SizedBox(height: AppDimensions.spacing24),

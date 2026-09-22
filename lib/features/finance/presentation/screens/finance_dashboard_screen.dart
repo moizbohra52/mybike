@@ -131,12 +131,14 @@ class _FinanceDashboardView extends StatelessWidget {
                 child: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.primaryBlack, size: 24),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Cash & Bank Operations', style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700)),
-                  Text('Multi-account liquid positions & financial vouchers', style: AppTypography.bodySmall),
-                ],
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Cash & Bank Operations', style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700)),
+                    Text('Multi-account liquid positions & financial vouchers', style: AppTypography.bodySmall),
+                  ],
+                ),
               ),
             ],
           ),

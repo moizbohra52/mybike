@@ -172,71 +172,88 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
           child: const Icon(Icons.history_rounded, color: AppColors.primaryYellowDark, size: 24),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Enterprise Audit Trail & Compliance Log',
-              style: AppTypography.headlineMedium.copyWith(
-                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                fontWeight: FontWeight.bold,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Enterprise Audit Trail & Compliance Log',
+                style: AppTypography.headlineMedium.copyWith(
+                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.isMobile ? 18 : null,
+                ),
               ),
-            ),
-            Text(
-              'Immutable ledger of user actions, module operations, before/after record diffs, and security events',
-              style: AppTypography.bodySmall.copyWith(
-                color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+              Text(
+                'Immutable ledger of user actions, module operations, before/after record diffs, and security events',
+                style: AppTypography.bodySmall.copyWith(
+                  color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
   }
 
   Widget _buildKpiRow(BuildContext context, Map<String, dynamic> metrics) {
+    final isMobile = context.isMobile;
+
+    final cards = [
+      _buildMetricCard(
+        context,
+        title: 'Total Logged Events',
+        value: '${metrics['total'] ?? 0}',
+        icon: Icons.receipt_long_rounded,
+        color: AppColors.primaryYellowDark,
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Actions Today',
+        value: '${metrics['today'] ?? 0}',
+        icon: Icons.today_rounded,
+        color: const Color(0xFF3B82F6),
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Critical Operations',
+        value: '${metrics['critical'] ?? 0}',
+        icon: Icons.warning_amber_rounded,
+        color: AppColors.error,
+        isHighlight: (metrics['critical'] ?? 0) > 0,
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Active Operators',
+        value: '${metrics['uniqueUsers'] ?? 0}',
+        icon: Icons.people_outline_rounded,
+        color: AppColors.success,
+      ),
+    ];
+
+    if (isMobile) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final cardWidth = (constraints.maxWidth - AppDimensions.spacing12) / 2;
+          return Wrap(
+            spacing: AppDimensions.spacing12,
+            runSpacing: AppDimensions.spacing12,
+            children: cards.map((c) => SizedBox(width: cardWidth, child: c)).toList(),
+          );
+        },
+      );
+    }
+
     return Row(
       children: [
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Total Logged Events',
-            value: '${metrics['total'] ?? 0}',
-            icon: Icons.receipt_long_rounded,
-            color: AppColors.primaryYellowDark,
-          ),
-        ),
+        Expanded(child: cards[0]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Actions Today',
-            value: '${metrics['today'] ?? 0}',
-            icon: Icons.today_rounded,
-            color: const Color(0xFF3B82F6),
-          ),
-        ),
+        Expanded(child: cards[1]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Critical Operations',
-            value: '${metrics['critical'] ?? 0}',
-            icon: Icons.warning_amber_rounded,
-            color: AppColors.error,
-            isHighlight: (metrics['critical'] ?? 0) > 0,
-          ),
-        ),
+        Expanded(child: cards[2]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Active Operators',
-            value: '${metrics['uniqueUsers'] ?? 0}',
-            icon: Icons.people_outline_rounded,
-            color: AppColors.success,
-          ),
-        ),
+        Expanded(child: cards[3]),
       ],
     );
   }
@@ -252,7 +269,7 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
     final isDark = context.isDarkMode;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -273,13 +290,16 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
             ),
             child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionMedium.copyWith(
                     color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                     fontWeight: FontWeight.w500,
@@ -288,6 +308,8 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
                 const SizedBox(height: 2),
                 Text(
                   value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.headlineSmall.copyWith(
                     color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                     fontWeight: FontWeight.bold,
@@ -308,87 +330,102 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
     required String selectedSeverity,
   }) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
+
+    final searchField = TextField(
+      controller: _searchController,
+      style: TextStyle(
+        color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Search audit logs by operator, record ID, action, or module...',
+        prefixIcon: const Icon(Icons.search, size: 20),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear, size: 18),
+                onPressed: () {
+                  _searchController.clear();
+                  context.read<AuditLogCubit>().setSearch('');
+                },
+              )
+            : null,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      ),
+      onChanged: (val) {
+        context.read<AuditLogCubit>().setSearch(val);
+      },
+    );
+
+    final moduleDropdown = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: selectedModule,
+          isExpanded: isMobile,
+          icon: const Icon(Icons.folder_open_outlined, size: 16),
+          style: AppTypography.bodySmall.copyWith(
+            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+          ),
+          dropdownColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+          items: _modules.map((m) {
+            return DropdownMenuItem(value: m['value'], child: Text(m['label']!));
+          }).toList(),
+          onChanged: (val) {
+            if (val != null) {
+              context.read<AuditLogCubit>().setModule(val);
+            }
+          },
+        ),
+      ),
+    );
+
+    final severityFilter = FilterChip(
+      label: const Text('Critical Only'),
+      selected: selectedSeverity == 'critical',
+      selectedColor: AppColors.error.withValues(alpha: 0.2),
+      labelStyle: TextStyle(
+        fontSize: 11,
+        fontWeight: selectedSeverity == 'critical' ? FontWeight.bold : FontWeight.normal,
+        color: selectedSeverity == 'critical' ? AppColors.error : null,
+      ),
+      onSelected: (selected) {
+        context.read<AuditLogCubit>().setSeverity(selected ? 'critical' : 'all');
+      },
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            // Search Input
-            Expanded(
-              flex: 3,
-              child: TextField(
-                controller: _searchController,
-                style: TextStyle(
-                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search audit logs by operator, record ID, action, or module...',
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () {
-                            _searchController.clear();
-                            context.read<AuditLogCubit>().setSearch('');
-                          },
-                        )
-                      : null,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
-                onChanged: (val) {
-                  context.read<AuditLogCubit>().setSearch(val);
-                },
+        if (isMobile) ...[
+          searchField,
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: moduleDropdown),
+              const SizedBox(width: 10),
+              severityFilter,
+            ],
+          ),
+        ] else ...[
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: searchField,
               ),
-            ),
-            const SizedBox(width: 12),
-
-            // Module Dropdown
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedModule,
-                  icon: const Icon(Icons.folder_open_outlined, size: 16),
-                  style: AppTypography.bodySmall.copyWith(
-                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                  ),
-                  dropdownColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  items: _modules.map((m) {
-                    return DropdownMenuItem(value: m['value'], child: Text(m['label']!));
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      context.read<AuditLogCubit>().setModule(val);
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Severity Filter
-            FilterChip(
-              label: const Text('Critical Only'),
-              selected: selectedSeverity == 'critical',
-              selectedColor: AppColors.error.withValues(alpha: 0.2),
-              labelStyle: TextStyle(
-                fontSize: 11,
-                fontWeight: selectedSeverity == 'critical' ? FontWeight.bold : FontWeight.normal,
-                color: selectedSeverity == 'critical' ? AppColors.error : null,
-              ),
-              onSelected: (selected) {
-                context.read<AuditLogCubit>().setSeverity(selected ? 'critical' : 'all');
-              },
-            ),
-          ],
-        ),
+              const SizedBox(width: 12),
+              moduleDropdown,
+              const SizedBox(width: 12),
+              severityFilter,
+            ],
+          ),
+        ],
         const SizedBox(height: 12),
 
         // Action Filter Chips

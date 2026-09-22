@@ -66,39 +66,54 @@ class _ReportsHubContent extends StatelessWidget {
     ReportsHubCubit cubit,
     bool isDark,
   ) {
+    final isMobile = context.isMobile;
+
+    final titleColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Financial & Operational Registers',
+          style: AppTypography.headlineMedium.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: isMobile ? 18 : null,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacing4),
+        Text(
+          '14 statutory, treasury, tax, and inventory statements with multi-branch reconciliation.',
+          style: AppTypography.bodyMedium.copyWith(
+            color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+          ),
+        ),
+      ],
+    );
+
+    final searchInput = SizedBox(
+      width: isMobile ? double.infinity : 280,
+      child: AppTextField(
+        hint: 'Search registers & ledgers...',
+        prefixIcon: Icons.search_rounded,
+        onChanged: (val) => cubit.searchReports(val),
+      ),
+    );
+
+    if (isMobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleColumn,
+          const SizedBox(height: AppDimensions.spacing16),
+          searchInput,
+        ],
+      );
+    }
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Financial & Operational Registers',
-                style: AppTypography.headlineMedium.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: AppDimensions.spacing4),
-              Text(
-                '14 statutory, treasury, tax, and inventory statements with multi-branch reconciliation.',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
-                ),
-              ),
-            ],
-          ),
-        ),
+        Expanded(child: titleColumn),
         const SizedBox(width: AppDimensions.spacing16),
-        // Search Input
-        SizedBox(
-          width: 280,
-          child: AppTextField(
-            hint: 'Search registers & ledgers...',
-            prefixIcon: Icons.search_rounded,
-            onChanged: (val) => cubit.searchReports(val),
-          ),
-        ),
+        searchInput,
       ],
     );
   }

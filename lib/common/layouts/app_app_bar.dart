@@ -74,16 +74,19 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
             Expanded(
               child: Text(
                 title!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.w700,
+                  fontSize: isMobile ? 18 : 20,
                   color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                 ),
               ),
             )
           else
             const Spacer(),
-          // Showroom Selector
-          if (showShowroomSelector) ...[
+          // Showroom Selector (Desktop / Tablet only, in Drawer or Profile menu on mobile)
+          if (showShowroomSelector && !isMobile) ...[
             InkWell(
               onTap: onShowroomSwitchTap ??
                   () {
@@ -111,58 +114,56 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                       size: AppDimensions.iconSm,
                       color: isDark ? AppColors.primaryYellowLight : AppColors.primaryYellowDark,
                     ),
-                    if (!isMobile) ...[
-                      const SizedBox(width: AppDimensions.spacing8),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 160),
-                        child: Text(
-                          currentShowroomName,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.captionMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                          ),
+                    const SizedBox(width: AppDimensions.spacing8),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 160),
+                      child: Text(
+                        currentShowroomName,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.captionMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                         ),
                       ),
-                      const SizedBox(width: AppDimensions.spacing4),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 16,
-                        color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
-                      ),
-                    ],
+                    ),
+                    const SizedBox(width: AppDimensions.spacing4),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 16,
+                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(width: AppDimensions.spacing12),
           ],
-          // Global Search Trigger (Ctrl+K)
-          InkWell(
-            onTap: () => GlobalSearchModal.show(context),
-            borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.spacing10,
-                vertical: AppDimensions.spacing6,
-              ),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkCard : AppColors.lightBackground,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                border: Border.all(
-                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                  width: AppDimensions.borderWidth,
+          // Global Search Trigger
+          if (!isMobile)
+            InkWell(
+              onTap: () => GlobalSearchModal.show(context),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.spacing10,
+                  vertical: AppDimensions.spacing6,
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.search,
-                    size: AppDimensions.iconSm,
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkCard : AppColors.lightBackground,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                  border: Border.all(
+                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                    width: AppDimensions.borderWidth,
                   ),
-                  if (!isMobile) ...[
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.search,
+                      size: AppDimensions.iconSm,
+                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                    ),
                     const SizedBox(width: AppDimensions.spacing8),
                     Text(
                       'Search ERP...',
@@ -190,28 +191,36 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     ),
                   ],
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: AppDimensions.spacing12),
-          // Theme Toggle
-          BlocBuilder<ThemeCubit, ThemeState>(
-            builder: (context, state) {
-              final isThemeDark = state.themeMode == ThemeMode.dark;
-              return IconButton(
-                icon: Icon(
-                  isThemeDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-                  size: AppDimensions.iconMd,
                 ),
-                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                tooltip: isThemeDark ? 'Switch to light mode' : 'Switch to dark mode',
-                onPressed: () {
-                  context.read<ThemeCubit>().toggleTheme();
-                },
-              );
-            },
-          ),
+              ),
+            )
+          else if (actions == null || actions!.isEmpty)
+            IconButton(
+              icon: const Icon(Icons.search_rounded),
+              iconSize: AppDimensions.iconMd,
+              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+              tooltip: 'Search ERP',
+              onPressed: () => GlobalSearchModal.show(context),
+            ),
+          if (!isMobile) const SizedBox(width: AppDimensions.spacing12),
+          // Theme Toggle (Desktop only; on mobile accessible via User Profile menu)
+          if (!isMobile)
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                final isThemeDark = state.themeMode == ThemeMode.dark;
+                return IconButton(
+                  icon: Icon(
+                    isThemeDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                    size: AppDimensions.iconMd,
+                  ),
+                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                  tooltip: isThemeDark ? 'Switch to light mode' : 'Switch to dark mode',
+                  onPressed: () {
+                    context.read<ThemeCubit>().toggleTheme();
+                  },
+                );
+              },
+            ),
           // Notifications
           StreamBuilder<int>(
             stream: NotificationService.instance.unreadCountStream,
@@ -291,6 +300,48 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               const PopupMenuDivider(),
+              if (isMobile && showShowroomSelector) ...[
+                PopupMenuItem<String>(
+                  value: 'showroom',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.storefront_outlined, size: 18, color: AppColors.primaryYellowDark),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          currentShowroomName,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+              ],
+              if (isMobile) ...[
+                PopupMenuItem<String>(
+                  value: 'search',
+                  child: const Row(
+                    children: [
+                      Icon(Icons.search_rounded, size: 18),
+                      SizedBox(width: 12),
+                      Text('Search ERP'),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'theme',
+                  child: Row(
+                    children: [
+                      Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, size: 18),
+                      const SizedBox(width: 12),
+                      Text(isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+              ],
               const PopupMenuItem<String>(
                 value: 'settings',
                 child: Row(
@@ -317,6 +368,16 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                 context.goNamed(RouteNames.login);
               } else if (val == 'settings') {
                 context.showSnackBar('Settings opened');
+              } else if (val == 'theme') {
+                context.read<ThemeCubit>().toggleTheme();
+              } else if (val == 'search') {
+                GlobalSearchModal.show(context);
+              } else if (val == 'showroom') {
+                if (onShowroomSwitchTap != null) {
+                  onShowroomSwitchTap!();
+                } else {
+                  context.showSnackBar('Showroom: $currentShowroomName');
+                }
               }
             },
             child: CircleAvatar(
@@ -332,7 +393,10 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          ...?actions,
+          if (actions != null && actions!.isNotEmpty) ...[
+            const SizedBox(width: AppDimensions.spacing8),
+            ...actions!,
+          ],
         ],
       ),
     );

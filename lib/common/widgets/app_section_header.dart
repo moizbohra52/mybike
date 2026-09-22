@@ -24,6 +24,68 @@ class AppSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
+
+    final titleRow = Row(
+      mainAxisSize: isMobile ? MainAxisSize.max : MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.headlineSmall.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: isMobile ? 18 : null,
+              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+            ),
+          ),
+        ),
+        if (countBadge != null) ...[
+          const SizedBox(width: AppDimensions.spacing8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.spacing8,
+              vertical: AppDimensions.spacing2,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.primaryYellow.withValues(alpha: isDark ? 0.2 : 0.15),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+            ),
+            child: Text(
+              countBadge.toString(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: isDark ? AppColors.primaryYellowLight : AppColors.primaryYellowDark,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (isMobile && trailing != null) {
+      return Padding(
+        padding: padding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            titleRow,
+            if (subtitle != null) ...[
+              const SizedBox(height: AppDimensions.spacing4),
+              Text(
+                subtitle!,
+                style: AppTypography.bodySmall.copyWith(
+                  color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                ),
+              ),
+            ],
+            const SizedBox(height: AppDimensions.spacing12),
+            trailing!,
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: padding,
@@ -35,39 +97,7 @@ class AppSectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTypography.headlineSmall.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                      ),
-                    ),
-                    if (countBadge != null) ...[
-                      const SizedBox(width: AppDimensions.spacing8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppDimensions.spacing8,
-                          vertical: AppDimensions.spacing2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryYellow.withValues(alpha: isDark ? 0.2 : 0.15),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-                        ),
-                        child: Text(
-                          countBadge.toString(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: isDark ? AppColors.primaryYellowLight : AppColors.primaryYellowDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                titleRow,
                 if (subtitle != null) ...[
                   const SizedBox(height: AppDimensions.spacing4),
                   Text(

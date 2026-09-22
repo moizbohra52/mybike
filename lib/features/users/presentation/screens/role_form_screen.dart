@@ -161,11 +161,11 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                   ? 'Update role configuration and description'
                   : 'Define the role identifier, display name, and description',
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: AppTextField(
+                if (context.isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextField(
                         controller: _nameController,
                         label: 'Role Slug',
                         hint: 'e.g. branch_auditor',
@@ -178,10 +178,8 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                           return null;
                         },
                       ),
-                    ),
-                    const SizedBox(width: AppDimensions.spacing16),
-                    Expanded(
-                      child: AppTextField(
+                      const SizedBox(height: AppDimensions.spacing16),
+                      AppTextField(
                         controller: _displayNameController,
                         label: 'Display Name',
                         hint: 'e.g. Branch Auditor',
@@ -192,9 +190,43 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                           return null;
                         },
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: AppTextField(
+                          controller: _nameController,
+                          label: 'Role Slug',
+                          hint: 'e.g. branch_auditor',
+                          isRequired: true,
+                          prefixIcon: Icons.key_rounded,
+                          enabled: !isEditMode,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Required';
+                            if (val.contains(' ')) return 'Use underscores, no spaces';
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.spacing16),
+                      Expanded(
+                        child: AppTextField(
+                          controller: _displayNameController,
+                          label: 'Display Name',
+                          hint: 'e.g. Branch Auditor',
+                          isRequired: true,
+                          prefixIcon: Icons.badge_outlined,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Required';
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 AppTextField(
                   controller: _descriptionController,
                   label: 'Description',
@@ -246,14 +278,29 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                 ],
               ),
               children: [
-                // ─── Action Column Headers ───
-                _buildActionHeaders(isDark),
-                const SizedBox(height: AppDimensions.spacing8),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: constraints.maxWidth < 800 ? 800 : constraints.maxWidth,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ─── Action Column Headers ───
+                            _buildActionHeaders(isDark),
+                            const SizedBox(height: AppDimensions.spacing8),
 
-                // ─── Module Groups ───
-                ...RoleManagementService.moduleGroups.entries.map((group) {
-                  return _buildModuleGroup(context, group.key, group.value, isDark);
-                }),
+                            // ─── Module Groups ───
+                            ...RoleManagementService.moduleGroups.entries.map((group) {
+                              return _buildModuleGroup(context, group.key, group.value, isDark);
+                            }),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(height: AppDimensions.spacing32),

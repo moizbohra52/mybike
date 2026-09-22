@@ -169,34 +169,55 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: AppTextField(
-                  controller: _searchController,
-                  hint: 'Search models by name...',
-                  prefixIcon: Icons.search_rounded,
-                  onChanged: (val) => _cubit.search(val),
+          if (ResponsiveUtils.isMobile(context)) ...[
+            AppTextField(
+              controller: _searchController,
+              hint: 'Search models by name...',
+              prefixIcon: Icons.search_rounded,
+              onChanged: (val) => _cubit.search(val),
+            ),
+            const SizedBox(height: AppDimensions.spacing12),
+            AppDropdown<String?>(
+              label: 'Brand',
+              value: state.selectedBrandId,
+              items: [null, ...state.brands.map((b) => b.id)],
+              itemLabel: (id) {
+                if (id == null) return 'All Brands';
+                final brand = state.brands.where((b) => b.id == id).firstOrNull;
+                return brand?.name ?? 'All Brands';
+              },
+              onChanged: (id) => _cubit.filterByBrand(id),
+            ),
+          ] else ...[
+            Row(
+              children: [
+                Expanded(
+                  child: AppTextField(
+                    controller: _searchController,
+                    hint: 'Search models by name...',
+                    prefixIcon: Icons.search_rounded,
+                    onChanged: (val) => _cubit.search(val),
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppDimensions.spacing12),
-              // Brand Dropdown filter
-              SizedBox(
-                width: 200,
-                child: AppDropdown<String?>(
-                  label: 'Brand',
-                  value: state.selectedBrandId,
-                  items: [null, ...state.brands.map((b) => b.id)],
-                  itemLabel: (id) {
-                    if (id == null) return 'All Brands';
-                    final brand = state.brands.where((b) => b.id == id).firstOrNull;
-                    return brand?.name ?? 'All Brands';
-                  },
-                  onChanged: (id) => _cubit.filterByBrand(id),
+                const SizedBox(width: AppDimensions.spacing12),
+                // Brand Dropdown filter
+                SizedBox(
+                  width: 200,
+                  child: AppDropdown<String?>(
+                    label: 'Brand',
+                    value: state.selectedBrandId,
+                    items: [null, ...state.brands.map((b) => b.id)],
+                    itemLabel: (id) {
+                      if (id == null) return 'All Brands';
+                      final brand = state.brands.where((b) => b.id == id).firstOrNull;
+                      return brand?.name ?? 'All Brands';
+                    },
+                    onChanged: (id) => _cubit.filterByBrand(id),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
           const SizedBox(height: AppDimensions.spacing12),
           Wrap(
             spacing: AppDimensions.spacing8,

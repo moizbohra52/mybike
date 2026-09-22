@@ -218,99 +218,203 @@ class _RoleCard extends StatelessWidget {
                 color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
               ),
             ),
-            child: Row(
-              children: [
-                // Role icon
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                  ),
-                  child: Icon(Icons.shield_outlined, size: 22, color: color),
-                ),
-                const SizedBox(width: AppDimensions.spacing16),
-
-                // Role info
-                Expanded(
-                  child: Column(
+            child: context.isMobile
+                ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text(
-                            role.displayName,
-                            style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          if (role.isSystemRole) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.warning.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: const Text('SYSTEM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                          // Role icon
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                             ),
-                          ],
+                            child: Icon(Icons.shield_outlined, size: 22, color: color),
+                          ),
+                          const SizedBox(width: AppDimensions.spacing16),
+
+                          // Role info
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 4,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      role.displayName,
+                                      style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                                    ),
+                                    if (role.isSystemRole)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.warning.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Text('SYSTEM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                                      ),
+                                  ],
+                                ),
+                                if (role.description != null) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    role.description!,
+                                    style: AppTypography.captionMedium.copyWith(
+                                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                      if (role.description != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          role.description!,
-                          style: AppTypography.captionMedium.copyWith(
-                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                      const SizedBox(height: AppDimensions.spacing16),
+                      Row(
+                        children: [
+                          // Permission count
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                            ),
+                            child: Text(
+                              '$permCount perm${permCount == 1 ? '' : 's'}',
+                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+                            ),
                           ),
+                          const SizedBox(width: AppDimensions.spacing12),
+
+                          // User count
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.people_outline_rounded, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${managedRole.userCount}',
+                                style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+
+                          // Actions
+                          IconButton(
+                            icon: const Icon(Icons.tune_rounded, size: 20),
+                            tooltip: 'Manage Permissions',
+                            onPressed: onViewPermissions,
+                          ),
+                          if (onDelete != null)
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                              tooltip: 'Delete Role',
+                              onPressed: onDelete,
+                            ),
+                        ],
+                      )
+                    ],
+                  )
+                : Row(
+                    children: [
+                      // Role icon
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                         ),
-                      ],
+                        child: Icon(Icons.shield_outlined, size: 22, color: color),
+                      ),
+                      const SizedBox(width: AppDimensions.spacing16),
+
+                      // Role info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  role.displayName,
+                                  style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                if (role.isSystemRole) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.warning.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text('SYSTEM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                                  ),
+                                ],
+                              ],
+                            ),
+                            if (role.description != null) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                role.description!,
+                                style: AppTypography.captionMedium.copyWith(
+                                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+
+                      // Permission count
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: color.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                        ),
+                        child: Text(
+                          '$permCount perm${permCount == 1 ? '' : 's'}',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.spacing12),
+
+                      // User count
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.people_outline_rounded, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${managedRole.userCount}',
+                            style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: AppDimensions.spacing12),
+
+                      // Actions
+                      IconButton(
+                        icon: const Icon(Icons.tune_rounded, size: 20),
+                        tooltip: 'Manage Permissions',
+                        onPressed: onViewPermissions,
+                      ),
+                      if (onDelete != null)
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                          tooltip: 'Delete Role',
+                          onPressed: onDelete,
+                        ),
                     ],
                   ),
-                ),
-
-                // Permission count
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-                  ),
-                  child: Text(
-                    '$permCount perm${permCount == 1 ? '' : 's'}',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
-                  ),
-                ),
-                const SizedBox(width: AppDimensions.spacing12),
-
-                // User count
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.people_outline_rounded, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${managedRole.userCount}',
-                      style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: AppDimensions.spacing12),
-
-                // Actions
-                IconButton(
-                  icon: const Icon(Icons.tune_rounded, size: 20),
-                  tooltip: 'Manage Permissions',
-                  onPressed: onViewPermissions,
-                ),
-                if (onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
-                    tooltip: 'Delete Role',
-                    onPressed: onDelete,
-                  ),
-              ],
-            ),
           ),
         ),
       ),

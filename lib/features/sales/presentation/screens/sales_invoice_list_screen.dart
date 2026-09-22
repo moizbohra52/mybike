@@ -201,13 +201,18 @@ class _SalesInvoiceListView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: AppTypography.captionLarge.copyWith(
-                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.captionLarge.copyWith(
+                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -239,39 +244,28 @@ class _SalesInvoiceListView extends StatelessWidget {
   }
 
   Widget _buildFilterBar(BuildContext context, SalesInvoiceListState state, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-        border: Border.all(
-          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+    final searchField = TextField(
+      onChanged: (v) => context.read<SalesInvoiceListCubit>().search(v),
+      decoration: InputDecoration(
+        hintText: 'Search by invoice no, VIN, customer name or mobile...',
+        hintStyle: AppTypography.bodyMedium.copyWith(
+          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+        ),
+        prefixIcon: const Icon(Icons.search_rounded, size: 20),
+        isDense: true,
+        filled: true,
+        fillColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+          borderSide: BorderSide.none,
         ),
       ),
+    );
+
+    final statusChips = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          // Search Field
-          Expanded(
-            child: TextField(
-              onChanged: (v) => context.read<SalesInvoiceListCubit>().search(v),
-              decoration: InputDecoration(
-                hintText: 'Search by invoice no, VIN, customer name or mobile...',
-                hintStyle: AppTypography.bodyMedium.copyWith(
-                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                ),
-                prefixIcon: const Icon(Icons.search_rounded, size: 20),
-                isDense: true,
-                filled: true,
-                fillColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          // Status Chips
           _buildFilterChip(context, 'All', null, state.selectedStatus == null, isDark),
           const SizedBox(width: 8),
           _buildFilterChip(context, 'Issued', 'issued', state.selectedStatus == 'issued', isDark),
@@ -281,6 +275,33 @@ class _SalesInvoiceListView extends StatelessWidget {
           _buildFilterChip(context, 'Draft', 'draft', state.selectedStatus == 'draft', isDark),
         ],
       ),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
+      ),
+      child: context.isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                searchField,
+                const SizedBox(height: 12),
+                statusChips,
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: searchField),
+                const SizedBox(width: 16),
+                statusChips,
+              ],
+            ),
     );
   }
 
@@ -294,9 +315,7 @@ class _SalesInvoiceListView extends StatelessWidget {
     return FilterChip(
       label: Text(label),
       selected: isSelected,
-      onSelected: (_) {
-        context.read<SalesInvoiceListCubit>().applyFilters(status: statusValue);
-      },
+      onSelected: (_) => context.read<SalesInvoiceListCubit>().filterByStatus(statusValue),
       selectedColor: AppColors.primaryYellow.withValues(alpha: 0.2),
       checkmarkColor: AppColors.primaryBlack,
       labelStyle: AppTypography.captionLarge.copyWith(
@@ -362,37 +381,46 @@ class _SalesInvoiceListView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryYellow.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryYellow.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                        ),
+                        child: const Icon(Icons.receipt_rounded, size: 20, color: AppColors.primaryYellowDark),
                       ),
-                      child: const Icon(Icons.receipt_rounded, size: 20, color: AppColors.primaryYellowDark),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          invoice.invoiceNumber,
-                          style: AppTypography.headlineSmall.copyWith(
-                            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              invoice.invoiceNumber,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.headlineSmall.copyWith(
+                                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Date: ${dateFormat.format(invoice.invoiceDate)} • ${invoice.showroomName ?? "Showroom"}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.captionSmall.copyWith(
+                                color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Date: ${dateFormat.format(invoice.invoiceDate)} • ${invoice.showroomName ?? "Showroom"}',
-                          style: AppTypography.captionSmall.copyWith(
-                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(

@@ -140,13 +140,18 @@ class _KpiCardsRow extends StatelessWidget {
       );
     }
 
-    return Wrap(
-      spacing: AppDimensions.spacing12,
-      runSpacing: AppDimensions.spacing12,
-      children: cards.map((kpi) => SizedBox(
-            width: (MediaQuery.of(context).size.width - 64) / 2,
-            child: _KpiCard(data: kpi, isDark: isDark),
-          )).toList(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth - AppDimensions.spacing12) / 2;
+        return Wrap(
+          spacing: AppDimensions.spacing12,
+          runSpacing: AppDimensions.spacing12,
+          children: cards.map((kpi) => SizedBox(
+                width: cardWidth,
+                child: _KpiCard(data: kpi, isDark: isDark),
+              )).toList(),
+        );
+      },
     );
   }
 }
@@ -167,7 +172,7 @@ class _KpiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.spacing16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : AppColors.lightCard,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -176,25 +181,38 @@ class _KpiCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: data.color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
             ),
-            child: Icon(data.icon, color: data.color, size: 20),
+            child: Icon(data.icon, color: data.color, size: 18),
           ),
-          const SizedBox(width: AppDimensions.spacing12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(data.value, style: AppTypography.headlineSmall.copyWith(
+                Text(
+                  data.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText)),
-                Text(data.title, style: AppTypography.captionLarge.copyWith(
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
-                  overflow: TextOverflow.ellipsis),
+                    fontSize: 18,
+                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                  ),
+                ),
+                Text(
+                  data.title,
+                  style: AppTypography.captionMedium.copyWith(
+                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),

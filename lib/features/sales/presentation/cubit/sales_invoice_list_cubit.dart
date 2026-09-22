@@ -70,6 +70,11 @@ class SalesInvoiceListCubit extends Cubit<SalesInvoiceListState> {
     ));
   }
 
+  /// Filter by status
+  void filterByStatus(String? status) {
+    applyFilters(status: status);
+  }
+
   /// Search
   void search(String query) {
     applyFilters(searchQuery: query);

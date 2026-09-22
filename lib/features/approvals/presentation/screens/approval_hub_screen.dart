@@ -414,6 +414,7 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
 
   Widget _buildHeader(BuildContext context) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
 
     return Row(
       children: [
@@ -426,23 +427,26 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
           child: const Icon(Icons.verified_user_outlined, color: AppColors.primaryYellowDark, size: 24),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Dealership Transaction Approvals',
-              style: AppTypography.headlineMedium.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Dealership Transaction Approvals',
+                style: AppTypography.headlineMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: isMobile ? 18 : null,
+                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                ),
               ),
-            ),
-            Text(
-              'Multi-level authorization for expenses, discounts, purchases, stock adjustments, and transfers',
-              style: AppTypography.captionMedium.copyWith(
-                color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+              Text(
+                'Multi-level authorization for expenses, discounts, purchases, stock adjustments, and transfers',
+                style: AppTypography.captionMedium.copyWith(
+                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -454,53 +458,67 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
     int approvedCount,
     int rejectedCount,
   ) {
+    final isMobile = context.isMobile;
+
     return BlocBuilder<ApprovalRulesCubit, ApprovalRulesState>(
       builder: (context, rulesState) {
         final activeRulesCount = rulesState is ApprovalRulesLoaded
             ? rulesState.rules.where((r) => r.isActive).length
             : 6;
 
+        final cards = [
+          _buildKpiCard(
+            title: 'Pending Approvals',
+            value: '$pendingCount',
+            icon: Icons.hourglass_top_rounded,
+            color: AppColors.warning,
+            subtext: 'Requires manager action',
+          ),
+          _buildKpiCard(
+            title: 'Approved Transactions',
+            value: '$approvedCount',
+            icon: Icons.check_circle_outline,
+            color: AppColors.success,
+            subtext: 'Authorized & processed',
+          ),
+          _buildKpiCard(
+            title: 'Rejected Transactions',
+            value: '$rejectedCount',
+            icon: Icons.cancel_outlined,
+            color: AppColors.error,
+            subtext: 'Turned down with audit reason',
+          ),
+          _buildKpiCard(
+            title: 'Active Approval Policies',
+            value: '$activeRulesCount',
+            icon: Icons.policy_outlined,
+            color: AppColors.primaryYellowDark,
+            subtext: 'Configured threshold triggers',
+          ),
+        ];
+
+        if (isMobile) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = (constraints.maxWidth - AppDimensions.spacing12) / 2;
+              return Wrap(
+                spacing: AppDimensions.spacing12,
+                runSpacing: AppDimensions.spacing12,
+                children: cards.map((c) => SizedBox(width: cardWidth, child: c)).toList(),
+              );
+            },
+          );
+        }
+
         return Row(
           children: [
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Pending Approvals',
-                value: '$pendingCount',
-                icon: Icons.hourglass_top_rounded,
-                color: AppColors.warning,
-                subtext: 'Requires manager action',
-              ),
-            ),
+            Expanded(child: cards[0]),
             const SizedBox(width: AppDimensions.spacing16),
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Approved Transactions',
-                value: '$approvedCount',
-                icon: Icons.check_circle_outline,
-                color: AppColors.success,
-                subtext: 'Authorized & processed',
-              ),
-            ),
+            Expanded(child: cards[1]),
             const SizedBox(width: AppDimensions.spacing16),
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Rejected Transactions',
-                value: '$rejectedCount',
-                icon: Icons.cancel_outlined,
-                color: AppColors.error,
-                subtext: 'Turned down with audit reason',
-              ),
-            ),
+            Expanded(child: cards[2]),
             const SizedBox(width: AppDimensions.spacing16),
-            Expanded(
-              child: _buildKpiCard(
-                title: 'Active Approval Policies',
-                value: '$activeRulesCount',
-                icon: Icons.policy_outlined,
-                color: AppColors.primaryYellowDark,
-                subtext: 'Configured threshold triggers',
-              ),
-            ),
+            Expanded(child: cards[3]),
           ],
         );
       },
@@ -517,7 +535,7 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
     final isDark = context.isDarkMode;
 
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.spacing16),
+      padding: const EdgeInsets.all(AppDimensions.spacing14),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : AppColors.lightCard,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -535,20 +553,23 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionMedium.copyWith(
                     color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                   ),
@@ -556,15 +577,20 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
                 const SizedBox(height: 2),
                 Text(
                   value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   subtext,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionSmall.copyWith(
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                    color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                   ),
                 ),
               ],

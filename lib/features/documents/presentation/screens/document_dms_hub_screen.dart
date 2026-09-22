@@ -239,11 +239,14 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
                     child: const Icon(Icons.folder_shared_outlined, color: AppColors.primaryYellowDark, size: 24),
                   ),
                   const SizedBox(width: 12),
-                  Text(
-                    'Document Management Hub (DMS)',
-                    style: AppTypography.headlineMedium.copyWith(
-                      color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      'Document Management Hub (DMS)',
+                      style: AppTypography.headlineMedium.copyWith(
+                        fontSize: context.isMobile ? 18 : null,
+                        color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -263,48 +266,62 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
   }
 
   Widget _buildKpiMetricsRow(BuildContext context, Map<String, int> counts) {
+    final isMobile = context.isMobile;
+
+    final cards = [
+      _buildMetricCard(
+        context,
+        title: 'Total Documents',
+        count: counts['total'] ?? 0,
+        icon: Icons.archive_outlined,
+        iconColor: AppColors.primaryYellowDark,
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Pending Verification',
+        count: counts['pending'] ?? 0,
+        icon: Icons.pending_actions_outlined,
+        iconColor: AppColors.warning,
+        isHighlight: (counts['pending'] ?? 0) > 0,
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Verified & Approved',
+        count: counts['verified'] ?? 0,
+        icon: Icons.verified_user_outlined,
+        iconColor: AppColors.success,
+      ),
+      _buildMetricCard(
+        context,
+        title: 'Rejected / Action Req.',
+        count: counts['rejected'] ?? 0,
+        icon: Icons.highlight_off_outlined,
+        iconColor: AppColors.error,
+      ),
+    ];
+
+    if (isMobile) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final cardWidth = (constraints.maxWidth - AppDimensions.spacing12) / 2;
+          return Wrap(
+            spacing: AppDimensions.spacing12,
+            runSpacing: AppDimensions.spacing12,
+            children: cards.map((card) => SizedBox(width: cardWidth, child: card)).toList(),
+          );
+        },
+      );
+    }
+
     return Row(
       children: [
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Total Documents',
-            count: counts['total'] ?? 0,
-            icon: Icons.archive_outlined,
-            iconColor: AppColors.primaryYellowDark,
-          ),
-        ),
+        Expanded(child: cards[0]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Pending Verification',
-            count: counts['pending'] ?? 0,
-            icon: Icons.pending_actions_outlined,
-            iconColor: AppColors.warning,
-            isHighlight: (counts['pending'] ?? 0) > 0,
-          ),
-        ),
+        Expanded(child: cards[1]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Verified & Approved',
-            count: counts['verified'] ?? 0,
-            icon: Icons.verified_user_outlined,
-            iconColor: AppColors.success,
-          ),
-        ),
+        Expanded(child: cards[2]),
         const SizedBox(width: AppDimensions.spacing12),
-        Expanded(
-          child: _buildMetricCard(
-            context,
-            title: 'Rejected / Action Req.',
-            count: counts['rejected'] ?? 0,
-            icon: Icons.highlight_off_outlined,
-            iconColor: AppColors.error,
-          ),
-        ),
+        Expanded(child: cards[3]),
       ],
     );
   }
@@ -320,14 +337,12 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
     final isDark = context.isDarkMode;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
         border: Border.all(
-          color: isHighlight
-              ? iconColor.withValues(alpha: 0.5)
-              : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          color: isHighlight ? iconColor.withValues(alpha: 0.6) : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
           width: isHighlight ? 1.5 : 1.0,
         ),
       ),
@@ -341,13 +356,16 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
             ),
             child: Icon(icon, color: iconColor, size: 20),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionMedium.copyWith(
                     color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                     fontWeight: FontWeight.w500,
@@ -376,100 +394,119 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
     required String selectedEntityType,
   }) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
+
+    final searchField = TextField(
+      controller: _searchController,
+      style: TextStyle(
+        color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Search by file name, doc type, customer, VIN, or record number...',
+        prefixIcon: const Icon(Icons.search, size: 20),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear, size: 18),
+                onPressed: () {
+                  _searchController.clear();
+                  context.read<DocumentListCubit>().setSearch('');
+                },
+              )
+            : null,
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      ),
+      onChanged: (val) {
+        context.read<DocumentListCubit>().setSearch(val);
+      },
+    );
+
+    final entityDropdown = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: selectedEntityType,
+          isExpanded: isMobile,
+          icon: const Icon(Icons.filter_alt_outlined, size: 16),
+          style: AppTypography.bodySmall.copyWith(
+            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+          ),
+          dropdownColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+          items: const [
+            DropdownMenuItem(value: 'all', child: Text('All Entity Types')),
+            DropdownMenuItem(value: 'customer', child: Text('Customers')),
+            DropdownMenuItem(value: 'vehicle', child: Text('Vehicles')),
+            DropdownMenuItem(value: 'booking', child: Text('Bookings')),
+            DropdownMenuItem(value: 'invoice', child: Text('Invoices')),
+            DropdownMenuItem(value: 'purchase', child: Text('Purchases')),
+          ],
+          onChanged: (val) {
+            if (val != null) {
+              context.read<DocumentListCubit>().setEntityType(val);
+            }
+          },
+        ),
+      ),
+    );
+
+    final statusChips = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: _statuses.map((status) {
+          final isSelected = selectedStatus == status['key'];
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: FilterChip(
+              label: Text(status['label']!),
+              selected: isSelected,
+              selectedColor: AppColors.primaryYellow.withValues(alpha: 0.25),
+              labelStyle: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected
+                    ? (isDark ? AppColors.primaryYellowDark : AppColors.warning)
+                    : (isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText),
+              ),
+              onSelected: (_) {
+                context.read<DocumentListCubit>().setStatus(status['key']!);
+              },
+            ),
+          );
+        }).toList(),
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Search & Entity Row
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: TextField(
-                controller: _searchController,
-                style: TextStyle(
-                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search by file name, doc type, customer, VIN, or record number...',
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  suffixIcon: _searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () {
-                            _searchController.clear();
-                            context.read<DocumentListCubit>().setSearch('');
-                          },
-                        )
-                      : null,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                ),
-                onChanged: (val) {
-                  context.read<DocumentListCubit>().setSearch(val);
-                },
+        if (isMobile) ...[
+          searchField,
+          const SizedBox(height: 10),
+          entityDropdown,
+          const SizedBox(height: 10),
+          statusChips,
+        ] else ...[
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: searchField,
               ),
-            ),
-            const SizedBox(width: 12),
-
-            // Entity Type Filter
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+              const SizedBox(width: 12),
+              entityDropdown,
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: statusChips,
               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedEntityType,
-                  icon: const Icon(Icons.filter_alt_outlined, size: 16),
-                  style: AppTypography.bodySmall.copyWith(
-                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                  ),
-                  dropdownColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  items: const [
-                    DropdownMenuItem(value: 'all', child: Text('All Entity Types')),
-                    DropdownMenuItem(value: 'customer', child: Text('Customers')),
-                    DropdownMenuItem(value: 'vehicle', child: Text('Vehicles')),
-                    DropdownMenuItem(value: 'booking', child: Text('Bookings')),
-                    DropdownMenuItem(value: 'invoice', child: Text('Invoices')),
-                    DropdownMenuItem(value: 'purchase', child: Text('Purchases')),
-                  ],
-                  onChanged: (val) {
-                    if (val != null) {
-                      context.read<DocumentListCubit>().setEntityType(val);
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Status Filter Chips
-            ..._statuses.map((status) {
-              final isSelected = selectedStatus == status['key'];
-              return Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: FilterChip(
-                  label: Text(status['label']!),
-                  selected: isSelected,
-                  selectedColor: AppColors.primaryYellow.withValues(alpha: 0.25),
-                  labelStyle: TextStyle(
-                    fontSize: 11,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected
-                        ? (isDark ? AppColors.primaryYellowDark : AppColors.warning)
-                        : (isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText),
-                  ),
-                  onSelected: (_) {
-                    context.read<DocumentListCubit>().setStatus(status['key']!);
-                  },
-                ),
-              );
-            }),
-          ],
-        ),
+            ],
+          ),
+        ],
         const SizedBox(height: 12),
 
         // Horizontal Category Pills
