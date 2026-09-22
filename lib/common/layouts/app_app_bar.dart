@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/route_names.dart';
@@ -42,23 +43,44 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     final isMobile = context.isMobile;
+    final surfaceColor = isDark ? AppColors.darkSurface : AppColors.lightSurface;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
-    return Container(
-      height: AppDimensions.appBarHeight,
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing24,
-      ),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        border: Border(
-          bottom: BorderSide(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-            width: AppDimensions.borderWidth,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDark
+          ? const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.dark,
+            )
+          : const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          border: Border(
+            bottom: BorderSide(
+              color: borderColor,
+              width: AppDimensions.borderWidth,
+            ),
           ),
         ),
-      ),
-      child: Row(
-        children: [
+        child: SafeArea(
+          top: true,
+          bottom: false,
+          left: true,
+          right: true,
+          child: SizedBox(
+            height: AppDimensions.appBarHeight,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing24,
+              ),
+              child: Row(
+                children: [
           if (onMenuTap != null) ...[
             IconButton(
               icon: const Icon(Icons.menu_rounded),
@@ -399,6 +421,10 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ],
       ),
-    );
-  }
+    ),
+  ),
+),
+),
+);
+}
 }

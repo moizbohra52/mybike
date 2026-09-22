@@ -1,12 +1,12 @@
 {
-    "name": "mybike",
-    "short_name": "mybike",
+    "name": "MYBIKE ERP — Multi-Showroom Dealership Management",
+    "short_name": "MYBIKE ERP",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#0A192F",
+    "theme_color": "#0A192F",
+    "description": "MYBIKE — Multi-Showroom Bike Dealership Management & Accounting ERP.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

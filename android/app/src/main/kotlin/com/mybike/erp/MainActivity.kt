@@ -1,4 +1,4 @@
-package com.example.mybike
+package com.mybike.erp
 
 import io.flutter.embedding.android.FlutterActivity
 

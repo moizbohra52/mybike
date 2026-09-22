@@ -68,7 +68,6 @@ class AppBottomNavigation extends StatelessWidget {
     final isDark = context.isDarkMode;
 
     return Container(
-      height: AppDimensions.bottomNavHeight,
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         border: Border(
@@ -80,7 +79,9 @@ class AppBottomNavigation extends StatelessWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Row(
+        child: SizedBox(
+          height: AppDimensions.bottomNavHeight,
+          child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: defaultItems.map((item) {
             final isActive = activeId == item.id;
@@ -116,6 +117,7 @@ class AppBottomNavigation extends StatelessWidget {
           }).toList(),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
