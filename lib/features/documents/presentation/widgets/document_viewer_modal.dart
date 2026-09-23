@@ -20,13 +20,17 @@ class DocumentViewerModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
 
     return Dialog(
       backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
       ),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing24,
+        vertical: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing24,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 860, maxHeight: 720),
         child: Column(
@@ -37,37 +41,48 @@ class DocumentViewerModal extends StatelessWidget {
 
             // Content Viewer
             Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Document Visual Preview Container
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      color: isDark ? const Color(0xFF14171F) : const Color(0xFFF1F3F5),
-                      padding: const EdgeInsets.all(AppDimensions.spacing16),
-                      child: Center(
-                        child: _buildDocumentPreview(context),
-                      ),
-                    ),
-                  ),
-
-                  // Metadata & Verification Details Sidebar
-                  Container(
-                    width: 280,
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkCard : AppColors.lightBackground,
-                      border: Border(
-                        left: BorderSide(
-                          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              child: isMobile
+                  ? Column(
+                      children: [
+                        Expanded(child: _buildPreviewPanel(context)),
+                        const Divider(height: 1),
+                        Container(
+                          constraints: const BoxConstraints(maxHeight: 220),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkCard : AppColors.lightBackground,
+                            border: Border(
+                              top: BorderSide(
+                                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              ),
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(AppDimensions.spacing16),
+                          child: _buildMetadataSidebar(context),
                         ),
-                      ),
+                      ],
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Document Visual Preview Container
+                        Expanded(flex: 3, child: _buildPreviewPanel(context)),
+
+                        // Metadata & Verification Details Sidebar
+                        Container(
+                          width: 280,
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkCard : AppColors.lightBackground,
+                            border: Border(
+                              left: BorderSide(
+                                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                              ),
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(AppDimensions.spacing16),
+                          child: _buildMetadataSidebar(context),
+                        ),
+                      ],
                     ),
-                    padding: const EdgeInsets.all(AppDimensions.spacing16),
-                    child: _buildMetadataSidebar(context),
-                  ),
-                ],
-              ),
             ),
 
             const Divider(height: 1),
@@ -79,26 +94,53 @@ class DocumentViewerModal extends StatelessWidget {
     );
   }
 
+  /// Preview panel: keeps the fixed "paper" size of the simulated document but
+  /// scales it down so it can never overflow a narrow screen.
+  Widget _buildPreviewPanel(BuildContext context) {
+    final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
+
+    return Container(
+      width: double.infinity,
+      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+      padding: EdgeInsets.all(
+        isMobile ? AppDimensions.spacing12 : AppDimensions.spacing16,
+      ),
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: _buildDocumentPreview(context),
+        ),
+      ),
+    );
+  }
+
   Widget _buildHeader(BuildContext context) {
     final isDark = context.isDarkMode;
+    final isMobile = context.isMobile;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing20,
+        vertical: AppDimensions.spacing14,
+      ),
       child: Row(
         children: [
           Icon(
             document.isPdf
                 ? Icons.picture_as_pdf
                 : (document.isImage ? Icons.image : Icons.description),
-            color: document.isPdf ? const Color(0xFFE53935) : AppColors.primaryYellowDark,
-            size: 24,
+            color: document.isPdf ? AppColors.error : AppColors.primaryYellowDark,
+            size: AppDimensions.iconLg,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppDimensions.spacing12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   document.documentType,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.titleMedium.copyWith(
                     color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                     fontWeight: FontWeight.bold,
@@ -106,6 +148,8 @@ class DocumentViewerModal extends StatelessWidget {
                 ),
                 Text(
                   '${document.categoryLabel} • ${document.fileName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionMedium.copyWith(
                     color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                   ),
@@ -113,8 +157,9 @@ class DocumentViewerModal extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(width: AppDimensions.spacing8),
           _buildStatusBadge(context),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppDimensions.spacing4),
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
@@ -427,10 +472,9 @@ class DocumentViewerModal extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       document.statusLabel,
-                      style: TextStyle(
+                      style: AppTypography.captionMedium.copyWith(
                         color: document.statusColor,
                         fontWeight: FontWeight.bold,
-                        fontSize: 11,
                       ),
                     ),
                   ],
@@ -482,7 +526,6 @@ class DocumentViewerModal extends StatelessWidget {
             title,
             style: AppTypography.captionSmall.copyWith(
               color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-              fontSize: 10,
             ),
           ),
           Text(
@@ -498,61 +541,84 @@ class DocumentViewerModal extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Downloading ${document.fileName}...')),
-              );
-            },
-            icon: const Icon(Icons.download, size: 16),
-            label: const Text('Download File'),
+    final isMobile = context.isMobile;
+
+    final downloadButton = OutlinedButton.icon(
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Downloading ${document.fileName}...')),
+        );
+      },
+      icon: const Icon(Icons.download, size: AppDimensions.iconSm),
+      label: const Text('Download File'),
+    );
+
+    final actionButtons = <Widget>[
+      if (document.isPending && onReject != null)
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pop();
+            onReject!();
+          },
+          icon: const Icon(Icons.close, size: AppDimensions.iconSm, color: AppColors.error),
+          label: const Text('Reject Document', style: TextStyle(color: AppColors.error)),
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: AppColors.error),
           ),
-          const Spacer(),
-          if (document.isPending && onReject != null) ...[
-            OutlinedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onReject!();
-              },
-              icon: const Icon(Icons.close, size: 16, color: AppColors.error),
-              label: const Text('Reject Document', style: TextStyle(color: AppColors.error)),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.error),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          if (document.isPending && onVerify != null) ...[
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onVerify!();
-              },
-              icon: const Icon(Icons.verified, size: 16, color: Colors.white),
-              label: const Text('Verify Document', style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.success,
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+        ),
+      if (document.isPending && onVerify != null)
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pop();
+            onVerify!();
+          },
+          icon: const Icon(Icons.verified, size: AppDimensions.iconSm, color: AppColors.white),
+          label: const Text('Verify Document', style: TextStyle(color: AppColors.white)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.success,
           ),
-        ],
+        ),
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Close'),
       ),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDimensions.spacing12 : AppDimensions.spacing20,
+        vertical: AppDimensions.spacing12,
+      ),
+      child: isMobile
+          // Wrap so the action buttons flow onto extra rows instead of
+          // overflowing the dialog on narrow screens.
+          ? Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppDimensions.spacing8,
+              runSpacing: AppDimensions.spacing8,
+              children: [downloadButton, ...actionButtons],
+            )
+          : Row(
+              children: [
+                downloadButton,
+                const Spacer(),
+                for (final button in actionButtons) ...[
+                  button,
+                  const SizedBox(width: AppDimensions.spacing8),
+                ],
+              ],
+            ),
     );
   }
 
   Widget _buildStatusBadge(BuildContext context) {
     final color = document.statusColor;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.spacing8,
+        vertical: AppDimensions.spacing4,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
@@ -560,7 +626,10 @@ class DocumentViewerModal extends StatelessWidget {
       ),
       child: Text(
         document.statusLabel,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11),
+        style: AppTypography.captionMedium.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

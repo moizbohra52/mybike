@@ -89,12 +89,16 @@ class _RoleListScreenState extends State<RoleListScreen> {
           AppSectionHeader(
             title: 'Roles & Permissions',
             countBadge: state.roles.length,
-            subtitle: 'Configure role-based access control for dealership staff',
+            subtitle:
+                'Configure role-based access control for dealership staff',
             trailing: AppButton.primary(
               label: 'New Custom Role',
               leadingIcon: Icons.add_rounded,
               onPressed: () async {
-                await context.pushNamed(RouteNames.roles, queryParameters: {'action': 'create'});
+                await context.pushNamed(
+                  RouteNames.roles,
+                  queryParameters: {'action': 'create'},
+                );
                 _cubit.loadRoles();
               },
             ),
@@ -104,19 +108,26 @@ class _RoleListScreenState extends State<RoleListScreen> {
           // ─── System Roles Section ───
           AppFormSection(
             title: 'System Roles',
-            subtitle: '${systemRoles.length} built-in roles — cannot be renamed or deleted',
+            subtitle:
+                '${systemRoles.length} built-in roles — cannot be renamed or deleted',
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.lock_outlined, size: 14, color: AppColors.warning),
                   SizedBox(width: 4),
-                  Text('PROTECTED', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                  Text(
+                    'PROTECTED',
+                    style: AppTypography.captionSmall.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.warning,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -126,7 +137,10 @@ class _RoleListScreenState extends State<RoleListScreen> {
                 onViewPermissions: () async {
                   await context.pushNamed(
                     RouteNames.roles,
-                    queryParameters: {'action': 'edit', 'roleId': managedRole.role.id},
+                    queryParameters: {
+                      'action': 'edit',
+                      'roleId': managedRole.role.id,
+                    },
                   );
                   _cubit.loadRoles();
                 },
@@ -147,7 +161,8 @@ class _RoleListScreenState extends State<RoleListScreen> {
                 const AppEmptyState(
                   icon: Icons.admin_panel_settings_outlined,
                   title: 'No Custom Roles',
-                  description: 'Create custom roles to define specific access patterns for your team.',
+                  description:
+                      'Create custom roles to define specific access patterns for your team.',
                 )
               else
                 ...customRoles.map((managedRole) {
@@ -156,7 +171,10 @@ class _RoleListScreenState extends State<RoleListScreen> {
                     onViewPermissions: () async {
                       await context.pushNamed(
                         RouteNames.roles,
-                        queryParameters: {'action': 'edit', 'roleId': managedRole.role.id},
+                        queryParameters: {
+                          'action': 'edit',
+                          'roleId': managedRole.role.id,
+                        },
                       );
                       _cubit.loadRoles();
                     },
@@ -164,7 +182,8 @@ class _RoleListScreenState extends State<RoleListScreen> {
                       final confirmed = await AppConfirmDialog.show(
                         context,
                         title: 'Delete Role?',
-                        message: 'Are you sure you want to delete "${managedRole.role.displayName}"? This cannot be undone and will unassign all users with this role.',
+                        message:
+                            'Are you sure you want to delete "${managedRole.role.displayName}"? This cannot be undone and will unassign all users with this role.',
                         confirmText: 'Delete Role',
                         isDestructive: true,
                       );
@@ -230,9 +249,15 @@ class _RoleCard extends StatelessWidget {
                             height: 44,
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusSm,
+                              ),
                             ),
-                            child: Icon(Icons.shield_outlined, size: 22, color: color),
+                            child: Icon(
+                              Icons.shield_outlined,
+                              size: 22,
+                              color: color,
+                            ),
                           ),
                           const SizedBox(width: AppDimensions.spacing16),
 
@@ -248,16 +273,32 @@ class _RoleCard extends StatelessWidget {
                                   children: [
                                     Text(
                                       role.displayName,
-                                      style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                                      style: AppTypography.titleSmall.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                     if (role.isSystemRole)
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.warning.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
                                         ),
-                                        child: const Text('SYSTEM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.warning.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'SYSTEM',
+                                          style: TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.warning,
+                                          ),
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -266,7 +307,9 @@ class _RoleCard extends StatelessWidget {
                                   Text(
                                     role.description!,
                                     style: AppTypography.captionMedium.copyWith(
-                                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                                      color: isDark
+                                          ? AppColors.darkMutedText
+                                          : AppColors.lightMutedText,
                                     ),
                                   ),
                                 ],
@@ -280,14 +323,22 @@ class _RoleCard extends StatelessWidget {
                         children: [
                           // Permission count
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                              borderRadius: BorderRadius.circular(
+                                AppDimensions.radiusFull,
+                              ),
                             ),
                             child: Text(
                               '$permCount perm${permCount == 1 ? '' : 's'}',
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+                              style: AppTypography.captionMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: color,
+                              ),
                             ),
                           ),
                           const SizedBox(width: AppDimensions.spacing12),
@@ -296,11 +347,19 @@ class _RoleCard extends StatelessWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.people_outline_rounded, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                              Icon(
+                                Icons.people_outline_rounded,
+                                size: 16,
+                                color: isDark
+                                    ? AppColors.darkMutedText
+                                    : AppColors.lightMutedText,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${managedRole.userCount}',
-                                style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                                style: AppTypography.bodySmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -314,12 +373,16 @@ class _RoleCard extends StatelessWidget {
                           ),
                           if (onDelete != null)
                             IconButton(
-                              icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                              icon: const Icon(
+                                Icons.delete_outline_rounded,
+                                size: 20,
+                                color: AppColors.error,
+                              ),
                               tooltip: 'Delete Role',
                               onPressed: onDelete,
                             ),
                         ],
-                      )
+                      ),
                     ],
                   )
                 : Row(
@@ -330,9 +393,15 @@ class _RoleCard extends StatelessWidget {
                         height: 44,
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusSm,
+                          ),
                         ),
-                        child: Icon(Icons.shield_outlined, size: 22, color: color),
+                        child: Icon(
+                          Icons.shield_outlined,
+                          size: 22,
+                          color: color,
+                        ),
                       ),
                       const SizedBox(width: AppDimensions.spacing16),
 
@@ -345,17 +414,31 @@ class _RoleCard extends StatelessWidget {
                               children: [
                                 Text(
                                   role.displayName,
-                                  style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700),
+                                  style: AppTypography.titleSmall.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                                 if (role.isSystemRole) ...[
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.warning.withValues(alpha: 0.15),
+                                      color: AppColors.warning.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: const Text('SYSTEM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: AppColors.warning)),
+                                    child: const Text(
+                                      'SYSTEM',
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.warning,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ],
@@ -365,7 +448,9 @@ class _RoleCard extends StatelessWidget {
                               Text(
                                 role.description!,
                                 style: AppTypography.captionMedium.copyWith(
-                                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                                  color: isDark
+                                      ? AppColors.darkMutedText
+                                      : AppColors.lightMutedText,
                                 ),
                               ),
                             ],
@@ -375,14 +460,22 @@ class _RoleCard extends StatelessWidget {
 
                       // Permission count
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                            AppDimensions.radiusFull,
+                          ),
                         ),
                         child: Text(
                           '$permCount perm${permCount == 1 ? '' : 's'}',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+                          style: AppTypography.captionMedium.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: color,
+                          ),
                         ),
                       ),
                       const SizedBox(width: AppDimensions.spacing12),
@@ -391,11 +484,19 @@ class _RoleCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.people_outline_rounded, size: 16, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+                          Icon(
+                            Icons.people_outline_rounded,
+                            size: 16,
+                            color: isDark
+                                ? AppColors.darkMutedText
+                                : AppColors.lightMutedText,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${managedRole.userCount}',
-                            style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                            style: AppTypography.bodySmall.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -409,7 +510,11 @@ class _RoleCard extends StatelessWidget {
                       ),
                       if (onDelete != null)
                         IconButton(
-                          icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.error),
+                          icon: const Icon(
+                            Icons.delete_outline_rounded,
+                            size: 20,
+                            color: AppColors.error,
+                          ),
                           tooltip: 'Delete Role',
                           onPressed: onDelete,
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/widgets/responsive_field_row.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
@@ -175,40 +176,38 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spacingMd),
-                  Row(
+                  ResponsiveFieldRow(
+                    spacing: AppDimensions.spacingSm,
                     children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: selectedType,
-                          decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
-                          items: const [
-                            DropdownMenuItem(value: 'expense', child: Text('Expense')),
-                            DropdownMenuItem(value: 'discount', child: Text('Discount')),
-                            DropdownMenuItem(value: 'purchase', child: Text('Purchase')),
-                            DropdownMenuItem(value: 'payment', child: Text('Payment')),
-                            DropdownMenuItem(value: 'stock_adjustment', child: Text('Stock Adjustment')),
-                            DropdownMenuItem(value: 'stock_transfer', child: Text('Stock Transfer')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) setDialogState(() => selectedType = val);
-                          },
-                        ),
+                      DropdownButtonFormField<String>(
+                        initialValue: selectedType,
+                        isExpanded: true,
+                        decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
+                        items: const [
+                          DropdownMenuItem(value: 'expense', child: Text('Expense')),
+                          DropdownMenuItem(value: 'discount', child: Text('Discount')),
+                          DropdownMenuItem(value: 'purchase', child: Text('Purchase')),
+                          DropdownMenuItem(value: 'payment', child: Text('Payment')),
+                          DropdownMenuItem(value: 'stock_adjustment', child: Text('Stock Adjustment')),
+                          DropdownMenuItem(value: 'stock_transfer', child: Text('Stock Transfer')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) setDialogState(() => selectedType = val);
+                        },
                       ),
-                      const SizedBox(width: AppDimensions.spacingSm),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: selectedUrgency,
-                          decoration: const InputDecoration(labelText: 'Urgency', border: OutlineInputBorder()),
-                          items: const [
-                            DropdownMenuItem(value: 'low', child: Text('Low')),
-                            DropdownMenuItem(value: 'normal', child: Text('Normal')),
-                            DropdownMenuItem(value: 'high', child: Text('High')),
-                            DropdownMenuItem(value: 'critical', child: Text('Critical')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) setDialogState(() => selectedUrgency = val);
-                          },
-                        ),
+                      DropdownButtonFormField<String>(
+                        initialValue: selectedUrgency,
+                        isExpanded: true,
+                        decoration: const InputDecoration(labelText: 'Urgency', border: OutlineInputBorder()),
+                        items: const [
+                          DropdownMenuItem(value: 'low', child: Text('Low')),
+                          DropdownMenuItem(value: 'normal', child: Text('Normal')),
+                          DropdownMenuItem(value: 'high', child: Text('High')),
+                          DropdownMenuItem(value: 'critical', child: Text('Critical')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) setDialogState(() => selectedUrgency = val);
+                        },
                       ),
                     ],
                   ),

@@ -387,7 +387,7 @@ class _BookingCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.currency_rupee_rounded, size: 12, color: AppColors.success),
                     Text('Token: ${BookingEntity.formatInr(booking.bookingAmount)}',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.success)),
+                        style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w700, color: AppColors.success)),
                   ],
                 ),
               ),
@@ -399,7 +399,7 @@ class _BookingCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                   ),
                   child: Text(booking.paymentModeLabel,
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                      style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600)),
                 ),
               Text('On-road: ${BookingEntity.formatInr(booking.onRoadPrice)}',
                   style: AppTypography.captionLarge.copyWith(
@@ -445,7 +445,7 @@ class _BookingCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                   ),
                   child: Text('Finance: ${booking.financeProvider ?? 'Pending'}',
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.inProgress)),
+                      style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600, color: AppColors.inProgress)),
                 ),
               ],
             ],
@@ -483,7 +483,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
+      child: Text(label, style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w700, color: color)),
     );
   }
 }

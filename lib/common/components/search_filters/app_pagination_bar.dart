@@ -83,7 +83,7 @@ class AppPaginationBar extends StatelessWidget {
                 items: availablePageSizes
                     .map((s) => DropdownMenuItem<int>(
                           value: s,
-                          child: Text('$s', style: const TextStyle(fontSize: 12)),
+                          child: Text('$s', style: AppTypography.captionLarge),
                         ))
                     .toList(),
                 onChanged: (val) {
@@ -207,8 +207,7 @@ class AppPaginationBar extends StatelessWidget {
             ),
             child: Text(
               '$p',
-              style: TextStyle(
-                fontSize: 12,
+              style: AppTypography.captionLarge.copyWith(
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                 color: isCurrent
                     ? Colors.white

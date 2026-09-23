@@ -71,23 +71,40 @@ class ApprovalRulesTable extends StatelessWidget {
                     horizontal: AppDimensions.spacingMd,
                     vertical: AppDimensions.spacingSm,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
+                  child: Builder(
+                    builder: (context) {
+                      final titleWidget = Text(
                         'Configured Approval Policies (${rules.length})',
                         style: AppTypography.titleMedium.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                         ),
-                      ),
-                      Text(
+                      );
+                      final hintWidget = Text(
                         'Transactions meeting thresholds require sign-off',
                         style: AppTypography.captionSmall.copyWith(
                           color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                         ),
-                      ),
-                    ],
+                      );
+
+                      return context.isMobile
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                titleWidget,
+                                const SizedBox(height: AppDimensions.spacing4),
+                                hintWidget,
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(child: titleWidget),
+                                const SizedBox(width: AppDimensions.spacing16),
+                                hintWidget,
+                              ],
+                            );
+                    },
                   ),
                 ),
                 ListView.separated(

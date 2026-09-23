@@ -254,48 +254,39 @@ class _ShowroomFormScreenState extends State<ShowroomFormScreen> {
                   },
                 ),
                 const SizedBox(height: AppDimensions.spacing16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                ResponsiveFieldRow(
                   children: [
-                    Expanded(
-                      child: AppTextField(
-                        controller: _cityController,
-                        label: 'City',
-                        hint: 'e.g. Mumbai',
-                        isRequired: true,
-                        prefixIcon: Icons.location_city_rounded,
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) return 'City is required';
-                          return null;
-                        },
-                      ),
+                    AppTextField(
+                      controller: _cityController,
+                      label: 'City',
+                      hint: 'e.g. Mumbai',
+                      isRequired: true,
+                      prefixIcon: Icons.location_city_rounded,
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) return 'City is required';
+                        return null;
+                      },
                     ),
-                    const SizedBox(width: AppDimensions.spacing16),
-                    Expanded(
-                      child: AppDropdown<String>(
-                        label: 'State / Union Territory',
-                        value: _selectedState,
-                        items: ShowroomManagementService.indianStatesAndUTs,
-                        onChanged: (val) => setState(() => _selectedState = val),
-                      ),
+                    AppDropdown<String>(
+                      label: 'State / Union Territory',
+                      value: _selectedState,
+                      items: ShowroomManagementService.indianStatesAndUTs,
+                      onChanged: (val) => setState(() => _selectedState = val),
                     ),
-                    const SizedBox(width: AppDimensions.spacing16),
-                    Expanded(
-                      child: AppTextField(
-                        controller: _pincodeController,
-                        label: 'PIN Code',
-                        hint: '6-digit PIN',
-                        isRequired: true,
-                        keyboardType: TextInputType.number,
-                        prefixIcon: Icons.markunread_mailbox_outlined,
-                        validator: (val) {
-                          if (val == null || val.trim().isEmpty) return 'PIN code is required';
-                          if (!ShowroomFormCubit.pincodeRegex.hasMatch(val.trim())) {
-                            return 'Enter 6-digit Indian PIN';
-                          }
-                          return null;
-                        },
-                      ),
+                    AppTextField(
+                      controller: _pincodeController,
+                      label: 'PIN Code',
+                      hint: '6-digit PIN',
+                      isRequired: true,
+                      keyboardType: TextInputType.number,
+                      prefixIcon: Icons.markunread_mailbox_outlined,
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) return 'PIN code is required';
+                        if (!ShowroomFormCubit.pincodeRegex.hasMatch(val.trim())) {
+                          return 'Enter 6-digit Indian PIN';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),

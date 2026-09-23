@@ -304,9 +304,9 @@ class _DeliveryChallanScreenState extends State<DeliveryChallanScreen> {
                                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                                       )
                                     : const Icon(Icons.check_circle_outline_rounded),
-                                label: const Text(
+                                label: Text(
                                   'Confirm Handover, Generate Challan & Exit Gate Pass',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 style: FilledButton.styleFrom(backgroundColor: AppColors.success),
                               ),

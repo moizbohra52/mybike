@@ -264,16 +264,19 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: AppTypography.captionSmall.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTypography.captionSmall.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                  ),
                 ),
               ),
-              Icon(icon, size: 20, color: color),
+              const SizedBox(width: AppDimensions.spacing8),
+              Icon(icon, size: AppDimensions.iconMd, color: color),
             ],
           ),
           const SizedBox(height: 8),
@@ -311,8 +314,7 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
       selected: isSelected,
       label: Text(label),
       selectedColor: AppColors.primaryYellow,
-      labelStyle: TextStyle(
-        fontSize: 12,
+      labelStyle: AppTypography.captionLarge.copyWith(
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         color: isSelected ? AppColors.primaryBlack : (isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText),
       ),

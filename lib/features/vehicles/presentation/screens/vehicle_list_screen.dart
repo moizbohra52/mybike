@@ -354,22 +354,27 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
         children: [
           // Top row: Brand chip & Powertrain badge
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                ),
-                child: Text(
-                  item.brand?.name ?? 'Unknown Brand',
-                  style: AppTypography.captionSmall.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                  ),
+                  child: Text(
+                    item.brand?.name ?? 'Unknown Brand',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.captionSmall.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    ),
                   ),
                 ),
               ),
+              const SizedBox(width: AppDimensions.spacing8),
               AppStatusBadge(
                 label: isEv ? 'ELECTRIC' : 'PETROL',
                 color: isEv ? const Color(0xFF10B981) : const Color(0xFFF97316),
@@ -420,7 +425,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Ex-Showroom:',
@@ -428,15 +433,19 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
                     color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                   ),
                 ),
-                Text(
-                  item.variants.isEmpty
-                      ? 'Pricing TBA'
-                      : item.minPrice == item.maxPrice
-                          ? _formatInr(item.minPrice)
-                          : '${_formatInr(item.minPrice)} - ${_formatInr(item.maxPrice)}',
-                  style: AppTypography.labelLarge.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                const SizedBox(width: AppDimensions.spacing8),
+                Expanded(
+                  child: Text(
+                    item.variants.isEmpty
+                        ? 'Pricing TBA'
+                        : item.minPrice == item.maxPrice
+                            ? _formatInr(item.minPrice)
+                            : '${_formatInr(item.minPrice)} - ${_formatInr(item.maxPrice)}',
+                    textAlign: TextAlign.right,
+                    style: AppTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                    ),
                   ),
                 ),
               ],

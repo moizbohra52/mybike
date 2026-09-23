@@ -337,8 +337,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
       selected: isSelected,
       label: Text(label),
       selectedColor: AppColors.primaryYellow,
-      labelStyle: TextStyle(
-        fontSize: 12,
+      labelStyle: AppTypography.captionLarge.copyWith(
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         color: isSelected ? AppColors.primaryBlack : (isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText),
       ),
@@ -401,7 +400,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                     ),
                     child: Text(
                       journal.status.toUpperCase(),
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
+                      style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold, color: statusColor),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -453,7 +452,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                           width: 60,
                           child: Text(
                             l.accountCode ?? '',
-                            style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, fontSize: 12),
+                            style: AppTypography.captionLarge.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.bold),
                           ),
                         ),
                         Expanded(
@@ -467,8 +466,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                           child: Text(
                             l.debitAmount > 0 ? currency.format(l.debitAmount) : '-',
                             textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTypography.captionLarge.copyWith(
                               fontWeight: l.debitAmount > 0 ? FontWeight.bold : FontWeight.normal,
                               color: l.debitAmount > 0 ? AppColors.info : null,
                             ),
@@ -479,8 +477,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                           child: Text(
                             l.creditAmount > 0 ? currency.format(l.creditAmount) : '-',
                             textAlign: TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTypography.captionLarge.copyWith(
                               fontWeight: l.creditAmount > 0 ? FontWeight.bold : FontWeight.normal,
                               color: l.creditAmount > 0 ? AppColors.success : null,
                             ),
@@ -493,15 +490,15 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                 const Divider(height: 16),
                 Row(
                   children: [
-                    const Expanded(
-                      child: Text('Voucher Balance Proof:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Expanded(
+                      child: Text('Voucher Balance Proof:', style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold)),
                     ),
                     SizedBox(
                       width: 120,
                       child: Text(
                         'DR: ${currency.format(journal.totalDebit)}',
                         textAlign: TextAlign.right,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.info),
+                        style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.info),
                       ),
                     ),
                     SizedBox(
@@ -509,7 +506,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                       child: Text(
                         'CR: ${currency.format(journal.totalCredit)}',
                         textAlign: TextAlign.right,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.success),
+                        style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.success),
                       ),
                     ),
                   ],

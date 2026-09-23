@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../utils/responsive_utils.dart';
 
 /// MYBIKE BuildContext Extension
@@ -58,7 +59,7 @@ extension ContextExtensions on BuildContext {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: const Color(0xFF22C55E),
+        backgroundColor: AppColors.success,
         duration: const Duration(seconds: 3),
       ),
     );

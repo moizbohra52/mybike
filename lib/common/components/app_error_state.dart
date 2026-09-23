@@ -111,9 +111,8 @@ class _AppErrorStateState extends State<AppErrorState> {
                   ),
                   child: SelectableText(
                     widget.technicalDetails!,
-                    style: const TextStyle(
+                    style: AppTypography.captionMedium.copyWith(
                       fontFamily: 'monospace',
-                      fontSize: 11,
                       color: AppColors.error,
                     ),
                   ),

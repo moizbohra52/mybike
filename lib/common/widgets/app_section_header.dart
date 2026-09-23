@@ -53,8 +53,7 @@ class AppSectionHeader extends StatelessWidget {
             ),
             child: Text(
               countBadge.toString(),
-              style: TextStyle(
-                fontSize: 12,
+              style: AppTypography.captionLarge.copyWith(
                 fontWeight: FontWeight.w700,
                 color: isDark ? AppColors.primaryYellowLight : AppColors.primaryYellowDark,
               ),

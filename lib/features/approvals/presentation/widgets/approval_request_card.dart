@@ -178,8 +178,7 @@ class ApprovalRequestCard extends StatelessWidget {
                         request.isApproved
                             ? 'Approved by ${request.approverName ?? "Manager"}${request.approvalNotes != null ? " • \"${request.approvalNotes}\"" : ""}'
                             : 'Rejected by ${request.approverName ?? "Manager"}${request.rejectionReason != null ? " • \"${request.rejectionReason}\"" : ""}',
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: AppTypography.captionLarge.copyWith(
                           color: request.isApproved ? AppColors.success : AppColors.error,
                           fontWeight: FontWeight.w500,
                         ),
@@ -209,7 +208,7 @@ class ApprovalRequestCard extends StatelessWidget {
                     ),
                     onPressed: onReject,
                     icon: const Icon(Icons.block, size: 14),
-                    label: const Text('Reject', style: TextStyle(fontSize: 12)),
+                    label: Text('Reject', style: AppTypography.captionLarge),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
@@ -221,7 +220,7 @@ class ApprovalRequestCard extends StatelessWidget {
                     ),
                     onPressed: onApprove,
                     icon: const Icon(Icons.check_circle_outline, size: 14),
-                    label: const Text('Approve', style: TextStyle(fontSize: 12)),
+                    label: Text('Approve', style: AppTypography.captionLarge),
                   ),
                 ],
               ),
@@ -270,8 +269,7 @@ class ApprovalRequestCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             type.replaceAll('_', ' ').toUpperCase(),
-            style: const TextStyle(
-              fontSize: 10,
+            style: AppTypography.captionSmall.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.primaryYellowDark,
             ),
@@ -351,8 +349,7 @@ class ApprovalRequestCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             status.toUpperCase(),
-            style: TextStyle(
-              fontSize: 10,
+            style: AppTypography.captionSmall.copyWith(
               fontWeight: FontWeight.bold,
               color: fg,
             ),

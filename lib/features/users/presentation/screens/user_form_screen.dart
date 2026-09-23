@@ -519,7 +519,7 @@ class _ShowroomAssignCard extends StatelessWidget {
                 ),
                 child: Text(
                   showroom.code,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primaryYellowDark),
+                  style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w800, color: AppColors.primaryYellowDark),
                 ),
               ),
               const SizedBox(width: AppDimensions.spacing12),
@@ -550,8 +550,7 @@ class _ShowroomAssignCard extends StatelessWidget {
                   ),
                   label: Text(
                     isDefault ? 'Default' : 'Set Default',
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: AppTypography.captionLarge.copyWith(
                       fontWeight: FontWeight.w600,
                       color: isDefault ? AppColors.primaryYellow : (isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText),
                     ),

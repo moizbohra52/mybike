@@ -79,10 +79,9 @@ class AuditLogRow extends StatelessWidget {
                             ),
                             child: Text(
                               log.action,
-                              style: TextStyle(
+                              style: AppTypography.captionSmall.copyWith(
                                 color: log.actionColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 10,
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -190,9 +189,8 @@ class AuditLogRow extends StatelessWidget {
                           if (log.hasDiff)
                             Text(
                               'View Diff →',
-                              style: TextStyle(
+                              style: AppTypography.captionMedium.copyWith(
                                 color: AppColors.primaryYellowDark,
-                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

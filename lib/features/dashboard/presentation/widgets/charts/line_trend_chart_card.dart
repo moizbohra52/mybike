@@ -102,8 +102,7 @@ class LineTrendChartCard extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
+          style: AppTypography.captionMedium.copyWith(
             color: isDark ? Colors.white70 : Colors.black87,
             fontWeight: FontWeight.w600,
           ),
@@ -183,8 +182,7 @@ class _LineTrendPainter extends CustomPainter {
       final x = i * stepX;
       textPainter.text = TextSpan(
         text: data[i].label,
-        style: TextStyle(
-          fontSize: 11,
+        style: AppTypography.captionMedium.copyWith(
           color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
         ),
       );

@@ -115,8 +115,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
                       ),
                       child: Text(
                         'Ctrl+K',
-                        style: TextStyle(
-                          fontSize: 10,
+                        style: AppTypography.captionSmall.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                         ),

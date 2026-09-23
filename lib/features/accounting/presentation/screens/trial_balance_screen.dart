@@ -78,10 +78,9 @@ class _TrialBalanceView extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
+                                  Builder(
+                                    builder: (context) {
+                                      final headerInfo = Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
@@ -98,8 +97,8 @@ class _TrialBalanceView extends StatelessWidget {
                                             ),
                                           ),
                                         ],
-                                      ),
-                                      Container(
+                                      );
+                                      final balanceChip = Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                         decoration: BoxDecoration(
                                           color: state.isBalanced
@@ -113,25 +112,43 @@ class _TrialBalanceView extends StatelessWidget {
                                           ),
                                         ),
                                         child: Row(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Icon(
                                               state.isBalanced ? Icons.verified_rounded : Icons.error_outline_rounded,
                                               color: state.isBalanced ? AppColors.success : AppColors.error,
-                                              size: 20,
+                                              size: AppDimensions.iconMd,
                                             ),
-                                            const SizedBox(width: 8),
+                                            const SizedBox(width: AppDimensions.spacing8),
                                             Text(
                                               state.isBalanced ? 'BALANCE PROVED (DR = CR)' : 'OUT OF BALANCE',
-                                              style: TextStyle(
+                                              style: AppTypography.labelMedium.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 12,
                                                 color: state.isBalanced ? AppColors.success : AppColors.error,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                      );
+
+                                      return context.isMobile
+                                          ? Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                headerInfo,
+                                                const SizedBox(height: AppDimensions.spacing12),
+                                                balanceChip,
+                                              ],
+                                            )
+                                          : Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(child: headerInfo),
+                                                const SizedBox(width: AppDimensions.spacing12),
+                                                balanceChip,
+                                              ],
+                                            );
+                                    },
                                   ),
                                   const Divider(height: 32),
 
@@ -258,7 +275,7 @@ class _TrialBalanceView extends StatelessWidget {
                                           child: Text(
                                             currency.format(state.totalDebit),
                                             textAlign: TextAlign.right,
-                                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.info),
+                                            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.info),
                                           ),
                                         ),
                                         SizedBox(
@@ -266,7 +283,7 @@ class _TrialBalanceView extends StatelessWidget {
                                           child: Text(
                                             currency.format(state.totalCredit),
                                             textAlign: TextAlign.right,
-                                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.success),
+                                            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.success),
                                           ),
                                         ),
                                       ],
@@ -300,7 +317,7 @@ class _TrialBalanceView extends StatelessWidget {
             width: 80,
             child: Text(
               item.accountCode,
-              style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold, fontSize: 12),
+              style: AppTypography.captionLarge.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(

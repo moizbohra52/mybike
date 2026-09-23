@@ -150,8 +150,7 @@ class _BarChartPainter extends CustomPainter {
       final valStr = item.displayValue ?? item.value.toStringAsFixed(0);
       textPainter.text = TextSpan(
         text: valStr,
-        style: TextStyle(
-          fontSize: 10,
+        style: AppTypography.captionSmall.copyWith(
           fontWeight: FontWeight.bold,
           color: isDark ? Colors.white70 : Colors.black87,
         ),
@@ -165,8 +164,7 @@ class _BarChartPainter extends CustomPainter {
       // Category label under bar
       textPainter.text = TextSpan(
         text: item.label,
-        style: TextStyle(
-          fontSize: 11,
+        style: AppTypography.captionMedium.copyWith(
           color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
         ),
       );

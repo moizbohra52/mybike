@@ -154,8 +154,7 @@ class ShowroomSelectionScreen extends StatelessWidget {
                                             ),
                                             child: Text(
                                               showroom.code,
-                                              style: TextStyle(
-                                                fontSize: 11,
+                                              style: AppTypography.captionMedium.copyWith(
                                                 fontWeight: FontWeight.w600,
                                                 color: isDark
                                                     ? AppColors.primaryYellowLight

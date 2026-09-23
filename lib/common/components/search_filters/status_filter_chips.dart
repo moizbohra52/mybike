@@ -3,6 +3,7 @@ import '../../../core/extensions/context_extensions.dart';
 import '../../../core/query/query_filter_models.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/app_typography.dart';
 
 class StatusFilterChips extends StatelessWidget {
   final StatusFilter selectedFilter;
@@ -60,8 +61,7 @@ class StatusFilterChips extends StatelessWidget {
           FilterChip(
             selected: selectedFilter.allStatuses || selectedFilter.selectedStatuses.isEmpty,
             label: const Text('All Statuses'),
-            labelStyle: TextStyle(
-              fontSize: 12,
+            labelStyle: AppTypography.captionLarge.copyWith(
               fontWeight: (selectedFilter.allStatuses || selectedFilter.selectedStatuses.isEmpty)
                   ? FontWeight.bold
                   : FontWeight.normal,
@@ -118,8 +118,7 @@ class StatusFilterChips extends StatelessWidget {
                         ),
                         child: Text(
                           '$count',
-                          style: TextStyle(
-                            fontSize: 10,
+                          style: AppTypography.captionSmall.copyWith(
                             fontWeight: FontWeight.bold,
                             color: color,
                           ),
@@ -128,8 +127,7 @@ class StatusFilterChips extends StatelessWidget {
                     ],
                   ],
                 ),
-                labelStyle: TextStyle(
-                  fontSize: 11,
+                labelStyle: AppTypography.captionMedium.copyWith(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected
                       ? color

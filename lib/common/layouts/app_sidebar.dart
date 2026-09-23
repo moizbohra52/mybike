@@ -230,7 +230,6 @@ class _AppSidebarState extends State<AppSidebar> {
                           group.groupTitle!,
                           style: AppTypography.overline.copyWith(
                             color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                            fontSize: 10,
                             letterSpacing: 1.0,
                           ),
                         ),
@@ -261,7 +260,7 @@ class _AppSidebarState extends State<AppSidebar> {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 150),
                               padding: EdgeInsets.symmetric(
-                                horizontal: _isCollapsed ? AppDimensions.spacing14 : AppDimensions.spacing14,
+                                horizontal: AppDimensions.spacing14,
                                 vertical: AppDimensions.spacing10,
                               ),
                               decoration: BoxDecoration(

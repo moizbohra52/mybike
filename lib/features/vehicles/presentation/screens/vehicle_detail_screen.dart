@@ -276,12 +276,15 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Model Variants & Pricing Breakdown',
-              style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+            Expanded(
+              child: Text(
+                'Model Variants & Pricing Breakdown',
+                style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
+            const SizedBox(width: AppDimensions.spacing12),
             AppButton.primary(
               label: 'Add Variant',
               leadingIcon: Icons.add_rounded,
@@ -591,12 +594,15 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Available Colors & Paint Options',
-              style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+            Expanded(
+              child: Text(
+                'Available Colors & Paint Options',
+                style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
+            const SizedBox(width: AppDimensions.spacing12),
             AppButton.primary(
               label: 'Add Color',
               leadingIcon: Icons.add_rounded,
@@ -769,22 +775,18 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Identification
-                    Row(
+                    ResponsiveFieldRow(
+                      spacing: AppDimensions.spacing12,
                       children: [
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Variant Name *',
-                            hint: isEv ? 'e.g. 3.7 kWh Pro' : 'e.g. DLX Pro Dual Tone',
-                            controller: nameCtrl,
-                          ),
+                        AppTextField(
+                          label: 'Variant Name *',
+                          hint: isEv ? 'e.g. 3.7 kWh Pro' : 'e.g. DLX Pro Dual Tone',
+                          controller: nameCtrl,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Variant Code *',
-                            hint: 'e.g. VAR-01',
-                            controller: codeCtrl,
-                          ),
+                        AppTextField(
+                          label: 'Variant Code *',
+                          hint: 'e.g. VAR-01',
+                          controller: codeCtrl,
                         ),
                       ],
                     ),
@@ -798,132 +800,108 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                     const SizedBox(height: 8),
 
                     if (isEv) ...[
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Battery Capacity (kWh)',
-                              hint: 'e.g. 3.7',
-                              controller: batteryCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Battery Capacity (kWh)',
+                            hint: 'e.g. 3.7',
+                            controller: batteryCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Motor Power (kW)',
-                              hint: 'e.g. 6.4',
-                              controller: motorCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Motor Power (kW)',
+                            hint: 'e.g. 6.4',
+                            controller: motorCtrl,
+                            keyboardType: TextInputType.number,
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Certified Range (km)',
-                              hint: 'e.g. 150',
-                              controller: rangeCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Certified Range (km)',
+                            hint: 'e.g. 150',
+                            controller: rangeCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppTextField(
-                              label: 'True / Real Range (km)',
-                              hint: 'e.g. 110',
-                              controller: trueRangeCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'True / Real Range (km)',
+                            hint: 'e.g. 110',
+                            controller: trueRangeCtrl,
+                            keyboardType: TextInputType.number,
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Charging Time (Hours)',
-                              hint: 'e.g. 4.5',
-                              controller: chargeTimeCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Charging Time (Hours)',
+                            hint: 'e.g. 4.5',
+                            controller: chargeTimeCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: const Text('Fast Charging'),
-                              value: fastCharging,
-                              onChanged: (val) => setModalState(() => fastCharging = val ?? false),
-                              controlAffinity: ListTileControlAffinity.leading,
-                              contentPadding: EdgeInsets.zero,
-                            ),
+                          CheckboxListTile(
+                            title: const Text('Fast Charging'),
+                            value: fastCharging,
+                            onChanged: (val) => setModalState(() => fastCharging = val ?? false),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            contentPadding: EdgeInsets.zero,
                           ),
                         ],
                       ),
                     ] else ...[
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Engine Displacement (cc)',
-                              hint: 'e.g. 348.36',
-                              controller: ccCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Engine Displacement (cc)',
+                            hint: 'e.g. 348.36',
+                            controller: ccCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Max Power',
-                              hint: 'e.g. 20.8 bhp @ 5500 rpm',
-                              controller: powerCtrl,
-                            ),
+                          AppTextField(
+                            label: 'Max Power',
+                            hint: 'e.g. 20.8 bhp @ 5500 rpm',
+                            controller: powerCtrl,
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Max Torque',
-                              hint: 'e.g. 30 Nm @ 3000 rpm',
-                              controller: torqueCtrl,
-                            ),
+                          AppTextField(
+                            label: 'Max Torque',
+                            hint: 'e.g. 30 Nm @ 3000 rpm',
+                            controller: torqueCtrl,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppTextField(
-                              label: 'ARAI Mileage (kmpl)',
-                              hint: 'e.g. 38.5',
-                              controller: mileageCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'ARAI Mileage (kmpl)',
+                            hint: 'e.g. 38.5',
+                            controller: mileageCtrl,
+                            keyboardType: TextInputType.number,
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      ResponsiveFieldRow(
+                        spacing: AppDimensions.spacing12,
                         children: [
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Fuel Tank Capacity (L)',
-                              hint: 'e.g. 15.0',
-                              controller: fuelTankCtrl,
-                              keyboardType: TextInputType.number,
-                            ),
+                          AppTextField(
+                            label: 'Fuel Tank Capacity (L)',
+                            hint: 'e.g. 15.0',
+                            controller: fuelTankCtrl,
+                            keyboardType: TextInputType.number,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: AppTextField(
-                              label: 'Transmission',
-                              hint: 'e.g. 5-Speed Manual',
-                              controller: transCtrl,
-                            ),
+                          AppTextField(
+                            label: 'Transmission',
+                            hint: 'e.g. 5-Speed Manual',
+                            controller: transCtrl,
                           ),
                         ],
                       ),
@@ -936,46 +914,38 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
                     ),
                     const SizedBox(height: 8),
 
-                    Row(
+                    ResponsiveFieldRow(
+                      spacing: AppDimensions.spacing12,
                       children: [
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Ex-Showroom Price (INR) *',
-                            hint: 'e.g. 145000',
-                            controller: priceCtrl,
-                            keyboardType: TextInputType.number,
-                          ),
+                        AppTextField(
+                          label: 'Ex-Showroom Price (INR) *',
+                          hint: 'e.g. 145000',
+                          controller: priceCtrl,
+                          keyboardType: TextInputType.number,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AppTextField(
-                            label: 'RTO / Registration (INR)',
-                            hint: 'e.g. 18000',
-                            controller: rtoCtrl,
-                            keyboardType: TextInputType.number,
-                          ),
+                        AppTextField(
+                          label: 'RTO / Registration (INR)',
+                          hint: 'e.g. 18000',
+                          controller: rtoCtrl,
+                          keyboardType: TextInputType.number,
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    ResponsiveFieldRow(
+                      spacing: AppDimensions.spacing12,
                       children: [
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Comprehensive Insurance (INR)',
-                            hint: 'e.g. 10500',
-                            controller: insCtrl,
-                            keyboardType: TextInputType.number,
-                          ),
+                        AppTextField(
+                          label: 'Comprehensive Insurance (INR)',
+                          hint: 'e.g. 10500',
+                          controller: insCtrl,
+                          keyboardType: TextInputType.number,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AppTextField(
-                            label: 'Other / Handling (INR)',
-                            hint: 'e.g. 2500',
-                            controller: otherCtrl,
-                            keyboardType: TextInputType.number,
-                          ),
+                        AppTextField(
+                          label: 'Other / Handling (INR)',
+                          hint: 'e.g. 2500',
+                          controller: otherCtrl,
+                          keyboardType: TextInputType.number,
                         ),
                       ],
                     ),

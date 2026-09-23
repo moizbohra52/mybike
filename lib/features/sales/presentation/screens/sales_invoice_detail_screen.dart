@@ -289,17 +289,23 @@ class _SalesInvoiceDetailView extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 8),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Booking Advance Adjusted: ${currencyFormat.format(invoice.bookingAdvanceAdjusted)}'),
+                                          Expanded(
+                                            child: Text('Booking Advance Adjusted: ${currencyFormat.format(invoice.bookingAdvanceAdjusted)}'),
+                                          ),
+                                          const SizedBox(width: AppDimensions.spacing12),
                                           Text('Amount Paid: ${currencyFormat.format(invoice.amountPaid)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                       if (invoice.financeAmount > 0)
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('Finance / Loan (${invoice.financeBank ?? "Financier"}): ${currencyFormat.format(invoice.financeAmount)}'),
+                                            Expanded(
+                                              child: Text('Finance / Loan (${invoice.financeBank ?? "Financier"}): ${currencyFormat.format(invoice.financeAmount)}'),
+                                            ),
+                                            const SizedBox(width: AppDimensions.spacing12),
                                             Text(
                                               'Balance Due: ${currencyFormat.format(invoice.balanceAmount)}',
                                               style: TextStyle(
@@ -365,20 +371,24 @@ class _SalesInvoiceDetailView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: isTotal
-                ? AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)
-                : AppTypography.bodyMedium.copyWith(
-                    color: isHighlight
-                        ? AppColors.error
-                        : (isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText),
-                  ),
+          Expanded(
+            child: Text(
+              label,
+              style: isTotal
+                  ? AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)
+                  : AppTypography.bodyMedium.copyWith(
+                      color: isHighlight
+                          ? AppColors.error
+                          : (isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText),
+                    ),
+            ),
           ),
+          const SizedBox(width: AppDimensions.spacing12),
           Text(
             value,
+            textAlign: TextAlign.right,
             style: isTotal
                 ? AppTypography.headlineSmall.copyWith(
                     fontWeight: FontWeight.bold,

@@ -91,18 +91,21 @@ class ApprovalDetailModal extends StatelessWidget {
                     // Payload Inspection
                     if (request.payload != null && request.payload!.isNotEmpty) ...[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            'Transaction Snapshot Payload',
-                            style: AppTypography.titleMedium.copyWith(
-                              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              'Transaction Snapshot Payload',
+                              style: AppTypography.titleMedium.copyWith(
+                                color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: AppDimensions.spacing8),
                           TextButton.icon(
-                            icon: const Icon(Icons.copy, size: 14),
-                            label: const Text('Copy JSON', style: TextStyle(fontSize: 12)),
+                            icon: const Icon(Icons.copy, size: AppDimensions.iconXs),
+                            label: Text('Copy JSON', style: AppTypography.captionLarge),
                             onPressed: () {
                               Clipboard.setData(ClipboardData(
                                 text: const JsonEncoder.withIndent('  ').convert(request.payload),
@@ -187,10 +190,9 @@ class ApprovalDetailModal extends StatelessWidget {
           color: AppColors.primaryYellowDark.withValues(alpha: 0.3),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
+      child: Builder(
+        builder: (context) {
+          final amountInfo = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -209,8 +211,8 @@ class ApprovalDetailModal extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          Container(
+          );
+          final referenceChip = Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkCard : AppColors.lightCard,
@@ -218,13 +220,33 @@ class ApprovalDetailModal extends StatelessWidget {
             ),
             child: Text(
               'Ref: ${request.recordReference ?? request.recordId}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppTypography.captionMedium.copyWith(
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
               ),
             ),
-          ),
-        ],
+          );
+
+          return context.isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    amountInfo,
+                    const SizedBox(height: AppDimensions.spacing8),
+                    referenceChip,
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(child: amountInfo),
+                    const SizedBox(width: AppDimensions.spacing8),
+                    Flexible(child: referenceChip),
+                  ],
+                );
+        },
       ),
     );
   }
@@ -427,9 +449,8 @@ class ApprovalDetailModal extends StatelessWidget {
       ),
       child: SelectableText(
         const JsonEncoder.withIndent('  ').convert(request.payload),
-        style: const TextStyle(
+        style: AppTypography.captionLarge.copyWith(
           fontFamily: 'monospace',
-          fontSize: 12,
           height: 1.4,
         ),
       ),
@@ -543,8 +564,7 @@ class ApprovalDetailModal extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             status.toUpperCase(),
-            style: TextStyle(
-              fontSize: 11,
+            style: AppTypography.captionMedium.copyWith(
               fontWeight: FontWeight.bold,
               color: fg,
             ),
@@ -580,8 +600,7 @@ class ApprovalDetailModal extends StatelessWidget {
       ),
       child: Text(
         urgency.toUpperCase(),
-        style: TextStyle(
-          fontSize: 10,
+        style: AppTypography.captionSmall.copyWith(
           fontWeight: FontWeight.bold,
           color: color,
         ),

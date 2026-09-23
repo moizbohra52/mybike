@@ -485,8 +485,7 @@ class _RoleBadges extends StatelessWidget {
           ),
           child: Text(
             role.displayName,
-            style: TextStyle(
-              fontSize: 11,
+            style: AppTypography.captionMedium.copyWith(
               fontWeight: FontWeight.w700,
               color: color,
             ),
@@ -558,8 +557,7 @@ class _ShowroomBadges extends StatelessWidget {
                 ],
                 Text(
                   s.code,
-                  style: TextStyle(
-                    fontSize: 10,
+                  style: AppTypography.captionSmall.copyWith(
                     fontWeight: FontWeight.w700,
                     color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                   ),
@@ -577,8 +575,7 @@ class _ShowroomBadges extends StatelessWidget {
             ),
             child: Text(
               '+${user.showrooms.length - 2}',
-              style: const TextStyle(
-                fontSize: 10,
+              style: AppTypography.captionSmall.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.primaryYellowDark,
               ),

@@ -144,7 +144,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
                         color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                       ),
                     ),
-                    child: const Text('ESC', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text('ESC', style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -230,7 +230,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
                   GlobalSearchService.instance.clearRecentSearches();
                   setState(() {});
                 },
-                child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                child: Text('Clear', style: AppTypography.captionLarge),
               ),
             ],
           ),
@@ -240,7 +240,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
             runSpacing: 8,
             children: recent.map((r) {
               return ActionChip(
-                label: Text(r, style: const TextStyle(fontSize: 12)),
+                label: Text(r, style: AppTypography.captionLarge),
                 avatar: const Icon(Icons.history, size: 14),
                 onPressed: () {
                   _controller.text = r;
@@ -293,8 +293,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
                   const SizedBox(width: 6),
                   Text(
                     group.key.label.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTypography.captionMedium.copyWith(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                       color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
@@ -348,8 +347,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
               ),
               child: Text(
                 item.badgeText!,
-                style: TextStyle(
-                  fontSize: 10,
+                style: AppTypography.captionSmall.copyWith(
                   fontWeight: FontWeight.bold,
                   color: item.badgeColor ?? Colors.grey,
                 ),

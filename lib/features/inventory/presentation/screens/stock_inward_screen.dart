@@ -111,75 +111,65 @@ class _StockInwardScreenState extends State<StockInwardScreen> {
                             ),
                             const SizedBox(height: AppDimensions.spacing16),
 
-                            Row(
+                            ResponsiveFieldRow(
                               children: [
                                 // Showroom
-                                Expanded(
-                                  child: AppDropdown<String?>(
-                                    label: 'Receiving Showroom Branch *',
-                                    value: state.selectedShowroomId,
-                                    items: state.showrooms.map((s) => s.showroom.id).toList(),
-                                    itemLabel: (id) {
-                                      final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
-                                      return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Branch';
-                                    },
-                                    onChanged: (id) {
-                                      if (id != null) _cubit.showroomChanged(id);
-                                    },
-                                  ),
+                                AppDropdown<String?>(
+                                  label: 'Receiving Showroom Branch *',
+                                  value: state.selectedShowroomId,
+                                  items: state.showrooms.map((s) => s.showroom.id).toList(),
+                                  itemLabel: (id) {
+                                    final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
+                                    return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Branch';
+                                  },
+                                  onChanged: (id) {
+                                    if (id != null) _cubit.showroomChanged(id);
+                                  },
                                 ),
-                                const SizedBox(width: AppDimensions.spacing16),
                                 // Model
-                                Expanded(
-                                  child: AppDropdown<String?>(
-                                    label: 'Vehicle Model *',
-                                    value: state.selectedModelId,
-                                    items: state.catalog.map((c) => c.model.id).toList(),
-                                    itemLabel: (id) {
-                                      final c = state.catalog.where((cat) => cat.model.id == id).firstOrNull;
-                                      return c != null ? '${c.model.name} (${c.model.type.toUpperCase()})' : 'Select Model';
-                                    },
-                                    onChanged: (id) {
-                                      if (id != null) _cubit.modelChanged(id);
-                                    },
-                                  ),
+                                AppDropdown<String?>(
+                                  label: 'Vehicle Model *',
+                                  value: state.selectedModelId,
+                                  items: state.catalog.map((c) => c.model.id).toList(),
+                                  itemLabel: (id) {
+                                    final c = state.catalog.where((cat) => cat.model.id == id).firstOrNull;
+                                    return c != null ? '${c.model.name} (${c.model.type.toUpperCase()})' : 'Select Model';
+                                  },
+                                  onChanged: (id) {
+                                    if (id != null) _cubit.modelChanged(id);
+                                  },
                                 ),
                               ],
                             ),
                             const SizedBox(height: AppDimensions.spacing16),
 
-                            Row(
+                            ResponsiveFieldRow(
                               children: [
                                 // Variant
-                                Expanded(
-                                  child: AppDropdown<String?>(
-                                    label: 'Variant *',
-                                    value: state.selectedVariantId,
-                                    items: catItem != null ? catItem.variants.map((v) => v.id).toList() : [],
-                                    itemLabel: (id) {
-                                      final v = catItem?.variants.where((vr) => vr.id == id).firstOrNull;
-                                      return v != null ? '${v.name} (${v.code})' : 'Select Variant';
-                                    },
-                                    onChanged: (id) {
-                                      if (id != null) _cubit.variantChanged(id);
-                                    },
-                                  ),
+                                AppDropdown<String?>(
+                                  label: 'Variant *',
+                                  value: state.selectedVariantId,
+                                  items: catItem != null ? catItem.variants.map((v) => v.id).toList() : [],
+                                  itemLabel: (id) {
+                                    final v = catItem?.variants.where((vr) => vr.id == id).firstOrNull;
+                                    return v != null ? '${v.name} (${v.code})' : 'Select Variant';
+                                  },
+                                  onChanged: (id) {
+                                    if (id != null) _cubit.variantChanged(id);
+                                  },
                                 ),
-                                const SizedBox(width: AppDimensions.spacing16),
                                 // Color
-                                Expanded(
-                                  child: AppDropdown<String?>(
-                                    label: 'Color Scheme *',
-                                    value: state.selectedColorId,
-                                    items: catItem != null ? catItem.colors.map((c) => c.id).toList() : [],
-                                    itemLabel: (id) {
-                                      final col = catItem?.colors.where((cl) => cl.id == id).firstOrNull;
-                                      return col != null ? '${col.name} [${col.code}]' : 'Select Color';
-                                    },
-                                    onChanged: (id) {
-                                      if (id != null) _cubit.colorChanged(id);
-                                    },
-                                  ),
+                                AppDropdown<String?>(
+                                  label: 'Color Scheme *',
+                                  value: state.selectedColorId,
+                                  items: catItem != null ? catItem.colors.map((c) => c.id).toList() : [],
+                                  itemLabel: (id) {
+                                    final col = catItem?.colors.where((cl) => cl.id == id).firstOrNull;
+                                    return col != null ? '${col.name} [${col.code}]' : 'Select Color';
+                                  },
+                                  onChanged: (id) {
+                                    if (id != null) _cubit.colorChanged(id);
+                                  },
                                 ),
                               ],
                             ),
@@ -203,12 +193,15 @@ class _StockInwardScreenState extends State<StockInwardScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Add Serialized Unit to Batch',
-                                  style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                                Expanded(
+                                  child: Text(
+                                    'Add Serialized Unit to Batch',
+                                    style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                                  ),
                                 ),
+                                const SizedBox(width: AppDimensions.spacing12),
                                 AppStatusBadge(
                                   label: isEv ? 'ELECTRIC EV UNIT' : 'PETROL UNIT',
                                   color: isEv ? const Color(0xFF10B981) : const Color(0xFFF97316),
@@ -324,11 +317,13 @@ class _StockInwardScreenState extends State<StockInwardScreen> {
 
                       // ─── Section 3: Added Units Batch Preview ───
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Units in Current Inward Batch (${state.units.length})',
-                            style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                          Expanded(
+                            child: Text(
+                              'Units in Current Inward Batch (${state.units.length})',
+                              style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w700),
+                            ),
                           ),
                         ],
                       ),
@@ -355,7 +350,7 @@ class _StockInwardScreenState extends State<StockInwardScreen> {
                                   CircleAvatar(
                                     radius: 14,
                                     backgroundColor: AppColors.primaryYellow.withValues(alpha: 0.2),
-                                    child: Text('${index + 1}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+                                    child: Text('${index + 1}', style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.w700)),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

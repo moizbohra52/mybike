@@ -3,6 +3,7 @@ import '../../../core/extensions/context_extensions.dart';
 import '../../../core/query/query_filter_models.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/app_typography.dart';
 import 'advanced_filter_modal.dart';
 import 'app_search_bar.dart';
 import 'date_range_filter_picker.dart';
@@ -246,8 +247,7 @@ class SearchFilterBar extends StatelessWidget {
         children: [
           Text(
             'Active Filters:',
-            style: TextStyle(
-              fontSize: 11,
+            style: AppTypography.captionMedium.copyWith(
               fontWeight: FontWeight.bold,
               color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
             ),
@@ -321,7 +321,7 @@ class SearchFilterBar extends StatelessWidget {
           // Clear All Button
           TextButton(
             onPressed: _clearAllFilters,
-            child: const Text('Clear All', style: TextStyle(fontSize: 11, color: AppColors.error)),
+            child: Text('Clear All', style: AppTypography.captionMedium.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -347,8 +347,7 @@ class SearchFilterBar extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
+            style: AppTypography.captionMedium.copyWith(
               fontWeight: FontWeight.w500,
               color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
             ),

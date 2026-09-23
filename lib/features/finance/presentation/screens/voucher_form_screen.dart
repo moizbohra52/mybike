@@ -139,166 +139,149 @@ class _VoucherFormViewState extends State<_VoucherFormView> {
                         isDark: isDark,
                         child: Column(
                           children: [
-                            Row(
+                            ResponsiveFieldRow(
                               children: [
                                 // Date Picker
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      final picked = await showDatePicker(
-                                        context: context,
-                                        initialDate: state.voucherDate,
-                                        firstDate: DateTime(2020),
-                                        lastDate: DateTime.now().add(const Duration(days: 30)),
-                                      );
-                                      if (picked != null && context.mounted) {
-                                        context.read<VoucherFormCubit>().updateField(voucherDate: picked);
-                                      }
-                                    },
-                                    child: InputDecorator(
-                                      decoration: const InputDecoration(
-                                        labelText: 'Voucher Date *',
-                                        prefixIcon: Icon(Icons.calendar_today_rounded),
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      child: Text(dateFormat.format(state.voucherDate)),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                // Payment Mode
-                                Expanded(
-                                  child: DropdownButtonFormField<String>(
-                                    initialValue: state.paymentMode,
+                                InkWell(
+                                  onTap: () async {
+                                    final picked = await showDatePicker(
+                                      context: context,
+                                      initialDate: state.voucherDate,
+                                      firstDate: DateTime(2020),
+                                      lastDate: DateTime.now().add(const Duration(days: 30)),
+                                    );
+                                    if (picked != null && context.mounted) {
+                                      context.read<VoucherFormCubit>().updateField(voucherDate: picked);
+                                    }
+                                  },
+                                  child: InputDecorator(
                                     decoration: const InputDecoration(
-                                      labelText: 'Payment Mode *',
-                                      prefixIcon: Icon(Icons.payment_rounded),
+                                      labelText: 'Voucher Date *',
+                                      prefixIcon: Icon(Icons.calendar_today_rounded),
                                       border: OutlineInputBorder(),
                                     ),
-                                    items: const [
-                                      DropdownMenuItem(value: 'bank_transfer', child: Text('Bank Transfer (NEFT/RTGS)')),
-                                      DropdownMenuItem(value: 'cash', child: Text('Cash')),
-                                      DropdownMenuItem(value: 'upi', child: Text('UPI / QR Code')),
-                                      DropdownMenuItem(value: 'cheque', child: Text('Cheque')),
-                                      DropdownMenuItem(value: 'clearing', child: Text('Book Adjustment / Clearing')),
-                                    ],
-                                    onChanged: (val) {
-                                      if (val != null) {
-                                        context.read<VoucherFormCubit>().updateField(paymentMode: val);
-                                      }
-                                    },
+                                    child: Text(dateFormat.format(state.voucherDate)),
                                   ),
+                                ),
+                                // Payment Mode
+                                DropdownButtonFormField<String>(
+                                  initialValue: state.paymentMode,
+                                  isExpanded: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Payment Mode *',
+                                    prefixIcon: Icon(Icons.payment_rounded),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: const [
+                                    DropdownMenuItem(value: 'bank_transfer', child: Text('Bank Transfer (NEFT/RTGS)', overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'cash', child: Text('Cash')),
+                                    DropdownMenuItem(value: 'upi', child: Text('UPI / QR Code')),
+                                    DropdownMenuItem(value: 'cheque', child: Text('Cheque')),
+                                    DropdownMenuItem(value: 'clearing', child: Text('Book Adjustment / Clearing', overflow: TextOverflow.ellipsis)),
+                                  ],
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      context.read<VoucherFormCubit>().updateField(paymentMode: val);
+                                    }
+                                  },
                                 ),
                               ],
                             ),
                             const SizedBox(height: 16),
 
                             // Party Type & Party Name
-                            Row(
+                            ResponsiveFieldRow(
+                              flexes: const [2, 3],
                               children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: DropdownButtonFormField<String>(
-                                    initialValue: state.partyType,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Party Category *',
-                                      prefixIcon: Icon(Icons.group_outlined),
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items: const [
-                                      DropdownMenuItem(value: 'supplier', child: Text('Supplier / OEM')),
-                                      DropdownMenuItem(value: 'customer', child: Text('Customer')),
-                                      DropdownMenuItem(value: 'staff', child: Text('Staff / Employee')),
-                                      DropdownMenuItem(value: 'bank', child: Text('Bank')),
-                                      DropdownMenuItem(value: 'other', child: Text('Other / Sundry')),
-                                    ],
-                                    onChanged: (val) {
-                                      if (val != null) {
-                                        context.read<VoucherFormCubit>().updateField(partyType: val);
-                                      }
-                                    },
+                                DropdownButtonFormField<String>(
+                                  initialValue: state.partyType,
+                                  isExpanded: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Party Category *',
+                                    prefixIcon: Icon(Icons.group_outlined),
+                                    border: OutlineInputBorder(),
                                   ),
+                                  items: const [
+                                    DropdownMenuItem(value: 'supplier', child: Text('Supplier / OEM', overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'customer', child: Text('Customer')),
+                                    DropdownMenuItem(value: 'staff', child: Text('Staff / Employee', overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'bank', child: Text('Bank')),
+                                    DropdownMenuItem(value: 'other', child: Text('Other / Sundry')),
+                                  ],
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      context.read<VoucherFormCubit>().updateField(partyType: val);
+                                    }
+                                  },
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextFormField(
-                                    controller: _partyNameCtrl,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Party Name *',
-                                      hintText: 'e.g. Honda Motorcycle Ltd / Ankit Verma',
-                                      prefixIcon: Icon(Icons.person_outline_rounded),
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    onChanged: (val) => context.read<VoucherFormCubit>().updateField(partyName: val),
-                                    validator: (val) => val == null || val.trim().isEmpty ? 'Party name is required' : null,
+                                TextFormField(
+                                  controller: _partyNameCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Party Name *',
+                                    hintText: 'e.g. Honda Motorcycle Ltd / Ankit Verma',
+                                    prefixIcon: Icon(Icons.person_outline_rounded),
+                                    border: OutlineInputBorder(),
                                   ),
+                                  onChanged: (val) => context.read<VoucherFormCubit>().updateField(partyName: val),
+                                  validator: (val) => val == null || val.trim().isEmpty ? 'Party name is required' : null,
                                 ),
                               ],
                             ),
                             const SizedBox(height: 16),
 
                             // Amounts Row
-                            Row(
+                            ResponsiveFieldRow(
                               children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _amountCtrl,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Gross Amount (₹) *',
-                                      hintText: '0.00',
-                                      prefixIcon: Icon(Icons.currency_rupee_rounded),
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    onChanged: (val) {
-                                      final amt = double.tryParse(val) ?? 0.0;
-                                      context.read<VoucherFormCubit>().updateField(amount: amt);
-                                    },
-                                    validator: (val) {
-                                      final amt = double.tryParse(val ?? '') ?? 0.0;
-                                      if (amt <= 0) return 'Enter a valid positive amount';
-                                      return null;
-                                    },
+                                TextFormField(
+                                  controller: _amountCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Gross Amount (₹) *',
+                                    hintText: '0.00',
+                                    prefixIcon: Icon(Icons.currency_rupee_rounded),
+                                    border: OutlineInputBorder(),
                                   ),
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  onChanged: (val) {
+                                    final amt = double.tryParse(val) ?? 0.0;
+                                    context.read<VoucherFormCubit>().updateField(amount: amt);
+                                  },
+                                  validator: (val) {
+                                    final amt = double.tryParse(val ?? '') ?? 0.0;
+                                    if (amt <= 0) return 'Enter a valid positive amount';
+                                    return null;
+                                  },
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _tdsCtrl,
-                                    decoration: const InputDecoration(
-                                      labelText: 'TDS Deducted (₹)',
-                                      hintText: '0.00',
-                                      prefixIcon: Icon(Icons.percent_rounded),
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    onChanged: (val) {
-                                      final tds = double.tryParse(val) ?? 0.0;
-                                      context.read<VoucherFormCubit>().updateField(tdsDeducted: tds);
-                                    },
+                                TextFormField(
+                                  controller: _tdsCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'TDS Deducted (₹)',
+                                    hintText: '0.00',
+                                    prefixIcon: Icon(Icons.percent_rounded),
+                                    border: OutlineInputBorder(),
                                   ),
+                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  onChanged: (val) {
+                                    final tds = double.tryParse(val) ?? 0.0;
+                                    context.read<VoucherFormCubit>().updateField(tdsDeducted: tds);
+                                  },
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.success.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Net Settlement Amount', style: AppTypography.bodySmall.copyWith(color: AppColors.success)),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          currencyFormat.format(state.netAmount),
-                                          style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w800, color: AppColors.success),
-                                        ),
-                                      ],
-                                    ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.success.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                                    border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Net Settlement Amount', style: AppTypography.bodySmall.copyWith(color: AppColors.success)),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        currencyFormat.format(state.netAmount),
+                                        style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w800, color: AppColors.success),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -314,62 +297,59 @@ class _VoucherFormViewState extends State<_VoucherFormView> {
                         isDark: isDark,
                         child: Column(
                           children: [
-                            Row(
+                            ResponsiveFieldRow(
                               children: [
                                 // Source Account Dropdown
-                                Expanded(
-                                  child: DropdownButtonFormField<String>(
-                                    initialValue: state.sourceAccountId,
-                                    decoration: InputDecoration(
-                                      labelText: state.voucherType == 'payment'
-                                          ? 'Source Account (Cash / Bank) [Credit] *'
-                                          : 'Source Account [Credit] *',
-                                      prefixIcon: const Icon(Icons.account_balance_outlined),
-                                      border: const OutlineInputBorder(),
-                                    ),
-                                    items: state.availableAccounts.map((acct) {
-                                      return DropdownMenuItem(
-                                        value: acct.id,
-                                        child: Text(
-                                          '${acct.accountCode} - ${acct.accountName}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (val) {
-                                      if (val != null) {
-                                        context.read<VoucherFormCubit>().updateField(sourceAccountId: val);
-                                      }
-                                    },
+                                DropdownButtonFormField<String>(
+                                  initialValue: state.sourceAccountId,
+                                  isExpanded: true,
+                                  decoration: InputDecoration(
+                                    labelText: state.voucherType == 'payment'
+                                        ? 'Source Account (Cash / Bank) [Credit] *'
+                                        : 'Source Account [Credit] *',
+                                    prefixIcon: const Icon(Icons.account_balance_outlined),
+                                    border: const OutlineInputBorder(),
                                   ),
+                                  items: state.availableAccounts.map((acct) {
+                                    return DropdownMenuItem(
+                                      value: acct.id,
+                                      child: Text(
+                                        '${acct.accountCode} - ${acct.accountName}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      context.read<VoucherFormCubit>().updateField(sourceAccountId: val);
+                                    }
+                                  },
                                 ),
-                                const SizedBox(width: 16),
                                 // Destination Account Dropdown
-                                Expanded(
-                                  child: DropdownButtonFormField<String>(
-                                    initialValue: state.destinationAccountId,
-                                    decoration: InputDecoration(
-                                      labelText: state.voucherType == 'payment'
-                                          ? 'Beneficiary / Expense Account [Debit] *'
-                                          : 'Destination Account [Debit] *',
-                                      prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
-                                      border: const OutlineInputBorder(),
-                                    ),
-                                    items: state.availableAccounts.map((acct) {
-                                      return DropdownMenuItem(
-                                        value: acct.id,
-                                        child: Text(
-                                          '${acct.accountCode} - ${acct.accountName}',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (val) {
-                                      if (val != null) {
-                                        context.read<VoucherFormCubit>().updateField(destinationAccountId: val);
-                                      }
-                                    },
+                                DropdownButtonFormField<String>(
+                                  initialValue: state.destinationAccountId,
+                                  isExpanded: true,
+                                  decoration: InputDecoration(
+                                    labelText: state.voucherType == 'payment'
+                                        ? 'Beneficiary / Expense Account [Debit] *'
+                                        : 'Destination Account [Debit] *',
+                                    prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
+                                    border: const OutlineInputBorder(),
                                   ),
+                                  items: state.availableAccounts.map((acct) {
+                                    return DropdownMenuItem(
+                                      value: acct.id,
+                                      child: Text(
+                                        '${acct.accountCode} - ${acct.accountName}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    if (val != null) {
+                                      context.read<VoucherFormCubit>().updateField(destinationAccountId: val);
+                                    }
+                                  },
                                 ),
                               ],
                             ),

@@ -191,8 +191,7 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
                           ? const Icon(Icons.check, size: 16, color: Colors.white)
                           : Text(
                               '${index + 1}',
-                              style: TextStyle(
-                                fontSize: 12,
+                              style: AppTypography.captionLarge.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: isCurrent
                                     ? AppColors.primaryBlack
@@ -471,8 +470,7 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
                         ),
                         Text(
                           bike['isEv'] == true ? '5% GST (EV)' : '28% GST (ICE)',
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: AppTypography.captionMedium.copyWith(
                             color: bike['isEv'] == true ? AppColors.success : AppColors.warning,
                             fontWeight: FontWeight.bold,
                           ),
@@ -539,11 +537,15 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Total On-Road Price (INR):', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+              Expanded(
+                child: Text('Total On-Road Price (INR):', style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(width: AppDimensions.spacing12),
               Text(
                 currency.format(state.totalOnRoadPrice),
+                textAlign: TextAlign.right,
                 style: AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
                   color: accentColor,
@@ -624,11 +626,13 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
             borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Total Received: ${currency.format(state.totalPaid)}'),
+              Expanded(child: Text('Total Received: ${currency.format(state.totalPaid)}')),
+              const SizedBox(width: AppDimensions.spacing12),
               Text(
                 'Balance Due: ${currency.format(state.balanceAmount)}',
+                textAlign: TextAlign.right,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: state.isFullyPaid ? AppColors.success : AppColors.warning,
@@ -668,43 +672,63 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Customer:', style: AppTypography.bodySmall),
-                  Text('${state.customerName} (+91 ${state.customerMobile})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(width: AppDimensions.spacing12),
+                  Expanded(
+                    child: Text('${state.customerName} (+91 ${state.customerMobile})',
+                        textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Vehicle:', style: AppTypography.bodySmall),
-                  Text('${state.selectedModelName} (${state.selectedVariantName})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(width: AppDimensions.spacing12),
+                  Expanded(
+                    child: Text('${state.selectedModelName} (${state.selectedVariantName})',
+                        textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Color / VIN:', style: AppTypography.bodySmall),
-                  Text('${state.selectedColorName} • ${state.selectedVin ?? "Assigned on Invoicing"}'),
+                  const SizedBox(width: AppDimensions.spacing12),
+                  Expanded(
+                    child: Text('${state.selectedColorName} • ${state.selectedVin ?? "Assigned on Invoicing"}',
+                        textAlign: TextAlign.right),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('GST Regime:', style: AppTypography.bodySmall),
-                  Text(state.isEv ? '5.0% EV Subsidized GST' : '28.0% Standard Motor Vehicle GST', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(width: AppDimensions.spacing12),
+                  Expanded(
+                    child: Text(state.isEv ? '5.0% EV Subsidized GST' : '28.0% Standard Motor Vehicle GST',
+                        textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
               const Divider(height: 24),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Total On-Road Value:', style: AppTypography.headlineSmall),
+                  Expanded(
+                    child: Text('Total On-Road Value:', style: AppTypography.headlineSmall),
+                  ),
+                  const SizedBox(width: AppDimensions.spacing12),
                   Text(
                     currency.format(state.totalOnRoadPrice),
+                    textAlign: TextAlign.right,
                     style: AppTypography.headlineSmall.copyWith(color: accentColor, fontWeight: FontWeight.bold),
                   ),
                 ],

@@ -323,7 +323,7 @@ class _LeadCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(lead.priorityEmoji, style: const TextStyle(fontSize: 22)),
+              Text(lead.priorityEmoji, style: AppTypography.headlineMedium),
               const SizedBox(width: AppDimensions.spacing8),
               Expanded(
                 child: Column(
@@ -366,7 +366,7 @@ class _LeadCard extends StatelessWidget {
                   color: (isDark ? AppColors.darkBorder : AppColors.lightBorder).withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                 ),
-                child: Text(lead.sourceLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                child: Text(lead.sourceLabel, style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -412,7 +412,7 @@ class _LeadCard extends StatelessWidget {
                   ),
                   child: Text(
                     'Follow-up: ${DateFormat('dd MMM').format(lead.nextFollowUpAt!)}',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600,
+                    style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600,
                         color: lead.isFollowUpOverdue ? AppColors.error : AppColors.info),
                   ),
                 ),
@@ -454,7 +454,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
-      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
+      child: Text(label, style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w700, color: color)),
     );
   }
 }

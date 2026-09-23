@@ -4,6 +4,7 @@ import '../../../core/query/query_filter_models.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../widgets/responsive_field_row.dart';
 
 class FilterableFieldDefinition {
   final String field;
@@ -258,102 +259,114 @@ class _AdvancedFilterModalState extends State<AdvancedFilterModal> {
           color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
-      child: Row(
-        children: [
-          // Field Dropdown
-          Expanded(
-            flex: 2,
-            child: DropdownButtonFormField<String>(
-              initialValue: rule.field,
-              decoration: const InputDecoration(
-                labelText: 'Field',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              ),
-              items: widget.availableFields
-                  .map((f) => DropdownMenuItem(
-                        value: f.field,
-                        child: Text(f.label, style: const TextStyle(fontSize: 12)),
-                      ))
-                  .toList(),
-              onChanged: (val) {
-                if (val != null) {
-                  final def = widget.availableFields.firstWhere((f) => f.field == val);
-                  setState(() {
-                    rule.field = val;
-                    rule.label = def.label;
-                    rule.operator = def.supportedOperators.first;
-                  });
-                }
-              },
+      child: Builder(
+        builder: (rowContext) {
+          final fieldDropdown = DropdownButtonFormField<String>(
+            initialValue: rule.field,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Field',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             ),
-          ),
-          const SizedBox(width: 8),
+            items: widget.availableFields
+                .map((f) => DropdownMenuItem(
+                      value: f.field,
+                      child: Text(f.label, style: AppTypography.captionLarge, overflow: TextOverflow.ellipsis),
+                    ))
+                .toList(),
+            onChanged: (val) {
+              if (val != null) {
+                final def = widget.availableFields.firstWhere((f) => f.field == val);
+                setState(() {
+                  rule.field = val;
+                  rule.label = def.label;
+                  rule.operator = def.supportedOperators.first;
+                });
+              }
+            },
+          );
 
-          // Operator Dropdown
-          Expanded(
-            flex: 2,
-            child: DropdownButtonFormField<FilterOperator>(
-              initialValue: rule.operator,
-              decoration: const InputDecoration(
-                labelText: 'Operator',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              ),
-              items: currentFieldDef.supportedOperators
-                  .map((op) => DropdownMenuItem(
-                        value: op,
-                        child: Text(op.label, style: const TextStyle(fontSize: 12)),
-                      ))
-                  .toList(),
-              onChanged: (val) {
-                if (val != null) setState(() => rule.operator = val);
-              },
+          final operatorDropdown = DropdownButtonFormField<FilterOperator>(
+            initialValue: rule.operator,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'Operator',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             ),
-          ),
-          const SizedBox(width: 8),
+            items: currentFieldDef.supportedOperators
+                .map((op) => DropdownMenuItem(
+                      value: op,
+                      child: Text(op.label, style: AppTypography.captionLarge, overflow: TextOverflow.ellipsis),
+                    ))
+                .toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => rule.operator = val);
+            },
+          );
 
-          // Value Input (or two inputs if between)
-          if (rule.operator != FilterOperator.isNull && rule.operator != FilterOperator.isNotNull) ...[
-            Expanded(
-              flex: 2,
-              child: TextField(
+          final valueFields = <Widget>[
+            if (rule.operator != FilterOperator.isNull && rule.operator != FilterOperator.isNotNull) ...[
+              TextField(
                 controller: rule.valueController,
                 decoration: InputDecoration(
                   labelText: rule.operator == FilterOperator.between ? 'From' : 'Value',
                   border: const OutlineInputBorder(),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                 ),
-                style: const TextStyle(fontSize: 12),
+                style: AppTypography.captionLarge,
               ),
-            ),
-            if (rule.operator == FilterOperator.between) ...[
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: TextField(
+              if (rule.operator == FilterOperator.between)
+                TextField(
                   controller: rule.secondValueController,
                   decoration: const InputDecoration(
                     labelText: 'To',
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   ),
-                  style: const TextStyle(fontSize: 12),
+                  style: AppTypography.captionLarge,
                 ),
-              ),
             ],
-          ] else ...[
-            const Spacer(flex: 2),
-          ],
+          ];
 
-          const SizedBox(width: 8),
-          // Delete Rule
-          IconButton(
+          final deleteButton = IconButton(
             icon: const Icon(Icons.delete_outline, size: 20, color: AppColors.error),
             onPressed: () => _removeRule(index),
             tooltip: 'Remove rule',
-          ),
-        ],
+          );
+
+          // Narrow screens: one control per line — four side-by-side controls
+          // leave each rule field too small to read or tap.
+          if (rowContext.isMobile) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ResponsiveFieldRow(children: [fieldDropdown, operatorDropdown, ...valueFields]),
+                Align(alignment: Alignment.centerRight, child: deleteButton),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              // Field Dropdown
+              Expanded(flex: 2, child: fieldDropdown),
+              const SizedBox(width: 8),
+
+              // Operator Dropdown
+              Expanded(flex: 2, child: operatorDropdown),
+              const SizedBox(width: 8),
+
+              // Value Input (or two inputs if between)
+              ...valueFields.expand((field) => [Expanded(flex: 2, child: field), const SizedBox(width: 8)]),
+              if (valueFields.isEmpty) const Spacer(flex: 2),
+
+              // Delete Rule
+              deleteButton,
+            ],
+          );
+        },
       ),
     );
   }
