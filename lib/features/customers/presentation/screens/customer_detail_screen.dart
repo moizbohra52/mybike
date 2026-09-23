@@ -7,6 +7,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../domain/entities/customer_document_entity.dart';
 import '../../domain/entities/lead_entity.dart';
 import '../../domain/entities/booking_entity.dart';
@@ -42,7 +43,7 @@ class _CustomerDetailView extends StatelessWidget {
           return AppScaffold(
             title: 'Customer Profile',
             activeNavigationId: 'customers',
-            body: const Center(child: CircularProgressIndicator(color: AppColors.primaryYellow)),
+            body: AppSkeleton.detail(rows: 5, columns: 3),
           );
         }
 

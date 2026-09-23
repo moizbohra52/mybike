@@ -8,6 +8,8 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_loading.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../common/widgets/responsive_field_row.dart';
 import '../cubit/journal_entry_form_cubit.dart';
 import '../cubit/journal_entry_form_state.dart';
@@ -89,7 +91,7 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
             const SizedBox(width: 16),
           ],
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? AppSkeleton.form(sections: 2, fields: 4)
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
                   child: Center(
@@ -237,42 +239,60 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                                           : AppColors.error.withValues(alpha: 0.3),
                                     ),
                                   ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              state.isBalanced ? Icons.check_circle_rounded : Icons.warning_rounded,
-                                              color: state.isBalanced ? AppColors.success : AppColors.error,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Expanded(
-                                              child: Text(
-                                                state.isBalanced
-                                                    ? 'Balanced Voucher (Debits = Credits)'
-                                                    : 'Unbalanced Voucher (Difference: ${currency.format(state.balanceDifference)})',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: state.isBalanced ? AppColors.success : AppColors.error,
-                                                ),
+                                  child: Builder(
+                                    builder: (context) {
+                                      final statusLine = Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            state.isBalanced ? Icons.check_circle_rounded : Icons.warning_rounded,
+                                            color: state.isBalanced ? AppColors.success : AppColors.error,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              state.isBalanced
+                                                  ? 'Balanced Voucher (Debits = Credits)'
+                                                  : 'Unbalanced Voucher (Difference: ${currency.format(state.balanceDifference)})',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: state.isBalanced ? AppColors.success : AppColors.error,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: AppDimensions.spacing12),
-                                      Row(
+                                          ),
+                                        ],
+                                      );
+                                      final totalsLine = Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text('Total DR: ${currency.format(state.totalDebit)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                           const SizedBox(width: 16),
                                           Text('Total CR: ${currency.format(state.totalCredit)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                         ],
-                                      ),
-                                    ],
+                                      );
+
+                                      // The DR/CR totals push the status message off
+                                      // a phone, so there they take their own line.
+                                      if (context.isMobile) {
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            statusLine,
+                                            const SizedBox(height: 10),
+                                            totalsLine,
+                                          ],
+                                        );
+                                      }
+
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(child: statusLine),
+                                          const SizedBox(width: AppDimensions.spacing12),
+                                          totalsLine,
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -281,23 +301,16 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                           const SizedBox(height: 28),
 
                           // ─── Action Buttons ───
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              OutlinedButton(
-                                onPressed: () => context.go('/accounting/journals'),
-                                child: const Text('Cancel'),
-                              ),
-                              const SizedBox(width: 12),
-                              FilledButton.icon(
+                          Builder(
+                            builder: (context) {
+                              final postButton = FilledButton.icon(
                                 onPressed: state.isSubmitting || !state.isValid
                                     ? null
                                     : () => context.read<JournalEntryFormCubit>().submitJournal(autoPost: true),
                                 icon: state.isSubmitting
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    ? const AppLoading(
+                                        size: AppLoadingSize.small,
+                                        color: Colors.white,
                                       )
                                     : const Icon(Icons.check_circle_rounded, size: 18),
                                 label: const Text('Post Journal Voucher'),
@@ -306,8 +319,34 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                                 ),
-                              ),
-                            ],
+                              );
+                              final cancelButton = OutlinedButton(
+                                onPressed: () => context.go('/accounting/journals'),
+                                child: const Text('Cancel'),
+                              );
+
+                              // The two buttons together are wider than a phone
+                              // screen, so they stack full width there.
+                              if (context.isMobile) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    postButton,
+                                    const SizedBox(height: 12),
+                                    cancelButton,
+                                  ],
+                                );
+                              }
+
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  cancelButton,
+                                  const SizedBox(width: 12),
+                                  postButton,
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -326,100 +365,108 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
     JournalEntryFormState state,
     bool isDark,
   ) {
+    final accountField = DropdownButtonFormField<String>(
+      initialValue: line.accountId.isNotEmpty ? line.accountId : null,
+      decoration: const InputDecoration(
+        labelText: 'Account *',
+        isDense: true,
+        border: OutlineInputBorder(),
+      ),
+      items: state.availableAccounts.map((acct) {
+        return DropdownMenuItem(
+          value: acct.id,
+          child: Text(
+            '${acct.accountCode} - ${acct.accountName}',
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+      onChanged: (val) {
+        if (val != null) {
+          context.read<JournalEntryFormCubit>().updateLine(index, accountId: val);
+        }
+      },
+    );
+    final debitField = TextFormField(
+      initialValue: line.debitAmount > 0 ? line.debitAmount.toStringAsFixed(2) : '',
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: const InputDecoration(
+        labelText: 'Debit (DR)',
+        prefixText: '₹ ',
+        isDense: true,
+        border: OutlineInputBorder(),
+      ),
+      onChanged: (val) {
+        final d = double.tryParse(val) ?? 0.0;
+        context.read<JournalEntryFormCubit>().updateLine(
+              index,
+              debit: d,
+              credit: d > 0 ? 0.0 : line.creditAmount, // mutually exclusive
+            );
+      },
+    );
+    final creditField = TextFormField(
+      initialValue: line.creditAmount > 0 ? line.creditAmount.toStringAsFixed(2) : '',
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: const InputDecoration(
+        labelText: 'Credit (CR)',
+        prefixText: '₹ ',
+        isDense: true,
+        border: OutlineInputBorder(),
+      ),
+      onChanged: (val) {
+        final c = double.tryParse(val) ?? 0.0;
+        context.read<JournalEntryFormCubit>().updateLine(
+              index,
+              credit: c,
+              debit: c > 0 ? 0.0 : line.debitAmount, // mutually exclusive
+            );
+      },
+    );
+    final removeButton = IconButton(
+      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+      onPressed: state.lines.length > 2
+          ? () => context.read<JournalEntryFormCubit>().removeLine(index)
+          : null,
+    );
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Account Selector
-          Expanded(
-            flex: 4,
-            child: DropdownButtonFormField<String>(
-              initialValue: line.accountId.isNotEmpty ? line.accountId : null,
-              decoration: const InputDecoration(
-                labelText: 'Account *',
-                isDense: true,
-                border: OutlineInputBorder(),
-              ),
-              items: state.availableAccounts.map((acct) {
-                return DropdownMenuItem(
-                  value: acct.id,
-                  child: Text(
-                    '${acct.accountCode} - ${acct.accountName}',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) {
-                  context.read<JournalEntryFormCubit>().updateLine(index, accountId: val);
-                }
-              },
+      // Three side-by-side inputs leave each about 50px wide on a phone, so the
+      // account takes a full-width line of its own there.
+      child: context.isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                accountField,
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(child: debitField),
+                    const SizedBox(width: 12),
+                    Expanded(child: creditField),
+                    const SizedBox(width: 4),
+                    removeButton,
+                  ],
+                ),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(flex: 4, child: accountField),
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: debitField),
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: creditField),
+                const SizedBox(width: 8),
+                removeButton,
+              ],
             ),
-          ),
-          const SizedBox(width: 12),
-
-          // Debit Input
-          Expanded(
-            flex: 2,
-            child: TextFormField(
-              initialValue: line.debitAmount > 0 ? line.debitAmount.toStringAsFixed(2) : '',
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Debit (DR)',
-                prefixText: '₹ ',
-                isDense: true,
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (val) {
-                final d = double.tryParse(val) ?? 0.0;
-                context.read<JournalEntryFormCubit>().updateLine(
-                      index,
-                      debit: d,
-                      credit: d > 0 ? 0.0 : line.creditAmount, // mutually exclusive
-                    );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-
-          // Credit Input
-          Expanded(
-            flex: 2,
-            child: TextFormField(
-              initialValue: line.creditAmount > 0 ? line.creditAmount.toStringAsFixed(2) : '',
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Credit (CR)',
-                prefixText: '₹ ',
-                isDense: true,
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (val) {
-                final c = double.tryParse(val) ?? 0.0;
-                context.read<JournalEntryFormCubit>().updateLine(
-                      index,
-                      credit: c,
-                      debit: c > 0 ? 0.0 : line.debitAmount, // mutually exclusive
-                    );
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-
-          // Remove Button
-          IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-            onPressed: state.lines.length > 2
-                ? () => context.read<JournalEntryFormCubit>().removeLine(index)
-                : null,
-          ),
-        ],
-      ),
     );
   }
 }

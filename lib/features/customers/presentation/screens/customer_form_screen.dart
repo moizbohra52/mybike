@@ -6,6 +6,8 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_loading.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../cubit/customer_form_cubit.dart';
 import '../cubit/customer_form_state.dart';
 
@@ -61,7 +63,7 @@ class _CustomerFormView extends StatelessWidget {
           title: isEdit ? 'Edit Customer' : 'New Customer',
           activeNavigationId: 'customers',
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryYellow))
+              ? AppSkeleton.form(sections: 2, fields: 4)
               : ListView(
                   padding: const EdgeInsets.all(AppDimensions.spacing20),
                   children: [
@@ -260,8 +262,10 @@ class _CustomerFormView extends StatelessWidget {
                           ),
                         ),
                         child: state.isSaving
-                            ? const SizedBox(width: 20, height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primaryBlack))
+                            ? const AppLoading(
+                                size: AppLoadingSize.small,
+                                color: AppColors.primaryBlack,
+                              )
                             : Text(isEdit ? 'Update Customer' : 'Create Customer',
                                 style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                       ),

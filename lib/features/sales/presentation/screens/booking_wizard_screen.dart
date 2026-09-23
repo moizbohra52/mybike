@@ -8,6 +8,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_loading.dart';
 import '../cubit/booking_wizard_cubit.dart';
 import '../cubit/booking_wizard_state.dart';
 
@@ -141,10 +142,9 @@ class _BookingWizardViewState extends State<_BookingWizardView> {
                                 ? null
                                 : () => context.read<BookingWizardCubit>().generateInvoice(),
                             icon: state.isSaving
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                ? const AppLoading(
+                                    size: AppLoadingSize.small,
+                                    color: Colors.white,
                                   )
                                 : const Icon(Icons.check_circle_rounded, size: 18),
                             label: const Text('Generate Tax Invoice'),

@@ -69,7 +69,7 @@ class _ReportViewerContent extends StatelessWidget {
               // ─── Main Content Area ───
               Expanded(
                 child: state.status == ReportViewerStatus.loading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? AppSkeleton.table(rows: 8, columns: 5)
                     : state.status == ReportViewerStatus.failure
                         ? _buildErrorView(state, cubit, isDark)
                         : _buildReportBody(context, state, isDark),

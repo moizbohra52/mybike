@@ -39,10 +39,79 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(AppDimensions.appBarHeight);
 
+  /// Actions compact enough to keep in the bar itself on a narrow screen.
+  List<Widget> get _inlineActions => (actions ?? const <Widget>[])
+      .where((action) => action is IconButton || action is PopupMenuButton)
+      .toList();
+
+  /// Actions that have to move into the overflow sheet on a narrow screen.
+  /// `SizedBox` spacers between actions are dropped — it spaces its own
+  /// children.
+  List<Widget> get _overflowActions {
+    final inline = _inlineActions;
+    return (actions ?? const <Widget>[])
+        .where((action) => !inline.contains(action) && action is! SizedBox)
+        .toList();
+  }
+
+  /// Opens the page actions that did not fit in the bar, laid out at full
+  /// width so their labels stay readable.
+  void _showActionsSheet(BuildContext context) {
+    final isDark = context.isDarkMode;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusLg),
+        ),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppDimensions.spacing20,
+            AppDimensions.spacing12,
+            AppDimensions.spacing20,
+            AppDimensions.spacing24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppDimensions.spacing20),
+              for (final action in _overflowActions) ...[
+                // Close the sheet on the way into the action. These navigate
+                // through the router underneath, which would otherwise leave the
+                // sheet sitting on top of the screen it just opened.
+                Listener(
+                  onPointerUp: (_) => Navigator.of(sheetContext).pop(),
+                  child: action,
+                ),
+                const SizedBox(height: AppDimensions.spacing12),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     final isMobile = context.isMobile;
+    final isDesktop = context.isDesktop;
     final surfaceColor = isDark ? AppColors.darkSurface : AppColors.lightSurface;
     final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
@@ -418,21 +487,25 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           if (actions != null && actions!.isNotEmpty) ...[
             SizedBox(width: isMobile ? AppDimensions.spacing4 : AppDimensions.spacing8),
-            ...actions!.map((action) {
-              if (isMobile && (action is FilledButton || action is ElevatedButton)) {
-                return IconButton(
-                  icon: const Icon(Icons.add_rounded),
-                  tooltip: 'Action',
+            if (isDesktop)
+              ...actions!
+            else ...[
+              // Text buttons ("Trial Balance", "New Voucher") are far too wide
+              // to sit beside the title on a phone — three of them overflow the
+              // bar by ~150px. Below desktop they collapse into an overflow menu
+              // that opens the full-size actions in a bottom sheet; icon-only
+              // actions stay inline, where they still fit.
+              ..._inlineActions,
+              if (_overflowActions.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  iconSize: AppDimensions.iconMd,
+                  color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                  tooltip: 'More actions',
                   visualDensity: VisualDensity.compact,
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primaryYellow,
-                    foregroundColor: AppColors.primaryBlack,
-                  ),
-                  onPressed: (action as dynamic).onPressed,
-                );
-              }
-              return action;
-            }),
+                  onPressed: () => _showActionsSheet(context),
+                ),
+            ],
           ],
         ],
       ),

@@ -78,7 +78,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
           },
           builder: (context, state) {
             if (state.status == VehicleFormStatus.loading) {
-              return const AppPageLoader(message: 'Loading vehicle details...');
+              return AppSkeleton.form(sections: 2, fields: 4);
             }
 
             return SingleChildScrollView(

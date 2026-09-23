@@ -59,7 +59,7 @@ class _Gstr3bReportView extends StatelessWidget {
       body: BlocBuilder<Gstr3bReportCubit, Gstr3bReportState>(
         builder: (context, state) {
           if (state.status == Gstr3bReportStatus.loading && state.report == null) {
-            return const Center(child: AppLoading(message: 'Compiling Form GSTR-3B statutory tables...'));
+            return AppSkeleton.table(kpis: 3, rows: 8, columns: 5);
           }
 
           if (state.status == Gstr3bReportStatus.failure && state.report == null) {

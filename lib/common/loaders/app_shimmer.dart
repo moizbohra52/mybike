@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimensions.dart';
+import '../../core/theme/app_shadows.dart';
 import '../../core/extensions/context_extensions.dart';
 
 /// MYBIKE Zero-Dependency Shimmer Skeleton Component
@@ -29,73 +30,75 @@ class AppShimmer extends StatefulWidget {
   }) {
     return AppShimmer(
       key: key,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-      ),
+      child: AppShimmerBone(width: width, height: height, radius: borderRadius),
     );
   }
 
-  /// Preset shimmer for ERP KPI stat cards
+  /// Preset shimmer for ERP KPI stat cards.
+  ///
+  /// Mirrors `AppStatCard`'s own chrome — same card colour, border, shadow and
+  /// padding — so the card does not resize when the value lands. The chrome is
+  /// painted outside the [AppShimmer] on purpose: wrapping the whole card swept
+  /// the border and background along with the bones, which read as a glowing
+  /// tile rather than a placeholder.
   static Widget statCard({Key? key}) {
-    return AppShimmer(
+    return Builder(
       key: key,
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.spacing16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder: (context) {
+        final isDark = context.isDarkMode;
+
+        return Container(
+          padding: const EdgeInsets.all(AppDimensions.spacing20),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkCard : AppColors.lightCard,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+            border: Border.all(
+              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              width: AppDimensions.borderWidth,
+            ),
+            boxShadow: isDark ? AppShadows.cardDark : AppShadows.cardLight,
+          ),
+          // One shimmer for the whole card: every bone sweeps in step, and the
+          // card costs a single animation controller however many bones it has.
+          child: const AppShimmer(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 90,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: 0.55,
+                        child: AppShimmerBone(height: 12),
+                      ),
+                    ),
+                    SizedBox(width: AppDimensions.spacing8),
+                    AppShimmerBone(
+                      width: 40,
+                      height: 40,
+                      radius: AppDimensions.radiusMd,
+                    ),
+                  ],
                 ),
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                  ),
+                SizedBox(height: AppDimensions.spacing12),
+                FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: 0.7,
+                  child: AppShimmerBone(height: 24),
+                ),
+                SizedBox(height: AppDimensions.spacing10),
+                FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: 0.4,
+                  child: AppShimmerBone(height: 14),
                 ),
               ],
             ),
-            const SizedBox(height: AppDimensions.spacing12),
-            Container(
-              width: 140,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.spacing10),
-            Container(
-              width: 80,
-              height: 14,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -109,20 +112,17 @@ class AppShimmer extends StatefulWidget {
           horizontal: AppDimensions.spacing16,
         ),
         child: Row(
-          children: List.generate(columns, (index) {
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacing8),
-                child: Container(
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
+          children: [
+            for (var index = 0; index < columns; index++)
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppDimensions.spacing8,
                   ),
+                  child: AppShimmerBone(height: 16),
                 ),
               ),
-            );
-          }),
+          ],
         ),
       ),
     );
@@ -139,36 +139,19 @@ class AppShimmer extends StatefulWidget {
         ),
         child: Row(
           children: [
-            Container(
+            const AppShimmerBone(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              ),
+              radius: AppDimensions.radiusMd,
             ),
             const SizedBox(width: AppDimensions.spacing16),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.spacing8),
-                  Container(
-                    width: 120,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
-                    ),
-                  ),
+                  AppShimmerBone(width: double.infinity, height: 14),
+                  SizedBox(height: AppDimensions.spacing8),
+                  AppShimmerBone(width: 120, height: 12),
                 ],
               ),
             ),
@@ -180,6 +163,38 @@ class AppShimmer extends StatefulWidget {
 
   @override
   State<AppShimmer> createState() => _AppShimmerState();
+}
+
+/// One placeholder bar inside an [AppShimmer].
+///
+/// Only meaningful as a descendant of an [AppShimmer]: the sweep paints over
+/// this widget's colour, which is why the value here never reaches the screen.
+/// It still has to be opaque — [ShaderMask] keeps the child's alpha, so a
+/// transparent bone would leave nothing for the gradient to sit on and would
+/// disappear entirely.
+class AppShimmerBone extends StatelessWidget {
+  final double? width;
+  final double height;
+  final double radius;
+
+  const AppShimmerBone({
+    super.key,
+    this.width,
+    required this.height,
+    this.radius = AppDimensions.radiusXs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
 }
 
 class _AppShimmerState extends State<AppShimmer>

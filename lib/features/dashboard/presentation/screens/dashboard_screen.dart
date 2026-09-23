@@ -51,7 +51,7 @@ class _DashboardView extends StatelessWidget {
       body: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           if (state.status == DashboardStatus.loading && state.salesData == null) {
-            return const Center(child: AppLoading(message: 'Compiling multi-showroom enterprise metrics...'));
+            return AppSkeleton.dashboard();
           }
 
           if (state.status == DashboardStatus.failure && state.salesData == null) {

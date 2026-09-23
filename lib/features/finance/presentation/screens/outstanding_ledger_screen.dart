@@ -61,7 +61,7 @@ class _OutstandingLedgerViewState extends State<_OutstandingLedgerView> {
       body: BlocBuilder<OutstandingCubit, OutstandingState>(
         builder: (context, state) {
           if (state.isLoading && state.customerReceivables.isEmpty) {
-            return const Center(child: AppLoading(message: 'Calculating aged outstandings...'));
+            return AppSkeleton.table(kpis: 4, rows: 8, columns: 5);
           }
 
           if (state.error != null && state.customerReceivables.isEmpty) {

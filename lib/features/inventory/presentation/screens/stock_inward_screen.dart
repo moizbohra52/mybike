@@ -79,7 +79,7 @@ class _StockInwardScreenState extends State<StockInwardScreen> {
           },
           builder: (context, state) {
             if (state.status == StockInwardStatus.loading) {
-              return const AppPageLoader(message: 'Initializing inwarding parameters...');
+              return AppSkeleton.form(sections: 2, fields: 4);
             }
 
             final isEv = state.isElectric;

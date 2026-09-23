@@ -48,7 +48,7 @@ class _FinanceDashboardView extends StatelessWidget {
       body: BlocBuilder<FinanceDashboardCubit, FinanceDashboardState>(
         builder: (context, state) {
           if (state.isLoading && state.cashAccounts.isEmpty) {
-            return const Center(child: AppLoading(message: 'Loading financial positions...'));
+            return AppSkeleton.dashboard();
           }
 
           if (state.error != null && state.cashAccounts.isEmpty) {

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../core/services/document_export_service.dart';
 import '../../domain/entities/sales_invoice_entity.dart';
 import '../../../reports/presentation/screens/document_preview_screen.dart';
@@ -68,7 +69,7 @@ class _SalesInvoiceDetailView extends StatelessWidget {
             const SizedBox(width: 16),
           ],
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? AppSkeleton.detail(rows: 5, columns: 4)
               : invoice == null
                   ? const Center(child: Text('Invoice not found'))
                   : SingleChildScrollView(

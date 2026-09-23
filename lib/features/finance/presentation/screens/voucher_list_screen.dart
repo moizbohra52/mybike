@@ -76,7 +76,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
       body: BlocBuilder<VoucherListCubit, VoucherListState>(
         builder: (context, state) {
           if (state.isLoading && state.vouchers.isEmpty) {
-            return const Center(child: AppLoading(message: 'Loading financial vouchers...'));
+            return AppSkeleton.list(kpis: 4, rows: 6);
           }
 
           if (state.error != null && state.vouchers.isEmpty) {

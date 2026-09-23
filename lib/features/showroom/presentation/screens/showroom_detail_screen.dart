@@ -62,7 +62,7 @@ class _ShowroomDetailScreenState extends State<ShowroomDetailScreen> {
           },
           builder: (context, state) {
             if (state is ShowroomDetailLoading) {
-              return const AppPageLoader(message: 'Loading showroom profile...');
+              return AppSkeleton.detail(rows: 4, columns: 3);
             }
 
             if (state is ShowroomDetailError) {

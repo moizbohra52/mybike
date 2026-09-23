@@ -54,7 +54,7 @@ class _RoleListScreenState extends State<RoleListScreen> {
           },
           builder: (context, state) {
             if (state is RoleManagementLoading) {
-              return const AppPageLoader(message: 'Loading roles...');
+              return AppSkeleton.list(rows: 7);
             }
 
             if (state is RoleManagementError) {

@@ -126,7 +126,7 @@ class _ShowroomFormScreenState extends State<ShowroomFormScreen> {
           },
           builder: (context, state) {
             if (state is ShowroomFormLoading) {
-              return const AppPageLoader(message: 'Loading showroom details...');
+              return AppSkeleton.form(sections: 2, fields: 4);
             }
             if (state is ShowroomFormSaving) {
               return const AppPageLoader(message: 'Saving showroom coordinates...');
