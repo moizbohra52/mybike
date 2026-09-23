@@ -437,8 +437,7 @@ class _ShowroomCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         'CURRENT',
-                        style: TextStyle(
-                          fontSize: 10,
+                        style: AppTypography.captionSmall.copyWith(
                           fontWeight: FontWeight.w800,
                           color: AppColors.success,
                           letterSpacing: 0.5,
@@ -600,8 +599,7 @@ class _ChipTag extends StatelessWidget {
           const SizedBox(width: 3),
           Text(
             text,
-            style: TextStyle(
-              fontSize: 10,
+            style: AppTypography.captionSmall.copyWith(
               fontWeight: FontWeight.w600,
               color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
             ),

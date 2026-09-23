@@ -232,42 +232,37 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    ResponsiveFieldRow(
                       children: [
-                        Expanded(
-                          child: AppDropdown<String?>(
-                            label: 'Source Branch *',
-                            value: sourceId,
-                            items: state.showrooms.map((s) => s.showroom.id).toList(),
-                            itemLabel: (id) {
-                              final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
-                              return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Source';
-                            },
-                            onChanged: (id) {
-                              if (id != null) {
-                                setModalState(() => sourceId = id);
-                                _cubit.selectSourceShowroom(id);
-                              }
-                            },
-                          ),
+                        AppDropdown<String?>(
+                          label: 'Source Branch *',
+                          value: sourceId,
+                          items: state.showrooms.map((s) => s.showroom.id).toList(),
+                          itemLabel: (id) {
+                            final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
+                            return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Source';
+                          },
+                          onChanged: (id) {
+                            if (id != null) {
+                              setModalState(() => sourceId = id);
+                              _cubit.selectSourceShowroom(id);
+                            }
+                          },
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AppDropdown<String?>(
-                            label: 'Destination Branch *',
-                            value: destId,
-                            items: state.showrooms.map((s) => s.showroom.id).toList(),
-                            itemLabel: (id) {
-                              final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
-                              return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Destination';
-                            },
-                            onChanged: (id) {
-                              if (id != null) {
-                                setModalState(() => destId = id);
-                                _cubit.selectDestShowroom(id);
-                              }
-                            },
-                          ),
+                        AppDropdown<String?>(
+                          label: 'Destination Branch *',
+                          value: destId,
+                          items: state.showrooms.map((s) => s.showroom.id).toList(),
+                          itemLabel: (id) {
+                            final s = state.showrooms.where((sh) => sh.showroom.id == id).firstOrNull;
+                            return s != null ? '${s.showroom.name} (${s.showroom.code})' : 'Select Destination';
+                          },
+                          onChanged: (id) {
+                            if (id != null) {
+                              setModalState(() => destId = id);
+                              _cubit.selectDestShowroom(id);
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -305,7 +300,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                             final isChecked = state.selectedVehicleIds.contains(item.vehicle.id);
                             return CheckboxListTile(
                               title: Text('${item.displayName} [${item.vehicle.vin}]', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                              subtitle: Text('Color: ${item.color?.name ?? "N/A"} • ${item.vehicle.locationInShowroom}', style: const TextStyle(fontSize: 12)),
+                              subtitle: Text('Color: ${item.color?.name ?? "N/A"} • ${item.vehicle.locationInShowroom}', style: AppTypography.captionLarge),
                               value: isChecked,
                               onChanged: (_) {
                                 _cubit.toggleVehicleSelection(item.vehicle.id);

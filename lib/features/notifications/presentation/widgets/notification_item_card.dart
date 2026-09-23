@@ -113,8 +113,7 @@ class NotificationItemCard extends StatelessWidget {
                             ),
                             child: Text(
                               notification.priorityLabel,
-                              style: TextStyle(
-                                fontSize: 9,
+                              style: AppTypography.captionSmall.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: notification.priorityColor,
                               ),
@@ -151,8 +150,7 @@ class NotificationItemCard extends StatelessWidget {
                       // Notification Title
                       Text(
                         notification.title,
-                        style: AppTypography.headlineSmall.copyWith(
-                          fontSize: 14,
+                        style: AppTypography.titleSmall.copyWith(
                           fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
                           color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                         ),
@@ -178,7 +176,7 @@ class NotificationItemCard extends StatelessWidget {
                             FilledButton.tonalIcon(
                               style: FilledButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                textStyle: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
                                 visualDensity: VisualDensity.compact,
                               ),
                               onPressed: () {

@@ -201,7 +201,6 @@ class _GstRateConfigView extends StatelessWidget {
                       Text(
                         'HSN/SAC',
                         style: AppTypography.captionSmall.copyWith(
-                          fontSize: 9,
                           color: AppColors.lightSecondaryText,
                         ),
                       ),
@@ -273,7 +272,6 @@ class _GstRateConfigView extends StatelessWidget {
                       Text(
                         'CGST: ${rate.cgstRate}% | SGST: ${rate.sgstRate}% | IGST: ${rate.igstRate}%',
                         style: AppTypography.captionSmall.copyWith(
-                          fontSize: 10,
                           color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
                         ),
                       ),

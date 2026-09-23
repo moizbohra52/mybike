@@ -170,10 +170,9 @@ class _VehicleInventoryDetailScreenState extends State<VehicleInventoryDetailScr
                   children: [
                     Text(
                       v.vin,
-                      style: const TextStyle(
+                      style: AppTypography.titleLarge.copyWith(
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w800,
-                        fontSize: 18,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -488,10 +487,9 @@ class _VehicleInventoryDetailScreenState extends State<VehicleInventoryDetailScr
         const SizedBox(height: 3),
         Text(
           value,
-          style: TextStyle(
+          style: AppTypography.labelLarge.copyWith(
             fontFamily: isMonospace ? 'monospace' : null,
             fontWeight: FontWeight.w700,
-            fontSize: 14,
             color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
           ),
         ),

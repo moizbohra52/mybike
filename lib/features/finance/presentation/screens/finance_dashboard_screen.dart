@@ -268,9 +268,12 @@ class _FinanceDashboardView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Operational Accounts Position', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text('Operational Accounts Position', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: AppDimensions.spacing8),
               TextButton.icon(
                 icon: const Icon(Icons.account_balance_outlined, size: 16),
                 label: const Text('Chart of Accounts'),
@@ -363,9 +366,12 @@ class _FinanceDashboardView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Receivables & Payables', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text('Receivables & Payables', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: AppDimensions.spacing8),
               TextButton.icon(
                 icon: const Icon(Icons.arrow_forward_rounded, size: 16),
                 label: const Text('Aging Ledger'),
@@ -470,9 +476,12 @@ class _FinanceDashboardView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Recent Financial Vouchers', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text('Recent Financial Vouchers', style: AppTypography.titleSmall.copyWith(fontWeight: FontWeight.w700)),
+              ),
+              const SizedBox(width: AppDimensions.spacing8),
               TextButton.icon(
                 icon: const Icon(Icons.list_alt_rounded, size: 16),
                 label: const Text('View All'),
@@ -562,7 +571,7 @@ class _FinanceDashboardView extends StatelessWidget {
                       ),
                       child: Text(
                         v.typeLabel,
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: badgeColor),
+                        style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w700, color: badgeColor),
                       ),
                     ),
                   ],

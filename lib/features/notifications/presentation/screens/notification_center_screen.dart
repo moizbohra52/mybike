@@ -172,8 +172,7 @@ class _NotificationCenterContent extends StatelessWidget {
               label: Text(cat['label']!),
               selected: isSelected,
               onSelected: (_) => cubit.setCategoryFilter(cat['id']!),
-              labelStyle: TextStyle(
-                fontSize: 12,
+              labelStyle: AppTypography.captionLarge.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected
                     ? Colors.black

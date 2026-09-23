@@ -33,6 +33,7 @@ export 'widgets/app_pagination.dart';
 export 'widgets/app_filter.dart';
 export 'widgets/app_form_section.dart';
 export 'widgets/app_section_header.dart';
+export 'widgets/responsive_field_row.dart';
 
 // Responsive Layout Shells
 export 'layouts/app_app_bar.dart';

@@ -199,7 +199,7 @@ class _StatusBadge extends StatelessWidget {
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
       ),
-      child: Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+      child: Text(label, style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w700, color: color)),
     );
   }
 }
@@ -407,7 +407,7 @@ class _LeadsSection extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Text(lead.priorityEmoji, style: const TextStyle(fontSize: 18)),
+                      Text(lead.priorityEmoji, style: AppTypography.titleLarge),
                       const SizedBox(width: AppDimensions.spacing8),
                       Expanded(
                         child: Column(

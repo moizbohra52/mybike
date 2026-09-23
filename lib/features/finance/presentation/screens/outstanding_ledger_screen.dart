@@ -186,7 +186,7 @@ class _OutstandingLedgerViewState extends State<_OutstandingLedgerView> {
                 color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
                 child: Row(
                   children: [
-                    const Text('Aging Intervals: ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                    Text('Aging Intervals: ', style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(width: 8),
                     _buildLegendBadge('0-30d: Current', AppColors.success),
                     const SizedBox(width: 8),
@@ -232,7 +232,7 @@ class _OutstandingLedgerViewState extends State<_OutstandingLedgerView> {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
-      child: Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+      child: Text(label, style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600, color: color)),
     );
   }
 
@@ -347,12 +347,11 @@ class _OutstandingLedgerViewState extends State<_OutstandingLedgerView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 10, color: hasAmount ? color : Colors.grey, fontWeight: FontWeight.w600)),
+          Text(label, style: AppTypography.captionSmall.copyWith(color: hasAmount ? color : Colors.grey, fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
           Text(
             currencyFormat.format(amount),
-            style: TextStyle(
-              fontSize: 11,
+            style: AppTypography.captionMedium.copyWith(
               fontWeight: FontWeight.w700,
               color: hasAmount ? color : Colors.grey,
             ),

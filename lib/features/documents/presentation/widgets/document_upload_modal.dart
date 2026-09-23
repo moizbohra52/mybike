@@ -4,6 +4,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../common/widgets/responsive_field_row.dart';
 import '../../domain/entities/dealership_document_entity.dart';
 import '../cubit/document_upload_cubit.dart';
 import '../cubit/document_upload_state.dart';
@@ -219,42 +220,38 @@ class _DocumentUploadModalState extends State<DocumentUploadModal> {
                       const SizedBox(height: 20),
 
                       // Entity Type & Entity ID Row
-                      Row(
+                      ResponsiveFieldRow(
                         children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              initialValue: _entityType,
-                              decoration: const InputDecoration(
-                                labelText: 'Linked Entity *',
-                                prefixIcon: Icon(Icons.link, size: 18),
-                              ),
-                              items: _entityTypes.map((type) {
-                                return DropdownMenuItem(
-                                  value: type['value'],
-                                  child: Text(type['label']!),
-                                );
-                              }).toList(),
-                              onChanged: (val) {
-                                if (val != null) setState(() => _entityType = val);
-                              },
+                          DropdownButtonFormField<String>(
+                            initialValue: _entityType,
+                            isExpanded: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Linked Entity *',
+                              prefixIcon: Icon(Icons.link, size: 18),
                             ),
+                            items: _entityTypes.map((type) {
+                              return DropdownMenuItem(
+                                value: type['value'],
+                                child: Text(type['label']!),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => _entityType = val);
+                            },
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _entityIdController,
-                              decoration: const InputDecoration(
-                                labelText: 'Entity ID / Code *',
-                                hintText: 'e.g. cust-01, veh-02',
-                                prefixIcon: Icon(Icons.tag, size: 18),
-                              ),
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return 'Entity ID is required';
-                                }
-                                return null;
-                              },
+                          TextFormField(
+                            controller: _entityIdController,
+                            decoration: const InputDecoration(
+                              labelText: 'Entity ID / Code *',
+                              hintText: 'e.g. cust-01, veh-02',
+                              prefixIcon: Icon(Icons.tag, size: 18),
                             ),
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return 'Entity ID is required';
+                              }
+                              return null;
+                            },
                           ),
                         ],
                       ),
@@ -279,34 +276,28 @@ class _DocumentUploadModalState extends State<DocumentUploadModal> {
                       const SizedBox(height: 16),
 
                       // Document Type & Document Number
-                      Row(
+                      ResponsiveFieldRow(
+                        flexes: const [3, 2],
                         children: [
-                          Expanded(
-                            flex: 3,
-                            child: TextFormField(
-                              controller: _documentTypeController,
-                              decoration: const InputDecoration(
-                                labelText: 'Document Name / Type *',
-                                hintText: 'e.g. Aadhaar Card, Form 20',
-                                prefixIcon: Icon(Icons.badge_outlined, size: 18),
-                              ),
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return 'Document name is required';
-                                }
-                                return null;
-                              },
+                          TextFormField(
+                            controller: _documentTypeController,
+                            decoration: const InputDecoration(
+                              labelText: 'Document Name / Type *',
+                              hintText: 'e.g. Aadhaar Card, Form 20',
+                              prefixIcon: Icon(Icons.badge_outlined, size: 18),
                             ),
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return 'Document name is required';
+                              }
+                              return null;
+                            },
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              controller: _documentNumberController,
-                              decoration: const InputDecoration(
-                                labelText: 'Doc Number / Ref',
-                                hintText: 'e.g. DL-1420110012345',
-                              ),
+                          TextFormField(
+                            controller: _documentNumberController,
+                            decoration: const InputDecoration(
+                              labelText: 'Doc Number / Ref',
+                              hintText: 'e.g. DL-1420110012345',
                             ),
                           ),
                         ],

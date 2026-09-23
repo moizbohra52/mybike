@@ -278,6 +278,15 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                 ],
               ),
               children: [
+                if (ResponsiveUtils.isMobile(context)) ...[
+                  Text(
+                    'Swipe sideways to see every action column',
+                    style: AppTypography.captionSmall.copyWith(
+                      color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                    ),
+                  ),
+                  const SizedBox(height: AppDimensions.spacing8),
+                ],
                 LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
@@ -421,8 +430,7 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
                   ),
                   child: Text(
                     '$groupSelected/$groupTotal',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTypography.captionMedium.copyWith(
                       fontWeight: FontWeight.w700,
                       color: groupSelected == groupTotal ? AppColors.success : AppColors.primaryYellowDark,
                     ),

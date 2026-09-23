@@ -101,8 +101,7 @@ class _DocumentRejectDialogState extends State<DocumentRejectDialog> {
                 return ChoiceChip(
                   label: Text(
                     reason,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTypography.captionMedium.copyWith(
                       color: isSelected
                           ? Colors.white
                           : (isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText),

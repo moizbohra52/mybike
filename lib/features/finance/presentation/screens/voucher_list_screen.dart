@@ -248,9 +248,9 @@ class _VoucherListViewState extends State<_VoucherListView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+            Text(label, style: AppTypography.captionMedium.copyWith(color: color, fontWeight: FontWeight.w600)),
             const SizedBox(height: 2),
-            Text(amount, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+            Text(amount, style: AppTypography.labelLarge.copyWith(color: color)),
           ],
         ),
       ),
@@ -325,7 +325,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
               ),
               child: Text(
                 v.typeLabel,
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: typeColor),
+                style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w700, color: typeColor),
               ),
             ),
           ],
@@ -366,7 +366,7 @@ class _VoucherListViewState extends State<_VoucherListView> {
                         ),
                         child: Text(
                           '✓ Synchronized with General Ledger: JRN-${v.voucherNumber}',
-                          style: const TextStyle(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.w600),
+                          style: AppTypography.captionMedium.copyWith(color: AppColors.success, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ],

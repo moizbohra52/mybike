@@ -206,8 +206,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       child: Text(
                         'Ctrl+K',
-                        style: TextStyle(
-                          fontSize: 10,
+                        style: AppTypography.captionSmall.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                         ),
@@ -276,7 +275,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
                           child: Text(
                             count > 9 ? '9+' : count.toString(),
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
                               height: 1,

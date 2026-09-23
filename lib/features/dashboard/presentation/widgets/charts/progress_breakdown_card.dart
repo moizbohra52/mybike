@@ -82,16 +82,14 @@ class ProgressBreakdownCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Text(
                     item.label,
-                    style: TextStyle(
-                      fontSize: 12,
+                    style: AppTypography.captionLarge.copyWith(
                       color: isDark ? Colors.white70 : Colors.black87,
                     ),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '($pct%)',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: AppTypography.captionMedium.copyWith(
                       fontWeight: FontWeight.bold,
                       color: item.color ?? AppColors.primaryYellow,
                     ),

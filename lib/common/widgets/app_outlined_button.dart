@@ -88,7 +88,7 @@ class AppOutlinedButton extends StatelessWidget {
           side: BorderSide(color: effectiveBorderColor, width: AppDimensions.borderWidth),
           padding: _padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           ),
           foregroundColor: effectiveTextColor,
         ),

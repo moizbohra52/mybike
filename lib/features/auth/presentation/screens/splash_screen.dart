@@ -114,10 +114,9 @@ class _SplashScreenState extends State<SplashScreen>
                   const SizedBox(height: 8),
                   Text(
                     'DEALERSHIP MANAGEMENT & ERP',
-                    style: AppTypography.subtitleMedium.copyWith(
+                    style: AppTypography.captionLarge.copyWith(
                       color: AppColors.white.withValues(alpha: 0.6),
                       letterSpacing: 2,
-                      fontSize: 12,
                     ),
                   ),
                 ],

@@ -36,7 +36,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     });
 
     try {
-      final user = await UserManagementService.instance.fetchUserById(widget.userId);
+      final user = await UserManagementService.instance.fetchUserById(
+        widget.userId,
+      );
       if (user == null) {
         setState(() {
           _error = 'User not found';
@@ -85,8 +87,8 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
       body: _isLoading
           ? const AppPageLoader(message: 'Loading user profile...')
           : _error != null
-              ? AppErrorState(title: 'Error', message: _error!, onRetry: _loadUser)
-              : _buildProfile(context),
+          ? AppErrorState(title: 'Error', message: _error!, onRetry: _loadUser)
+          : _buildProfile(context),
     );
   }
 
@@ -113,11 +115,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
               children: [
                 CircleAvatar(
                   radius: 36,
-                  backgroundColor: AppColors.primaryYellow.withValues(alpha: 0.2),
+                  backgroundColor: AppColors.primaryYellow.withValues(
+                    alpha: 0.2,
+                  ),
                   child: Text(
                     initials,
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: AppTypography.headlineLarge.copyWith(
                       fontWeight: FontWeight.w800,
                       color: AppColors.primaryYellowDark,
                     ),
@@ -135,11 +138,17 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         children: [
                           Text(
                             user.profile.fullName ?? 'Unnamed',
-                            style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.w700),
+                            style: AppTypography.headlineSmall.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           AppStatusBadge(
-                            label: user.profile.isActive ? 'Active' : 'Inactive',
-                            color: user.profile.isActive ? AppColors.success : AppColors.error,
+                            label: user.profile.isActive
+                                ? 'Active'
+                                : 'Inactive',
+                            color: user.profile.isActive
+                                ? AppColors.success
+                                : AppColors.error,
                           ),
                         ],
                       ),
@@ -147,7 +156,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       Text(
                         user.profile.email,
                         style: AppTypography.bodyMedium.copyWith(
-                          color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                          color: isDark
+                              ? AppColors.darkSecondaryText
+                              : AppColors.lightSecondaryText,
                         ),
                       ),
                       if (user.profile.phone != null) ...[
@@ -155,7 +166,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         Text(
                           user.profile.phone!,
                           style: AppTypography.bodySmall.copyWith(
-                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                            color: isDark
+                                ? AppColors.darkMutedText
+                                : AppColors.lightMutedText,
                           ),
                         ),
                       ],
@@ -210,7 +223,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       _InfoItem(
                         icon: Icons.fingerprint_rounded,
                         label: 'User ID',
-                        value: user.profile.id.length > 12 ? '${user.profile.id.substring(0, 12)}...' : user.profile.id,
+                        value: user.profile.id.length > 12
+                            ? '${user.profile.id.substring(0, 12)}...'
+                            : user.profile.id,
                       ),
                     ],
                   )
@@ -234,7 +249,9 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         child: _InfoItem(
                           icon: Icons.fingerprint_rounded,
                           label: 'User ID',
-                          value: user.profile.id.length > 12 ? '${user.profile.id.substring(0, 12)}...' : user.profile.id,
+                          value: user.profile.id.length > 12
+                              ? '${user.profile.id.substring(0, 12)}...'
+                              : user.profile.id,
                         ),
                       ),
                     ],
@@ -249,16 +266,25 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   Widget _buildRolesCard(ManagedUser user) {
     return AppCard(
       title: 'Assigned Roles',
-      subtitle: '${user.roles.length} role${user.roles.length == 1 ? '' : 's'} assigned',
+      subtitle:
+          '${user.roles.length} role${user.roles.length == 1 ? '' : 's'} assigned',
       child: user.roles.isEmpty
-          ? Text('No roles', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
+          ? Text(
+              'No roles',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.lightMutedText,
+              ),
+            )
           : Wrap(
               spacing: 8,
               runSpacing: 8,
               children: user.roles.map((role) {
                 final color = _roleColor(role.name);
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
@@ -275,12 +301,18 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         children: [
                           Text(
                             role.displayName,
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: color,
+                            ),
                           ),
                           if (role.isSystemRole)
                             Text(
                               'System Role',
-                              style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.7)),
+                              style: AppTypography.captionSmall.copyWith(
+                                color: color.withValues(alpha: 0.7),
+                              ),
                             ),
                         ],
                       ),
@@ -295,9 +327,15 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   Widget _buildShowroomsCard(ManagedUser user, bool isDark) {
     return AppCard(
       title: 'Showroom Access',
-      subtitle: '${user.showrooms.length} showroom${user.showrooms.length == 1 ? '' : 's'} assigned',
+      subtitle:
+          '${user.showrooms.length} showroom${user.showrooms.length == 1 ? '' : 's'} assigned',
       child: user.showrooms.isEmpty
-          ? Text('No showrooms', style: AppTypography.bodySmall.copyWith(color: AppColors.lightMutedText))
+          ? Text(
+              'No showrooms',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.lightMutedText,
+              ),
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: user.showrooms.map((showroom) {
@@ -307,25 +345,39 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(AppDimensions.spacing12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                      color: isDark
+                          ? AppColors.darkBackground
+                          : AppColors.lightBackground,
+                      borderRadius: BorderRadius.circular(
+                        AppDimensions.radiusSm,
+                      ),
                       border: Border.all(
                         color: isDefault
                             ? AppColors.primaryYellow.withValues(alpha: 0.5)
-                            : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                            : (isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder),
                       ),
                     ),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryYellow.withValues(alpha: 0.15),
+                            color: AppColors.primaryYellow.withValues(
+                              alpha: 0.15,
+                            ),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             showroom.code,
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primaryYellowDark),
+                            style: AppTypography.captionSmall.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryYellowDark,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -333,24 +385,51 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(showroom.name, style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
-                              Text('${showroom.city}, ${showroom.state}', style: AppTypography.captionMedium.copyWith(color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
+                              Text(
+                                showroom.name,
+                                style: AppTypography.bodySmall.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '${showroom.city}, ${showroom.state}',
+                                style: AppTypography.captionMedium.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkMutedText
+                                      : AppColors.lightMutedText,
+                                ),
+                              ),
                             ],
                           ),
                         ),
                         if (isDefault)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryYellow.withValues(alpha: 0.2),
+                              color: AppColors.primaryYellow.withValues(
+                                alpha: 0.2,
+                              ),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star_rounded, size: 12, color: AppColors.primaryYellow),
+                                Icon(
+                                  Icons.star_rounded,
+                                  size: 12,
+                                  color: AppColors.primaryYellow,
+                                ),
                                 SizedBox(width: 3),
-                                Text('Default', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primaryYellow)),
+                                Text(
+                                  'Default',
+                                  style: AppTypography.captionSmall.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primaryYellow,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -392,7 +471,11 @@ class _InfoItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoItem({required this.icon, required this.label, required this.value});
+  const _InfoItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -400,13 +483,29 @@ class _InfoItem extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, size: 18, color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText),
+        Icon(
+          icon,
+          size: 18,
+          color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+        ),
         const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTypography.captionMedium.copyWith(color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText)),
-            Text(value, style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              style: AppTypography.captionMedium.copyWith(
+                color: isDark
+                    ? AppColors.darkMutedText
+                    : AppColors.lightMutedText,
+              ),
+            ),
+            Text(
+              value,
+              style: AppTypography.bodySmall.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ],

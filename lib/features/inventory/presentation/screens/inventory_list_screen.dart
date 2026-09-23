@@ -481,17 +481,21 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
               borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  isEv
-                      ? 'Motor: ${v.motorNumber ?? "N/A"}'
-                      : 'Engine: ${v.engineNumber ?? "N/A"}',
-                  style: AppTypography.captionSmall.copyWith(
-                    fontFamily: 'monospace',
-                    color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                Expanded(
+                  child: Text(
+                    isEv
+                        ? 'Motor: ${v.motorNumber ?? "N/A"}'
+                        : 'Engine: ${v.engineNumber ?? "N/A"}',
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.captionSmall.copyWith(
+                      fontFamily: 'monospace',
+                      color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
+                    ),
                   ),
                 ),
+                const SizedBox(width: AppDimensions.spacing8),
                 Text(
                   v.keyNumber != null ? 'Key: ${v.keyNumber}' : 'No Key Tag',
                   style: AppTypography.captionSmall.copyWith(

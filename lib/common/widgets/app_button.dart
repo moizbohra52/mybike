@@ -171,7 +171,7 @@ class AppButton extends StatelessWidget {
       children: [
         if (isLoading) ...[
           AppLoading(
-            size: size == AppButtonSize.small ? AppLoadingSize.small : AppLoadingSize.small,
+            size: AppLoadingSize.small,
             color: foregroundColor,
           ),
           const SizedBox(width: AppDimensions.spacing8),
@@ -196,12 +196,12 @@ class AppButton extends StatelessWidget {
       child: Material(
         color: backgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           side: borderSide,
         ),
         child: InkWell(
           onTap: isEnabled ? onPressed : null,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
           splashColor: foregroundColor.withValues(alpha: 0.1),
           highlightColor: foregroundColor.withValues(alpha: 0.05),
           child: Padding(

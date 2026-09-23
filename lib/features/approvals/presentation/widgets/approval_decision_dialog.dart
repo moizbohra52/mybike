@@ -150,23 +150,28 @@ class _ApprovalDecisionDialogState extends State<ApprovalDecisionDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.request.title,
-                          style: AppTypography.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                        Expanded(
+                          child: Text(
+                            widget.request.title,
+                            style: AppTypography.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+                            ),
                           ),
                         ),
-                        if (widget.request.amount != null)
+                        if (widget.request.amount != null) ...[
+                          const SizedBox(width: AppDimensions.spacing12),
                           Text(
                             '₹${widget.request.amount!.toStringAsFixed(2)}',
+                            textAlign: TextAlign.right,
                             style: AppTypography.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primaryYellowDark,
                             ),
                           ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -268,9 +273,9 @@ class _ApprovalDecisionDialogState extends State<ApprovalDecisionDialog> {
                         color: AppColors.error,
                       ),
                     ),
-                    const Text(
+                    Text(
                       ' * Mandatory',
-                      style: TextStyle(color: AppColors.error, fontSize: 11),
+                      style: AppTypography.captionMedium.copyWith(color: AppColors.error),
                     ),
                   ],
                 ),
@@ -281,7 +286,7 @@ class _ApprovalDecisionDialogState extends State<ApprovalDecisionDialog> {
                   children: _rejectionPresets.map((preset) {
                     final isSelected = _selectedPresetReason == preset;
                     return ChoiceChip(
-                      label: Text(preset, style: const TextStyle(fontSize: 12)),
+                      label: Text(preset, style: AppTypography.captionLarge),
                       selected: isSelected,
                       selectedColor: AppColors.error.withValues(alpha: 0.2),
                       backgroundColor: isDark ? AppColors.darkCard : AppColors.lightCard,

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/widgets/responsive_field_row.dart';
 import '../cubit/journal_entry_form_cubit.dart';
 import '../cubit/journal_entry_form_state.dart';
 
@@ -112,64 +113,57 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                               children: [
                                 Text('Voucher Particulars', style: AppTypography.headlineSmall),
                                 const SizedBox(height: 16),
-                                Row(
+                                ResponsiveFieldRow(
                                   children: [
-                                    Expanded(
-                                      child: InkWell(
-                                        onTap: () async {
-                                          final picked = await showDatePicker(
-                                            context: context,
-                                            initialDate: state.entryDate,
-                                            firstDate: DateTime(2020),
-                                            lastDate: DateTime(2030),
-                                          );
-                                          if (picked != null && context.mounted) {
-                                            context.read<JournalEntryFormCubit>().updateHeader(date: picked);
-                                          }
-                                        },
-                                        child: InputDecorator(
-                                          decoration: const InputDecoration(
-                                            labelText: 'Voucher Date *',
-                                            prefixIcon: Icon(Icons.calendar_today_rounded),
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          child: Text(dateFormat.format(state.entryDate)),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: DropdownButtonFormField<String>(
-                                        initialValue: state.referenceType,
+                                    InkWell(
+                                      onTap: () async {
+                                        final picked = await showDatePicker(
+                                          context: context,
+                                          initialDate: state.entryDate,
+                                          firstDate: DateTime(2020),
+                                          lastDate: DateTime(2030),
+                                        );
+                                        if (picked != null && context.mounted) {
+                                          context.read<JournalEntryFormCubit>().updateHeader(date: picked);
+                                        }
+                                      },
+                                      child: InputDecorator(
                                         decoration: const InputDecoration(
-                                          labelText: 'Reference Type *',
-                                          prefixIcon: Icon(Icons.receipt_rounded),
+                                          labelText: 'Voucher Date *',
+                                          prefixIcon: Icon(Icons.calendar_today_rounded),
                                           border: OutlineInputBorder(),
                                         ),
-                                        items: const [
-                                          DropdownMenuItem(value: 'manual', child: Text('Manual General Journal')),
-                                          DropdownMenuItem(value: 'sales_invoice', child: Text('Sales Invoice Adjustment')),
-                                          DropdownMenuItem(value: 'payment_receipt', child: Text('Payment Receipt Settlement')),
-                                          DropdownMenuItem(value: 'purchase_invoice', child: Text('Purchase Bill Settlement')),
-                                          DropdownMenuItem(value: 'expense', child: Text('Expense Voucher')),
-                                        ],
-                                        onChanged: (v) {
-                                          if (v != null) {
-                                            context.read<JournalEntryFormCubit>().updateHeader(referenceType: v);
-                                          }
-                                        },
+                                        child: Text(dateFormat.format(state.entryDate)),
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _refIdController,
-                                        onChanged: (v) => context.read<JournalEntryFormCubit>().updateHeader(referenceId: v),
-                                        decoration: const InputDecoration(
-                                          labelText: 'Reference No. (Optional)',
-                                          hintText: 'e.g. INV-1002 or CHQ-991',
-                                          border: OutlineInputBorder(),
-                                        ),
+                                    DropdownButtonFormField<String>(
+                                      initialValue: state.referenceType,
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Reference Type *',
+                                        prefixIcon: Icon(Icons.receipt_rounded),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      items: const [
+                                        DropdownMenuItem(value: 'manual', child: Text('Manual General Journal')),
+                                        DropdownMenuItem(value: 'sales_invoice', child: Text('Sales Invoice Adjustment')),
+                                        DropdownMenuItem(value: 'payment_receipt', child: Text('Payment Receipt Settlement')),
+                                        DropdownMenuItem(value: 'purchase_invoice', child: Text('Purchase Bill Settlement')),
+                                        DropdownMenuItem(value: 'expense', child: Text('Expense Voucher')),
+                                      ],
+                                      onChanged: (v) {
+                                        if (v != null) {
+                                          context.read<JournalEntryFormCubit>().updateHeader(referenceType: v);
+                                        }
+                                      },
+                                    ),
+                                    TextField(
+                                      controller: _refIdController,
+                                      onChanged: (v) => context.read<JournalEntryFormCubit>().updateHeader(referenceId: v),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Reference No. (Optional)',
+                                        hintText: 'e.g. INV-1002 or CHQ-991',
+                                        border: OutlineInputBorder(),
                                       ),
                                     ),
                                   ],
@@ -203,9 +197,12 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Accounting Lines (Debits & Credits)', style: AppTypography.headlineSmall),
+                                    Expanded(
+                                      child: Text('Accounting Lines (Debits & Credits)', style: AppTypography.headlineSmall),
+                                    ),
+                                    const SizedBox(width: AppDimensions.spacing12),
                                     OutlinedButton.icon(
                                       onPressed: () => context.read<JournalEntryFormCubit>().addLine(),
                                       icon: const Icon(Icons.add_rounded, size: 18),
@@ -241,27 +238,34 @@ class _JournalEntryFormViewState extends State<_JournalEntryFormView> {
                                     ),
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            state.isBalanced ? Icons.check_circle_rounded : Icons.warning_rounded,
-                                            color: state.isBalanced ? AppColors.success : AppColors.error,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            state.isBalanced
-                                                ? 'Balanced Voucher (Debits = Credits)'
-                                                : 'Unbalanced Voucher (Difference: ${currency.format(state.balanceDifference)})',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
+                                      Expanded(
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Icon(
+                                              state.isBalanced ? Icons.check_circle_rounded : Icons.warning_rounded,
                                               color: state.isBalanced ? AppColors.success : AppColors.error,
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                state.isBalanced
+                                                    ? 'Balanced Voucher (Debits = Credits)'
+                                                    : 'Unbalanced Voucher (Difference: ${currency.format(state.balanceDifference)})',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: state.isBalanced ? AppColors.success : AppColors.error,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
+                                      const SizedBox(width: AppDimensions.spacing12),
                                       Row(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text('Total DR: ${currency.format(state.totalDebit)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                                           const SizedBox(width: 16),

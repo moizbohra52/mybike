@@ -389,8 +389,7 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
       label: const Text('Critical Only'),
       selected: selectedSeverity == 'critical',
       selectedColor: AppColors.error.withValues(alpha: 0.2),
-      labelStyle: TextStyle(
-        fontSize: 11,
+      labelStyle: AppTypography.captionMedium.copyWith(
         fontWeight: selectedSeverity == 'critical' ? FontWeight.bold : FontWeight.normal,
         color: selectedSeverity == 'critical' ? AppColors.error : null,
       ),
@@ -441,8 +440,7 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
                   selected: isSelected,
                   selectedColor: AppColors.primaryYellow,
                   backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  labelStyle: TextStyle(
-                    fontSize: 11,
+                  labelStyle: AppTypography.captionMedium.copyWith(
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     color: isSelected
                         ? Colors.black87

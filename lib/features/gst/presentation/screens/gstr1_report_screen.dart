@@ -109,58 +109,88 @@ class _Gstr1ReportView extends StatelessWidget {
     bool isDark,
   ) {
     const periods = ['2026-09', '2026-08', '2026-07'];
+    final isMobile = context.isMobile;
+
+    final gstinBlock = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            'GSTIN: ${report.gstin}',
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppColors.success.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
+          ),
+          child: Text(
+            'COMPUTED • READY TO FILE',
+            style: AppTypography.captionSmall.copyWith(color: AppColors.success, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+
+    final periodBlock = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('Period: ', style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold)),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: periods.map((p) {
+              final isSelected = state.selectedPeriod == p;
+              return ChoiceChip(
+                label: Text(
+                  p,
+                  style: AppTypography.labelMedium.copyWith(
+                    color: isSelected ? AppColors.primaryBlack : null,
+                  ),
+                ),
+                selected: isSelected,
+                selectedColor: AppColors.primaryYellow,
+                onSelected: (selected) {
+                  if (selected) context.read<Gstr1ReportCubit>().changePeriod(p);
+                },
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E222B) : Colors.white,
-        border: Border(bottom: BorderSide(color: isDark ? Colors.white12 : Colors.grey.shade200)),
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        border: Border(
+          bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Text(
-                'GSTIN: ${report.gstin}',
-                style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  'COMPUTED • READY TO FILE',
-                  style: AppTypography.captionSmall.copyWith(color: AppColors.success, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text('Period: ', style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-              Wrap(
-                spacing: 6,
-                children: periods.map((p) {
-                  final isSelected = state.selectedPeriod == p;
-                  return ChoiceChip(
-                    label: Text(p, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : null)),
-                    selected: isSelected,
-                    selectedColor: AppColors.primaryYellow,
-                    onSelected: (selected) {
-                      if (selected) context.read<Gstr1ReportCubit>().changePeriod(p);
-                    },
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ],
-      ),
+      child: isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                gstinBlock,
+                const SizedBox(height: AppDimensions.spacing10),
+                periodBlock,
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: gstinBlock),
+                const SizedBox(width: AppDimensions.spacing16),
+                Flexible(child: periodBlock),
+              ],
+            ),
     );
   }
 
@@ -176,7 +206,7 @@ class _Gstr1ReportView extends StatelessWidget {
     ];
 
     return Container(
-      color: isDark ? const Color(0xFF191C24) : Colors.grey.shade100,
+      color: isDark ? AppColors.darkSurface : AppColors.lightBackground,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -201,25 +231,29 @@ class _Gstr1ReportView extends StatelessWidget {
                     children: [
                       Text(
                         tab['title'] as String,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: AppTypography.captionLarge.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                          color: isSelected
+                              ? AppColors.primaryBlack
+                              : (isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText),
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: AppDimensions.spacing6),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white24 : (isDark ? Colors.white12 : Colors.grey.shade200),
-                          borderRadius: BorderRadius.circular(10),
+                          color: isSelected
+                              ? AppColors.primaryYellowDark.withValues(alpha: 0.35)
+                              : (isDark ? AppColors.darkCard : AppColors.lightBorder),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                         ),
                         child: Text(
                           '${tab['count']}',
-                          style: TextStyle(
-                            fontSize: 10,
+                          style: AppTypography.captionSmall.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                            color: isSelected
+                                ? AppColors.primaryBlack
+                                : (isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText),
                           ),
                         ),
                       ),
@@ -313,25 +347,43 @@ class _Gstr1ReportView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
-            separatorBuilder: (_, _) => Divider(height: 1, color: isDark ? Colors.white10 : Colors.grey.shade200),
+            separatorBuilder: (_, _) => Divider(
+              height: 1,
+              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+            ),
             itemBuilder: (context, idx) {
               final item = items[idx];
               return ListTile(
                 dense: true,
                 title: Row(
                   children: [
-                    Text(item.invoiceNumber, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 8),
-                    Text(dateFormat.format(item.invoiceDate), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Flexible(
+                      child: Text(
+                        item.invoiceNumber,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(width: AppDimensions.spacing8),
+                    Text(
+                      dateFormat.format(item.invoiceDate),
+                      style: AppTypography.captionLarge.copyWith(
+                        color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                      ),
+                    ),
                     if (item.customerGstin != null) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppDimensions.spacing8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
                           color: AppColors.info.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
                         ),
-                        child: Text(item.customerGstin!, style: const TextStyle(fontSize: 10, color: AppColors.info)),
+                        child: Text(
+                          item.customerGstin!,
+                          style: AppTypography.captionSmall.copyWith(color: AppColors.info),
+                        ),
                       ),
                     ],
                   ],
@@ -341,10 +393,15 @@ class _Gstr1ReportView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(currency.format(item.invoiceValue), style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      currency.format(item.invoiceValue),
+                      style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                    ),
                     Text(
                       'Taxable: ${currency.format(item.taxableAmount)} | ${item.gstRate}%',
-                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      style: AppTypography.captionMedium.copyWith(
+                        color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                      ),
                     ),
                   ],
                 ),
@@ -373,38 +430,61 @@ class _Gstr1ReportView extends StatelessWidget {
           child: Column(
             children: items.map((hsn) {
               return Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppDimensions.spacing16),
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200)),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                    ),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(AppDimensions.spacing8),
                       decoration: BoxDecoration(
                         color: AppColors.primaryYellow.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusXs),
                       ),
-                      child: Text(hsn.hsnSacCode, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryYellow)),
+                      child: Text(
+                        hsn.hsnSacCode,
+                        style: AppTypography.labelMedium.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryYellowDark,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppDimensions.spacing16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(hsn.description, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          const SizedBox(height: 2),
-                          Text('Quantity: ${hsn.totalQuantity} ${hsn.uqc}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                          Text(
+                            hsn.description,
+                            style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: AppDimensions.spacing2),
+                          Text(
+                            'Quantity: ${hsn.totalQuantity} ${hsn.uqc}',
+                            style: AppTypography.captionMedium.copyWith(
+                              color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Taxable: ${currency.format(hsn.taxableValue)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Taxable: ${currency.format(hsn.taxableValue)}',
+                          style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                        ),
                         Text(
                           'CGST: ${currency.format(hsn.cgstAmount)} | SGST: ${currency.format(hsn.sgstAmount)}',
-                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                          style: AppTypography.captionMedium.copyWith(
+                            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                          ),
                         ),
                       ],
                     ),
@@ -430,28 +510,44 @@ class _Gstr1ReportView extends StatelessWidget {
           child: Column(
             children: items.map((doc) {
               return Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppDimensions.spacing16),
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: isDark ? Colors.white10 : Colors.grey.shade200)),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                    ),
+                  ),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(doc.docType, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 2),
-                        Text('Range: ${doc.fromSerial} to ${doc.toSerial}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                      ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            doc.docType,
+                            style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: AppDimensions.spacing2),
+                          Text(
+                            'Range: ${doc.fromSerial} to ${doc.toSerial}',
+                            style: AppTypography.captionMedium.copyWith(
+                              color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: AppDimensions.spacing12),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        _docMetric('Total Issued', doc.totalCount),
-                        const SizedBox(width: 16),
-                        _docMetric('Cancelled', doc.cancelledCount),
-                        const SizedBox(width: 16),
-                        _docMetric('Net Issued', doc.netIssuedCount, isBold: true),
+                        _docMetric('Total Issued', doc.totalCount, isDark),
+                        const SizedBox(width: AppDimensions.spacing16),
+                        _docMetric('Cancelled', doc.cancelledCount, isDark),
+                        const SizedBox(width: AppDimensions.spacing16),
+                        _docMetric('Net Issued', doc.netIssuedCount, isDark, isBold: true),
                       ],
                     ),
                   ],
@@ -464,12 +560,23 @@ class _Gstr1ReportView extends StatelessWidget {
     );
   }
 
-  Widget _docMetric(String label, int val, {bool isBold = false}) {
+  Widget _docMetric(String label, int val, bool isDark, {bool isBold = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text('$val', style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 13)),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+        Text(
+          '$val',
+          style: AppTypography.labelLarge.copyWith(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
+          ),
+        ),
+        Text(
+          label,
+          style: AppTypography.captionSmall.copyWith(
+            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+          ),
+        ),
       ],
     );
   }
@@ -479,24 +586,24 @@ class _Gstr1ReportView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E222B) : Colors.grey.shade900,
+        color: isDark ? AppColors.darkCard : AppColors.primaryBlack,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              _totalItem('Gross Taxable Value', currency.format(report.totalTaxableValue)),
-              const SizedBox(width: 24),
-              _totalItem('CGST', currency.format(report.totalCgstAmount)),
-              const SizedBox(width: 24),
-              _totalItem('SGST', currency.format(report.totalSgstAmount)),
-              const SizedBox(width: 24),
-              _totalItem('IGST', currency.format(report.totalIgstAmount)),
-            ],
-          ),
-          _totalItem('Total Invoice Value', currency.format(report.totalInvoiceValue), isHighlight: true),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _totalItem('Gross Taxable Value', currency.format(report.totalTaxableValue)),
+            const SizedBox(width: AppDimensions.spacing24),
+            _totalItem('CGST', currency.format(report.totalCgstAmount)),
+            const SizedBox(width: AppDimensions.spacing24),
+            _totalItem('SGST', currency.format(report.totalSgstAmount)),
+            const SizedBox(width: AppDimensions.spacing24),
+            _totalItem('IGST', currency.format(report.totalIgstAmount)),
+            const SizedBox(width: AppDimensions.spacing32),
+            _totalItem('Total Invoice Value', currency.format(report.totalInvoiceValue), isHighlight: true),
+          ],
+        ),
       ),
     );
   }
@@ -505,14 +612,18 @@ class _Gstr1ReportView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.white70)),
-        const SizedBox(height: 2),
+        Text(
+          label,
+          style: AppTypography.captionSmall.copyWith(
+            color: AppColors.white.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacing2),
         Text(
           value,
-          style: TextStyle(
-            fontSize: isHighlight ? 15 : 13,
+          style: (isHighlight ? AppTypography.titleMedium : AppTypography.labelLarge).copyWith(
             fontWeight: FontWeight.bold,
-            color: isHighlight ? AppColors.success : Colors.white,
+            color: isHighlight ? AppColors.success : AppColors.white,
           ),
         ),
       ],

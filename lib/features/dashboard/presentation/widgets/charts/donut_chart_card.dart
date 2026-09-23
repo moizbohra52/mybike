@@ -93,14 +93,12 @@ class DonutChartCard extends StatelessWidget {
                           centerTitle,
                           style: AppTypography.titleMedium.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
                           ),
                         ),
                         Text(
                           centerSubtitle,
                           style: AppTypography.captionSmall.copyWith(
                             color: isDark ? AppColors.darkSecondaryText : AppColors.lightSecondaryText,
-                            fontSize: 10,
                           ),
                         ),
                       ],
@@ -136,13 +134,13 @@ class DonutChartCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               item.label,
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                              style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.w500),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Text(
                             item.displayValue ?? pct,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),

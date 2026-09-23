@@ -267,9 +267,9 @@ class _ReportViewerContent extends StatelessWidget {
                       color: AppColors.primaryYellow,
                       borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
                     ),
-                    child: const Text(
+                    child: Text(
                       'MYBIKE ERP',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.black),
+                      style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w900, color: Colors.black),
                     ),
                   ),
                   const SizedBox(width: 8),

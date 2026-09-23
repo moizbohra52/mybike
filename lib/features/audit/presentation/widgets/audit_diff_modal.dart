@@ -105,9 +105,8 @@ class AuditDiffModal extends StatelessWidget {
                       ),
                       child: Text(
                         log.action,
-                        style: TextStyle(
+                        style: AppTypography.captionSmall.copyWith(
                           color: log.actionColor,
-                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -225,8 +224,7 @@ class AuditDiffModal extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             diff.oldValue != null ? '${diff.oldValue}' : '<null>',
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTypography.captionLarge.copyWith(
                               color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                               fontFamily: 'monospace',
                             ),
@@ -262,8 +260,7 @@ class AuditDiffModal extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             diff.newValue != null ? '${diff.newValue}' : '<null>',
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTypography.captionLarge.copyWith(
                               color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                               fontFamily: 'monospace',
                             ),
@@ -317,7 +314,7 @@ class AuditDiffModal extends StatelessWidget {
                     child: SingleChildScrollView(
                       child: SelectableText(
                         beforeStr,
-                        style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                        style: AppTypography.captionMedium.copyWith(fontFamily: 'monospace'),
                       ),
                     ),
                   ),
@@ -352,7 +349,7 @@ class AuditDiffModal extends StatelessWidget {
                     child: SingleChildScrollView(
                       child: SelectableText(
                         afterStr,
-                        style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                        style: AppTypography.captionMedium.copyWith(fontFamily: 'monospace'),
                       ),
                     ),
                   ),

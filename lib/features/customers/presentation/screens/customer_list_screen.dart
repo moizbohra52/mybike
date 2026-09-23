@@ -211,9 +211,8 @@ class _KpiCard extends StatelessWidget {
                   data.value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.headlineSmall.copyWith(
+                  style: AppTypography.titleLarge.copyWith(
                     fontWeight: FontWeight.w800,
-                    fontSize: 18,
                     color: isDark ? AppColors.darkPrimaryText : AppColors.lightPrimaryText,
                   ),
                 ),
@@ -460,7 +459,7 @@ class _CustomerCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                         ),
                         child: Text(customer.customerTypeLabel,
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
+                            style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
@@ -531,7 +530,7 @@ class _KycBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color),
+        style: AppTypography.captionSmall.copyWith(fontWeight: FontWeight.w700, color: color),
       ),
     );
   }

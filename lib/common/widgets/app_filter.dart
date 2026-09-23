@@ -95,8 +95,7 @@ class AppFilter<T> extends StatelessWidget {
                         ),
                         child: Text(
                           option.count.toString(),
-                          style: TextStyle(
-                            fontSize: 10,
+                          style: AppTypography.captionSmall.copyWith(
                             fontWeight: FontWeight.w600,
                             color: isSelected
                                 ? AppColors.primaryBlack

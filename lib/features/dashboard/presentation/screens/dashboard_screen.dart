@@ -140,8 +140,7 @@ class _DashboardView extends StatelessWidget {
             child: ChoiceChip(
               label: Text(
                 p['label'] as String,
-                style: TextStyle(
-                  fontSize: 12,
+                style: AppTypography.captionLarge.copyWith(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
                 ),
@@ -225,8 +224,7 @@ class _DashboardView extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         tab['title'] as String,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: AppTypography.captionLarge.copyWith(
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
                         ),

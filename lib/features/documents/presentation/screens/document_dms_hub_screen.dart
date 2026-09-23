@@ -465,8 +465,7 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
               label: Text(status['label']!),
               selected: isSelected,
               selectedColor: AppColors.primaryYellow.withValues(alpha: 0.25),
-              labelStyle: TextStyle(
-                fontSize: 11,
+              labelStyle: AppTypography.captionMedium.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected
                     ? (isDark ? AppColors.primaryYellowDark : AppColors.warning)
@@ -522,8 +521,7 @@ class _DocumentDmsHubViewState extends State<_DocumentDmsHubView> {
                   selected: isSelected,
                   selectedColor: AppColors.primaryYellow,
                   backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                  labelStyle: TextStyle(
-                    fontSize: 12,
+                  labelStyle: AppTypography.captionLarge.copyWith(
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     color: isSelected
                         ? Colors.black87
