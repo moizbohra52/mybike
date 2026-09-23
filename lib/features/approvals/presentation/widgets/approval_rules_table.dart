@@ -4,6 +4,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../domain/entities/approval_rule_entity.dart';
 import '../cubit/approval_rules_cubit.dart';
 import '../cubit/approval_rules_state.dart';
@@ -38,12 +39,7 @@ class ApprovalRulesTable extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is ApprovalRulesLoading) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(40),
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return AppSkeleton.table(rows: 5, columns: 4);
         }
 
         if (state is ApprovalRulesLoaded) {

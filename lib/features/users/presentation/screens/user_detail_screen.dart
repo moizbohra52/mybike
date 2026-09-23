@@ -85,7 +85,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         ),
       ],
       body: _isLoading
-          ? const AppPageLoader(message: 'Loading user profile...')
+          ? AppSkeleton.detail()
           : _error != null
           ? AppErrorState(title: 'Error', message: _error!, onRetry: _loadUser)
           : _buildProfile(context),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../common/widgets/responsive_field_row.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -747,7 +748,7 @@ class _ApprovalHubViewState extends State<_ApprovalHubView> with SingleTickerPro
     final isDark = context.isDarkMode;
 
     if (state is ApprovalListLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return AppSkeleton.list(kpis: 4, rows: 6);
     }
 
     if (state is ApprovalListLoaded) {

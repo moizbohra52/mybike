@@ -88,9 +88,9 @@ class _VoucherFormViewState extends State<_VoucherFormView> {
       },
       builder: (context, state) {
         if (state.isLoading && state.availableAccounts.isEmpty) {
-          return const AppScaffold(
+          return AppScaffold(
             title: 'New Financial Voucher',
-            body: Center(child: AppLoading(message: 'Initializing Chart of Accounts...')),
+            body: AppSkeleton.form(sections: 2, fields: 4),
           );
         }
 

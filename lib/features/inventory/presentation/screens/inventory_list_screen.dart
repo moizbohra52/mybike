@@ -62,7 +62,7 @@ class _InventoryListScreenState extends State<InventoryListScreen> {
           },
           builder: (context, state) {
             if (state.status == InventoryListStatus.loading && state.items.isEmpty) {
-              return const AppPageLoader(message: 'Loading vehicle inventory & stock levels...');
+              return AppSkeleton.list(kpis: 4, rows: 6);
             }
 
             return SingleChildScrollView(

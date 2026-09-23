@@ -58,7 +58,7 @@ class _VehicleInventoryDetailScreenState extends State<VehicleInventoryDetailScr
           },
           builder: (context, state) {
             if (state.status == VehicleInventoryDetailStatus.loading && state.item == null) {
-              return const AppPageLoader(message: 'Loading vehicle dossier & lifecycle history...');
+              return AppSkeleton.detail();
             }
 
             if (state.status == VehicleInventoryDetailStatus.failure && state.item == null) {

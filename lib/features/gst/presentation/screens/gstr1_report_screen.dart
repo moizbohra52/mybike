@@ -59,7 +59,7 @@ class _Gstr1ReportView extends StatelessWidget {
       body: BlocBuilder<Gstr1ReportCubit, Gstr1ReportState>(
         builder: (context, state) {
           if (state.status == Gstr1ReportStatus.loading && state.report == null) {
-            return const Center(child: AppLoading(message: 'Compiling GSTR-1 outward registers...'));
+            return AppSkeleton.table(kpis: 3, rows: 8, columns: 5);
           }
 
           if (state.status == Gstr1ReportStatus.failure && state.report == null) {

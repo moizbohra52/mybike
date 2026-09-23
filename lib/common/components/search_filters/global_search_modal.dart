@@ -6,6 +6,7 @@ import '../../../core/services/global_search_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../loaders/app_loading.dart';
 
 class GlobalSearchModal extends StatefulWidget {
   const GlobalSearchModal({super.key});
@@ -121,11 +122,7 @@ class _GlobalSearchModalState extends State<GlobalSearchModal> {
                     ),
                   ),
                   if (_isLoading)
-                    const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                    const AppLoading(size: AppLoadingSize.small)
                   else if (_controller.text.isNotEmpty)
                     IconButton(
                       icon: const Icon(Icons.clear, size: 18),

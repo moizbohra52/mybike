@@ -4,6 +4,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../common/loaders/app_loading.dart';
 import '../../../../common/widgets/responsive_field_row.dart';
 import '../../domain/entities/dealership_document_entity.dart';
 import '../cubit/document_upload_cubit.dart';
@@ -449,10 +450,12 @@ class _DocumentUploadModalState extends State<DocumentUploadModal> {
                                         );
                                   },
                             icon: isSubmitting
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                // The themed spinner colour is the same yellow
+                                // as this button, so it has to be told to use
+                                // the button's own foreground instead.
+                                ? const AppLoading(
+                                    size: AppLoadingSize.small,
+                                    color: AppColors.primaryBlack,
                                   )
                                 : const Icon(Icons.cloud_upload, size: 18),
                             label: Text(isSubmitting ? 'Uploading...' : 'Upload & Register'),

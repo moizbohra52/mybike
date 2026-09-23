@@ -64,7 +64,7 @@ class _GstRateConfigView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state.status == GstRateConfigStatus.loading && state.rates.isEmpty) {
-            return const Center(child: AppLoading(message: 'Loading statutory tax slabs...'));
+            return AppSkeleton.table(kpis: 3, rows: 6, columns: 4);
           }
 
           if (state.status == GstRateConfigStatus.failure && state.rates.isEmpty) {

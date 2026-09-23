@@ -8,6 +8,8 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
+import '../../../../common/widgets/app_responsive_grid.dart';
 import '../../domain/entities/journal_entry_entity.dart';
 import '../cubit/journal_entry_list_cubit.dart';
 import '../cubit/journal_entry_list_state.dart';
@@ -146,7 +148,7 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
             const SizedBox(width: 16),
           ],
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? AppSkeleton.list(kpis: 4, rows: 5)
               : RefreshIndicator(
                   onRefresh: () => context.read<JournalEntryListCubit>().loadJournals(),
                   child: SingleChildScrollView(
@@ -155,46 +157,38 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ─── KPI Cards ───
-                        Row(
+                        AppResponsiveGrid(
+                          // Wide enough for "Reversals & Adjustments" to stay on
+                          // one line beside the metric icon.
+                          minItemWidth: 230,
                           children: [
-                            Expanded(
-                              child: _buildMetricCard(
-                                title: 'Total Debits Posted',
-                                value: compact.format(state.totalDebits),
-                                icon: Icons.arrow_downward_rounded,
-                                color: AppColors.info,
-                                isDark: isDark,
-                              ),
+                            _buildMetricCard(
+                              title: 'Total Debits Posted',
+                              value: compact.format(state.totalDebits),
+                              icon: Icons.arrow_downward_rounded,
+                              color: AppColors.info,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildMetricCard(
-                                title: 'Total Credits Posted',
-                                value: compact.format(state.totalCredits),
-                                icon: Icons.arrow_upward_rounded,
-                                color: AppColors.success,
-                                isDark: isDark,
-                              ),
+                            _buildMetricCard(
+                              title: 'Total Credits Posted',
+                              value: compact.format(state.totalCredits),
+                              icon: Icons.arrow_upward_rounded,
+                              color: AppColors.success,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildMetricCard(
-                                title: 'Posted Vouchers',
-                                value: '${state.postedCount}',
-                                icon: Icons.verified_rounded,
-                                color: AppColors.primaryYellowDark,
-                                isDark: isDark,
-                              ),
+                            _buildMetricCard(
+                              title: 'Posted Vouchers',
+                              value: '${state.postedCount}',
+                              icon: Icons.verified_rounded,
+                              color: AppColors.primaryYellowDark,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildMetricCard(
-                                title: 'Reversals & Adjustments',
-                                value: '${state.reversedCount}',
-                                icon: Icons.history_rounded,
-                                color: AppColors.warning,
-                                isDark: isDark,
-                              ),
+                            _buildMetricCard(
+                              title: 'Reversals & Adjustments',
+                              value: '${state.reversedCount}',
+                              icon: Icons.history_rounded,
+                              color: AppColors.warning,
+                              isDark: isDark,
                             ),
                           ],
                         ),
@@ -308,12 +302,16 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionSmall.copyWith(
                     color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
                   ),
                 ),
                 Text(
                   value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.headlineSmall.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -379,44 +377,50 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
         children: [
           // Voucher Header
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    journal.entryNumber,
-                    style: AppTypography.bodyLarge.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+              // Wrapping keeps the number, status and reference chips from
+              // overflowing the card on a narrow screen.
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      journal.entryNumber,
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                      border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        journal.status.toUpperCase(),
+                        style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold, color: statusColor),
+                      ),
                     ),
-                    child: Text(
-                      journal.status.toUpperCase(),
-                      style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.bold, color: statusColor),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+                      ),
+                      child: Text(
+                        journal.referenceTypeLabel,
+                        style: AppTypography.captionSmall,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-                    ),
-                    child: Text(
-                      journal.referenceTypeLabel,
-                      style: AppTypography.captionSmall,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 12),
               Text(
                 dateFormat.format(journal.entryDate),
                 style: AppTypography.captionMedium.copyWith(fontWeight: FontWeight.w600),
@@ -444,73 +448,115 @@ class _JournalEntryListViewState extends State<_JournalEntryListView> {
             child: Column(
               children: [
                 ...journal.lines.map((l) {
+                  final codeText = Text(
+                    l.accountCode ?? '',
+                    style: AppTypography.captionLarge.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                  );
+                  final nameText = Text(
+                    l.accountName ?? (l.description ?? 'Account Entry'),
+                    style: AppTypography.bodySmall,
+                  );
+                  final debitText = Text(
+                    l.debitAmount > 0 ? currency.format(l.debitAmount) : '-',
+                    textAlign: TextAlign.right,
+                    style: AppTypography.captionLarge.copyWith(
+                      fontWeight: l.debitAmount > 0 ? FontWeight.bold : FontWeight.normal,
+                      color: l.debitAmount > 0 ? AppColors.info : null,
+                    ),
+                  );
+                  final creditText = Text(
+                    l.creditAmount > 0 ? currency.format(l.creditAmount) : '-',
+                    textAlign: TextAlign.right,
+                    style: AppTypography.captionLarge.copyWith(
+                      fontWeight: l.creditAmount > 0 ? FontWeight.bold : FontWeight.normal,
+                      color: l.creditAmount > 0 ? AppColors.success : null,
+                    ),
+                  );
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 60,
-                          child: Text(
-                            l.accountCode ?? '',
-                            style: AppTypography.captionLarge.copyWith(fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                    // Four columns do not fit a phone, so the DR and CR amounts
+                    // drop onto their own line underneath the account.
+                    child: context.isMobile
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(width: 56, child: codeText),
+                                  Expanded(child: nameText),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Expanded(child: debitText),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: creditText),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              SizedBox(width: 60, child: codeText),
+                              Expanded(child: nameText),
+                              SizedBox(width: 120, child: debitText),
+                              SizedBox(width: 120, child: creditText),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            l.accountName ?? (l.description ?? 'Account Entry'),
-                            style: AppTypography.bodySmall,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                            l.debitAmount > 0 ? currency.format(l.debitAmount) : '-',
-                            textAlign: TextAlign.right,
-                            style: AppTypography.captionLarge.copyWith(
-                              fontWeight: l.debitAmount > 0 ? FontWeight.bold : FontWeight.normal,
-                              color: l.debitAmount > 0 ? AppColors.info : null,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                            l.creditAmount > 0 ? currency.format(l.creditAmount) : '-',
-                            textAlign: TextAlign.right,
-                            style: AppTypography.captionLarge.copyWith(
-                              fontWeight: l.creditAmount > 0 ? FontWeight.bold : FontWeight.normal,
-                              color: l.creditAmount > 0 ? AppColors.success : null,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   );
                 }),
                 const Divider(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text('Voucher Balance Proof:', style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: Text(
-                        'DR: ${currency.format(journal.totalDebit)}',
-                        textAlign: TextAlign.right,
-                        style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.info),
+                if (context.isMobile) ...[
+                  Text(
+                    'Voucher Balance Proof:',
+                    style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'DR: ${currency.format(journal.totalDebit)}',
+                          textAlign: TextAlign.right,
+                          style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.info),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: Text(
-                        'CR: ${currency.format(journal.totalCredit)}',
-                        textAlign: TextAlign.right,
-                        style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.success),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'CR: ${currency.format(journal.totalCredit)}',
+                          textAlign: TextAlign.right,
+                          style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.success),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ] else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text('Voucher Balance Proof:', style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold)),
+                      ),
+                      SizedBox(
+                        width: 120,
+                        child: Text(
+                          'DR: ${currency.format(journal.totalDebit)}',
+                          textAlign: TextAlign.right,
+                          style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.info),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 120,
+                        child: Text(
+                          'CR: ${currency.format(journal.totalCredit)}',
+                          textAlign: TextAlign.right,
+                          style: AppTypography.captionLarge.copyWith(fontWeight: FontWeight.bold, color: AppColors.success),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

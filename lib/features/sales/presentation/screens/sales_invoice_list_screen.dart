@@ -9,6 +9,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../domain/entities/sales_invoice_entity.dart';
 import '../cubit/sales_invoice_list_cubit.dart';
 import '../cubit/sales_invoice_list_state.dart';
@@ -69,7 +70,7 @@ class _SalesInvoiceListView extends StatelessWidget {
       body: BlocBuilder<SalesInvoiceListCubit, SalesInvoiceListState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primaryYellow));
+            return AppSkeleton.list(kpis: 4, rows: 6);
           }
 
           if (state.error != null) {

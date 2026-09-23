@@ -4,6 +4,7 @@ import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../common/loaders/app_loading.dart';
 
 /// Modal Bottom Sheet offering multi-format export and print actions
 class ExportActionModal extends StatefulWidget {
@@ -158,7 +159,7 @@ class _ExportActionModalState extends State<ExportActionModal> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CircularProgressIndicator(),
+                        const AppLoading(size: AppLoadingSize.large),
                         const SizedBox(height: 16),
                         Text(
                           _loadingMessage,

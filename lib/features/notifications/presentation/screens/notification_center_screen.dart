@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
@@ -106,7 +107,7 @@ class _NotificationCenterContent extends StatelessWidget {
               // ─── Notifications List ───
               Expanded(
                 child: state.status == NotificationStatus.loading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? AppSkeleton.list(rows: 6)
                     : filteredList.isEmpty
                         ? _buildEmptyState(context, isDark, state.activeCategory)
                         : ListView.builder(

@@ -135,7 +135,7 @@ class _RoleFormScreenState extends State<RoleFormScreen> {
         ),
       ],
       body: _isLoading
-          ? const AppPageLoader(message: 'Loading permission data...')
+          ? AppSkeleton.form(sections: 2, fields: 5)
           : _error != null
               ? AppErrorState(title: 'Error', message: _error!, onRetry: _loadData)
               : _isSaving

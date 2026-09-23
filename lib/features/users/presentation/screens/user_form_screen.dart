@@ -89,7 +89,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
           },
           builder: (context, state) {
             if (state is UserFormLoading) {
-              return const AppPageLoader(message: 'Loading form data...');
+              return AppSkeleton.form(sections: 2, fields: 5);
             }
             if (state is UserFormSaving) {
               return const AppPageLoader(message: 'Saving user...');

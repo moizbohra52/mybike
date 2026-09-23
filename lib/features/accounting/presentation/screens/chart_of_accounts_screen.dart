@@ -8,6 +8,8 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
+import '../../../../common/widgets/app_responsive_grid.dart';
 import '../../domain/entities/account_entity.dart';
 import '../cubit/chart_of_accounts_cubit.dart';
 import '../cubit/chart_of_accounts_state.dart';
@@ -83,7 +85,7 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
             const SizedBox(width: 16),
           ],
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? AppSkeleton.list(kpis: 5, rows: 6)
               : RefreshIndicator(
                   onRefresh: () => context.read<ChartOfAccountsCubit>().loadAccounts(),
                   child: SingleChildScrollView(
@@ -92,66 +94,53 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ─── Financial KPI Cards ───
-                        Row(
+                        AppResponsiveGrid(
+                          minItemWidth: 210,
                           children: [
-                            Expanded(
-                              child: _buildKpiCard(
-                                context,
-                                title: 'Total Assets',
-                                value: compactCurrency.format(state.totalAssets),
-                                subtitle: 'Cash, Banks, Stock, Debtors',
-                                icon: Icons.account_balance_wallet_rounded,
-                                color: AppColors.info,
-                                isDark: isDark,
-                              ),
+                            _buildKpiCard(
+                              context,
+                              title: 'Total Assets',
+                              value: compactCurrency.format(state.totalAssets),
+                              subtitle: 'Cash, Banks, Stock, Debtors',
+                              icon: Icons.account_balance_wallet_rounded,
+                              color: AppColors.info,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildKpiCard(
-                                context,
-                                title: 'Total Liabilities',
-                                value: compactCurrency.format(state.totalLiabilities),
-                                subtitle: 'OEM Creditors, Taxes, Advances',
-                                icon: Icons.credit_card_rounded,
-                                color: AppColors.warning,
-                                isDark: isDark,
-                              ),
+                            _buildKpiCard(
+                              context,
+                              title: 'Total Liabilities',
+                              value: compactCurrency.format(state.totalLiabilities),
+                              subtitle: 'OEM Creditors, Taxes, Advances',
+                              icon: Icons.credit_card_rounded,
+                              color: AppColors.warning,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildKpiCard(
-                                context,
-                                title: 'Capital & Equity',
-                                value: compactCurrency.format(state.totalEquity),
-                                subtitle: 'Promoter Equity & Surplus',
-                                icon: Icons.pie_chart_rounded,
-                                color: AppColors.success,
-                                isDark: isDark,
-                              ),
+                            _buildKpiCard(
+                              context,
+                              title: 'Capital & Equity',
+                              value: compactCurrency.format(state.totalEquity),
+                              subtitle: 'Promoter Equity & Surplus',
+                              icon: Icons.pie_chart_rounded,
+                              color: AppColors.success,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildKpiCard(
-                                context,
-                                title: 'Sales Revenue',
-                                value: compactCurrency.format(state.totalRevenue),
-                                subtitle: 'Petrol & EV Two-Wheelers',
-                                icon: Icons.trending_up_rounded,
-                                color: AppColors.primaryYellowDark,
-                                isDark: isDark,
-                              ),
+                            _buildKpiCard(
+                              context,
+                              title: 'Sales Revenue',
+                              value: compactCurrency.format(state.totalRevenue),
+                              subtitle: 'Petrol & EV Two-Wheelers',
+                              icon: Icons.trending_up_rounded,
+                              color: AppColors.primaryYellowDark,
+                              isDark: isDark,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildKpiCard(
-                                context,
-                                title: 'COGS & Expenses',
-                                value: compactCurrency.format(state.totalExpenses),
-                                subtitle: 'Stock Cost, Rent & Salaries',
-                                icon: Icons.payments_rounded,
-                                color: AppColors.error,
-                                isDark: isDark,
-                              ),
+                            _buildKpiCard(
+                              context,
+                              title: 'COGS & Expenses',
+                              value: compactCurrency.format(state.totalExpenses),
+                              subtitle: 'Stock Cost, Rent & Salaries',
+                              icon: Icons.payments_rounded,
+                              color: AppColors.error,
+                              isDark: isDark,
                             ),
                           ],
                         ),
@@ -170,30 +159,27 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _searchController,
-                                      onChanged: (q) => context.read<ChartOfAccountsCubit>().searchAccounts(q),
-                                      decoration: InputDecoration(
-                                        hintText: 'Search by account code, name, or category...',
-                                        prefixIcon: const Icon(Icons.search_rounded),
-                                        suffixIcon: _searchController.text.isNotEmpty
-                                            ? IconButton(
-                                                icon: const Icon(Icons.clear_rounded),
-                                                onPressed: () {
-                                                  _searchController.clear();
-                                                  context.read<ChartOfAccountsCubit>().searchAccounts('');
-                                                },
-                                              )
-                                            : null,
-                                        border: const OutlineInputBorder(),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              TextField(
+                                controller: _searchController,
+                                onChanged: (q) => context.read<ChartOfAccountsCubit>().searchAccounts(q),
+                                decoration: InputDecoration(
+                                  // The full hint is clipped mid-word on a phone.
+                                  hintText: context.isMobile
+                                      ? 'Search accounts...'
+                                      : 'Search by account code, name, or category...',
+                                  prefixIcon: const Icon(Icons.search_rounded),
+                                  suffixIcon: _searchController.text.isNotEmpty
+                                      ? IconButton(
+                                          icon: const Icon(Icons.clear_rounded),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            context.read<ChartOfAccountsCubit>().searchAccounts('');
+                                          },
+                                        )
+                                      : null,
+                                  border: const OutlineInputBorder(),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                ),
                               ),
                               const SizedBox(height: 12),
                               SingleChildScrollView(
@@ -269,6 +255,8 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
               Expanded(
                 child: Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.captionSmall.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
@@ -282,6 +270,8 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
           const SizedBox(height: 8),
           Text(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineSmall.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: -0.5,
@@ -347,6 +337,59 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
         typeColor = AppColors.error;
     }
 
+    final codeChip = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: typeColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
+        border: Border.all(color: typeColor.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        acct.accountCode,
+        style: AppTypography.captionLarge.copyWith(
+          fontFamily: 'monospace',
+          fontWeight: FontWeight.bold,
+          color: typeColor,
+        ),
+      ),
+    );
+
+    final nameColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          acct.accountName,
+          style: AppTypography.bodyLarge.copyWith(fontWeight: FontWeight.w600),
+        ),
+        Text(
+          '${acct.typeDisplayLabel} • Subtype: ${acct.subType.replaceAll('_', ' ').toUpperCase()}',
+          style: AppTypography.captionSmall.copyWith(
+            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+          ),
+        ),
+      ],
+    );
+
+    final balanceColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          currency.format(acct.currentBalance),
+          textAlign: TextAlign.right,
+          style: AppTypography.bodyLarge.copyWith(
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.2,
+          ),
+        ),
+        Text(
+          acct.isAsset || acct.isExpense ? 'Debit Balance' : 'Credit Balance',
+          style: AppTypography.captionSmall.copyWith(
+            color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
+          ),
+        ),
+      ],
+    );
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
@@ -356,68 +399,34 @@ class _ChartOfAccountsViewState extends State<_ChartOfAccountsView> {
           color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
         ),
       ),
-      child: Row(
-        children: [
-          // Account Code Chip
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: typeColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppDimensions.radiusSm),
-              border: Border.all(color: typeColor.withValues(alpha: 0.3)),
-            ),
-            child: Text(
-              acct.accountCode,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: typeColor,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Account Name & Subtype
-          Expanded(
-            child: Column(
+      // A phone cannot hold the code, the name and the balance on one line
+      // without squeezing the name to a few characters, so the balance drops
+      // onto its own line there.
+      child: context.isMobile
+          ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  acct.accountName,
-                  style: AppTypography.bodyLarge.copyWith(fontWeight: FontWeight.w600),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    codeChip,
+                    const SizedBox(width: 12),
+                    Expanded(child: nameColumn),
+                  ],
                 ),
-                Text(
-                  '${acct.typeDisplayLabel} • Subtype: ${acct.subType.replaceAll('_', ' ').toUpperCase()}',
-                  style: AppTypography.captionSmall.copyWith(
-                    color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                  ),
-                ),
+                const SizedBox(height: 10),
+                balanceColumn,
+              ],
+            )
+          : Row(
+              children: [
+                codeChip,
+                const SizedBox(width: 16),
+                Expanded(child: nameColumn),
+                const SizedBox(width: 16),
+                balanceColumn,
               ],
             ),
-          ),
-
-          // Balance
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                currency.format(acct.currentBalance),
-                style: AppTypography.bodyLarge.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              Text(
-                acct.isAsset || acct.isExpense ? 'Debit Balance' : 'Credit Balance',
-                style: AppTypography.captionSmall.copyWith(
-                  color: isDark ? AppColors.darkMutedText : AppColors.lightMutedText,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 

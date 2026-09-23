@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_dimensions.dart';
@@ -464,7 +465,7 @@ class _AuditTrailViewState extends State<_AuditTrailView> {
     final isDark = context.isDarkMode;
 
     if (state is AuditLogLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return AppSkeleton.table(kpis: 4, rows: 8, columns: 5);
     }
 
     if (state is AuditLogError) {

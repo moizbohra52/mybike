@@ -62,7 +62,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen>
           },
           builder: (context, state) {
             if (state.status == VehicleDetailStatus.loading && state.item == null) {
-              return const AppPageLoader(message: 'Loading model details...');
+              return AppSkeleton.detail();
             }
 
             if (state.status == VehicleDetailStatus.failure && state.item == null) {

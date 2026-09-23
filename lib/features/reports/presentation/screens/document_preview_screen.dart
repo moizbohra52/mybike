@@ -45,7 +45,7 @@ class DocumentPreviewScreen extends StatelessWidget {
           maxPageWidth: 700,
           previewPageMargin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           loadingWidget: const Center(
-            child: CircularProgressIndicator(),
+            child: AppLoading(message: 'Rendering document...'),
           ),
           actions: [
             PdfPreviewAction(

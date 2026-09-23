@@ -54,7 +54,7 @@ class _ShowroomListScreenState extends State<ShowroomListScreen> {
           },
           builder: (context, state) {
             if (state is ShowroomListLoading) {
-              return const AppPageLoader(message: 'Loading showrooms directory...');
+              return AppSkeleton.list(kpis: 4, rows: 6);
             }
 
             if (state is ShowroomListError) {

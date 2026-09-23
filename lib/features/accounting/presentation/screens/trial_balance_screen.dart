@@ -8,9 +8,15 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
+import '../../../../common/widgets/app_responsive_grid.dart';
 import '../../domain/entities/trial_balance_item_entity.dart';
 import '../cubit/trial_balance_cubit.dart';
 import '../cubit/trial_balance_state.dart';
+
+/// Width the trial balance table needs before it starts scrolling sideways
+/// instead of squeezing its columns.
+const double _minTableWidth = 700;
 
 /// Trial Balance Statement Screen
 class TrialBalanceScreen extends StatelessWidget {
@@ -54,7 +60,7 @@ class _TrialBalanceView extends StatelessWidget {
             const SizedBox(width: 16),
           ],
           body: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? AppSkeleton.table(kpis: 3, rows: 8, columns: 5)
               : RefreshIndicator(
                   onRefresh: () => context.read<TrialBalanceCubit>().loadTrialBalance(),
                   child: SingleChildScrollView(
@@ -153,55 +159,50 @@ class _TrialBalanceView extends StatelessWidget {
                                   const Divider(height: 32),
 
                                   // Summary Metric Columns
-                                  Row(
+                                  AppResponsiveGrid(
+                                    minItemWidth: 210,
                                     children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Total Debit Balances (DR)', style: AppTypography.captionSmall),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              currency.format(state.totalDebit),
-                                              style: AppTypography.headlineSmall.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.info,
-                                              ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Total Debit Balances (DR)', style: AppTypography.captionSmall),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            currency.format(state.totalDebit),
+                                            style: AppTypography.headlineSmall.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.info,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Total Credit Balances (CR)', style: AppTypography.captionSmall),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              currency.format(state.totalCredit),
-                                              style: AppTypography.headlineSmall.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.success,
-                                              ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Total Credit Balances (CR)', style: AppTypography.captionSmall),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            currency.format(state.totalCredit),
+                                            style: AppTypography.headlineSmall.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.success,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Net Trial Variance', style: AppTypography.captionSmall),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              currency.format(state.difference),
-                                              style: AppTypography.headlineSmall.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: state.isBalanced ? AppColors.success : AppColors.error,
-                                              ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Net Trial Variance', style: AppTypography.captionSmall),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            currency.format(state.difference),
+                                            style: AppTypography.headlineSmall.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: state.isBalanced ? AppColors.success : AppColors.error,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -211,6 +212,9 @@ class _TrialBalanceView extends StatelessWidget {
                             const SizedBox(height: 24),
 
                             // ─── Trial Balance Data Table ───
+                            // Five columns need ~700px. Below that the table
+                            // scrolls sideways rather than crushing the
+                            // classification and the amounts out of the card.
                             Container(
                               decoration: BoxDecoration(
                                 color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -219,77 +223,88 @@ class _TrialBalanceView extends StatelessWidget {
                                   color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  // Table Header
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                                    decoration: BoxDecoration(
-                                      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                                      borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusLg)),
-                                    ),
-                                    child: const Row(
-                                      children: [
-                                        SizedBox(width: 80, child: Text('Code', style: TextStyle(fontWeight: FontWeight.bold))),
-                                        Expanded(child: Text('Account Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                                        SizedBox(width: 110, child: Text('Classification', style: TextStyle(fontWeight: FontWeight.bold))),
-                                        SizedBox(width: 150, child: Text('Debit (DR)', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
-                                        SizedBox(width: 150, child: Text('Credit (CR)', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
-                                      ],
-                                    ),
-                                  ),
-                                  const Divider(height: 1),
+                              clipBehavior: Clip.antiAlias,
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final tableWidth = constraints.maxWidth < _minTableWidth
+                                      ? _minTableWidth
+                                      : constraints.maxWidth;
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: SizedBox(
+                                      width: tableWidth,
+                                      child: Column(
+                                        children: [
+                                          // Table Header
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                            color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                                            child: const Row(
+                                              children: [
+                                                SizedBox(width: 80, child: Text('Code', style: TextStyle(fontWeight: FontWeight.bold))),
+                                                Expanded(child: Text('Account Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                                                SizedBox(width: 110, child: Text('Classification', style: TextStyle(fontWeight: FontWeight.bold))),
+                                                SizedBox(width: 150, child: Text('Debit (DR)', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
+                                                SizedBox(width: 150, child: Text('Credit (CR)', textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
+                                              ],
+                                            ),
+                                          ),
+                                          const Divider(height: 1),
 
-                                  // Table Rows
-                                  ListView.separated(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemCount: state.items.length,
-                                    separatorBuilder: (_, _) => const Divider(height: 1),
-                                    itemBuilder: (context, index) {
-                                      final item = state.items[index];
-                                      return _buildRow(context, item, currency, isDark);
-                                    },
-                                  ),
-                                  const Divider(height: 1, thickness: 2),
+                                          // Table Rows
+                                          ListView.separated(
+                                            shrinkWrap: true,
+                                            physics: const NeverScrollableScrollPhysics(),
+                                            itemCount: state.items.length,
+                                            separatorBuilder: (_, _) => const Divider(height: 1),
+                                            itemBuilder: (context, index) {
+                                              final item = state.items[index];
+                                              return _buildRow(context, item, currency, isDark);
+                                            },
+                                          ),
+                                          const Divider(height: 1, thickness: 2),
 
-                                  // Table Footer (Total Proof)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                    decoration: BoxDecoration(
-                                      color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                                      borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppDimensions.radiusLg)),
+                                          // Table Footer (Total Proof)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                            color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                                            child: Row(
+                                              children: [
+                                                const SizedBox(width: 80),
+                                                Expanded(
+                                                  child: Text(
+                                                    'TOTAL TRIAL BALANCE PROOF:',
+                                                    style: AppTypography.labelLarge.copyWith(
+                                                      fontWeight: FontWeight.w900,
+                                                      letterSpacing: 0.5,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 110),
+                                                SizedBox(
+                                                  width: 150,
+                                                  child: Text(
+                                                    currency.format(state.totalDebit),
+                                                    textAlign: TextAlign.right,
+                                                    style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.info),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 150,
+                                                  child: Text(
+                                                    currency.format(state.totalCredit),
+                                                    textAlign: TextAlign.right,
+                                                    style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.success),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        const SizedBox(width: 80),
-                                        const Expanded(
-                                          child: Text(
-                                            'TOTAL TRIAL BALANCE PROOF:',
-                                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 110),
-                                        SizedBox(
-                                          width: 150,
-                                          child: Text(
-                                            currency.format(state.totalDebit),
-                                            textAlign: TextAlign.right,
-                                            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.info),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 150,
-                                          child: Text(
-                                            currency.format(state.totalCredit),
-                                            textAlign: TextAlign.right,
-                                            style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w900, color: AppColors.success),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ),
                           ],

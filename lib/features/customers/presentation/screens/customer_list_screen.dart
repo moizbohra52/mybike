@@ -8,6 +8,7 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../cubit/customer_list_cubit.dart';
 import '../cubit/customer_list_state.dart';
@@ -64,7 +65,7 @@ class _CustomerListView extends StatelessWidget {
         builder: (context, state) {
           final isDark = context.isDarkMode;
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primaryYellow));
+            return AppSkeleton.list(kpis: 4, rows: 6);
           }
 
           return RefreshIndicator(

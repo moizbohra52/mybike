@@ -6,6 +6,8 @@ import '../../../../core/theme/app_dimensions.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../common/layouts/app_scaffold.dart';
+import '../../../../common/loaders/app_loading.dart';
+import '../../../../common/loaders/app_skeleton.dart';
 import '../../../../core/services/sales_management_service.dart';
 import '../../domain/entities/sales_invoice_entity.dart';
 import '../../domain/entities/delivery_challan_entity.dart';
@@ -129,7 +131,7 @@ class _DeliveryChallanScreenState extends State<DeliveryChallanScreen> {
       activeNavigationId: 'sales',
       title: 'Vehicle Delivery Handover',
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? AppSkeleton.form(sections: 2, fields: 4)
           : _invoice == null
               ? const Center(child: Text('Invoice not found'))
               : SingleChildScrollView(
@@ -298,10 +300,9 @@ class _DeliveryChallanScreenState extends State<DeliveryChallanScreen> {
                               child: FilledButton.icon(
                                 onPressed: _isSaving ? null : _submitHandover,
                                 icon: _isSaving
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    ? const AppLoading(
+                                        size: AppLoadingSize.small,
+                                        color: Colors.white,
                                       )
                                     : const Icon(Icons.check_circle_outline_rounded),
                                 label: Text(

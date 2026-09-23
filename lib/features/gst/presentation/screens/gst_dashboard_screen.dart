@@ -53,7 +53,7 @@ class _GstDashboardView extends StatelessWidget {
       body: BlocBuilder<GstDashboardCubit, GstDashboardState>(
         builder: (context, state) {
           if (state.status == GstDashboardStatus.loading && state.summary == null) {
-            return const Center(child: AppLoading(message: 'Compiling GST returns and tax registers...'));
+            return AppSkeleton.dashboard();
           }
 
           if (state.status == GstDashboardStatus.failure && state.summary == null) {

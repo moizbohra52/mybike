@@ -51,7 +51,7 @@ class _UserListScreenState extends State<UserListScreen> {
           },
           builder: (context, state) {
             if (state is UserManagementLoading) {
-              return const AppPageLoader(message: 'Loading users...');
+              return AppSkeleton.list(kpis: 4, rows: 6);
             }
 
             if (state is UserManagementError) {

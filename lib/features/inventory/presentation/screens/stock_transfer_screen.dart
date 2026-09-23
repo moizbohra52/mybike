@@ -49,7 +49,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
           },
           builder: (context, state) {
             if (state.status == StockTransferStatus.loading && state.transfers.isEmpty) {
-              return const AppPageLoader(message: 'Loading stock transfers...');
+              return AppSkeleton.list(kpis: 4, rows: 6);
             }
 
             final showroomMap = {for (final s in state.showrooms) s.showroom.id: s.showroom};

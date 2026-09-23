@@ -61,7 +61,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
           },
           builder: (context, state) {
             if (state.status == VehicleCatalogStatus.loading && state.items.isEmpty) {
-              return const AppPageLoader(message: 'Loading vehicle catalog...');
+              return AppSkeleton.list(kpis: 4, rows: 6);
             }
 
             return SingleChildScrollView(
