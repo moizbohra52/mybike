@@ -556,6 +556,7 @@ class InventoryManagementService {
     }
 
     // ─── Dev Mode Fallback ───
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devVehicles!;
 
@@ -817,6 +818,7 @@ class InventoryManagementService {
     String? showroomId,
     String? status,
   }) async {
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devTransfers!;
     if (showroomId != null) {
@@ -958,6 +960,7 @@ class InventoryManagementService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     return _devMovements!.where((m) => m.vehicleId == vehicleId).toList();
   }

@@ -3,6 +3,7 @@ import '../../features/notifications/data/models/app_notification_model.dart';
 import '../../features/notifications/domain/entities/app_notification_entity.dart';
 import '../../features/notifications/domain/entities/notification_preference_entity.dart';
 import 'fcm_notification_provider.dart';
+import 'supabase_service.dart';
 
 /// Central Notification & Alert Management Service
 class NotificationService {
@@ -49,6 +50,7 @@ class NotificationService {
     String? category,
     bool? unreadOnly,
   }) async {
+    await SupabaseService.devLatency();
     List<AppNotificationEntity> results = List.from(_notifications);
 
     if (showroomId != null) {

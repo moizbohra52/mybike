@@ -1,3 +1,7 @@
+# Local Supabase credentials — copy env.example.json to env.json and fill it in.
+# Never commit real keys; the anon key is public-but-project-scoped, still keep it out.
+env.json
+
 # Miscellaneous
 *.class
 *.log

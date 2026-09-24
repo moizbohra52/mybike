@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="MYBIKE">
+  <!-- MYBIKE launcher icon — full-bleed square, the "M" monogram in brand yellow
+       on brand black. This is the source of truth for every raster icon:
+       export it at 1024x1024 and let the platform mask it (Android adaptive
+       icons and iOS both mask the square themselves). The Android adaptive
+       foreground is the same mark in android/app/src/main/res/drawable/. -->
+  <rect width="1024" height="1024" fill="#171717"/>
+  <path d="M232 722V302l280 266 280-266v420"
+        fill="none" stroke="#F9C846" stroke-width="126"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

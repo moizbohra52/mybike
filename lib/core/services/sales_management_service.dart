@@ -386,6 +386,7 @@ class SalesManagementService {
     String? search,
   }) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _fetchDevInvoices(showroomId: showroomId, status: status, search: search);
     }
     try {
@@ -430,6 +431,7 @@ class SalesManagementService {
   /// Fetch a single invoice by ID
   Future<SalesInvoiceEntity?> fetchInvoiceById(String id) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _invoices.cast<SalesInvoiceEntity?>().firstWhere((i) => i!.id == id, orElse: () => null);
     }
     try {
@@ -512,6 +514,7 @@ class SalesManagementService {
 
   /// Fetch payment receipts
   Future<List<PaymentReceiptEntity>> fetchReceipts({String? invoiceId, String? showroomId}) async {
+    await SupabaseService.devLatency();
     var result = List<PaymentReceiptEntity>.from(_receipts);
     if (invoiceId != null) result = result.where((r) => r.invoiceId == invoiceId).toList();
     if (showroomId != null) result = result.where((r) => r.showroomId == showroomId).toList();
@@ -569,6 +572,7 @@ class SalesManagementService {
 
   /// Fetch delivery challans
   Future<List<DeliveryChallanEntity>> fetchDeliveryChallans({String? showroomId}) async {
+    await SupabaseService.devLatency();
     var result = List<DeliveryChallanEntity>.from(_challans);
     if (showroomId != null) result = result.where((dc) => dc.showroomId == showroomId).toList();
     return result;
@@ -655,6 +659,7 @@ class SalesManagementService {
 
   /// Fetch gate passes
   Future<List<GatePassEntity>> fetchGatePasses({String? showroomId}) async {
+    await SupabaseService.devLatency();
     var result = List<GatePassEntity>.from(_gatePasses);
     if (showroomId != null) result = result.where((gp) => gp.showroomId == showroomId).toList();
     return result;

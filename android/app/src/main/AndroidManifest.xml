@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 
+    <!-- No android:roundIcon: it would need a non-v26 fallback, and only the
+         adaptive icon has one. API 26+ launchers mask @mipmap/ic_launcher
+         themselves, which is what roundIcon existed to arrange. -->
     <application
         android:label="MYBIKE ERP"
         android:name="${applicationName}"

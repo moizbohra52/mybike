@@ -3,33 +3,17 @@
     "short_name": "MYBIKE ERP",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0A192F",
-    "theme_color": "#0A192F",
+    "background_color": "#171717",
+    "theme_color": "#171717",
     "description": "MYBIKE — Multi-Showroom Bike Dealership Management & Accounting ERP.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {
-            "src": "icons/Icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "icons/Icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        },
-        {
-            "src": "icons/Icon-maskable-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "icons/Icon-maskable-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
         }
     ]
 }

@@ -6,6 +6,7 @@ import '../../features/approvals/domain/entities/approval_rule_entity.dart';
 import '../../features/notifications/domain/entities/app_notification_entity.dart';
 import 'audit_trail_service.dart';
 import 'notification_service.dart';
+import 'supabase_service.dart';
 
 /// Central Dealership Approval Workflow Service
 class ApprovalWorkflowService {
@@ -26,6 +27,7 @@ class ApprovalWorkflowService {
   // ─────────────────────────────────────────────────────────
 
   Future<List<ApprovalRuleEntity>> getRules({String? showroomId}) async {
+    await SupabaseService.devLatency();
     if (showroomId == null) return List.from(_rules);
     return _rules.where((r) => r.showroomId == null || r.showroomId == showroomId).toList();
   }
@@ -73,6 +75,7 @@ class ApprovalWorkflowService {
   // ─────────────────────────────────────────────────────────
 
   Future<List<ApprovalRequestEntity>> fetchRequests(ApprovalFilterCriteria criteria) async {
+    await SupabaseService.devLatency();
     List<ApprovalRequestEntity> results = List.from(_requests);
 
     if (criteria.showroomId != null && criteria.showroomId!.isNotEmpty) {

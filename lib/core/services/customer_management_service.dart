@@ -983,6 +983,7 @@ class CustomerManagementService {
     String? customerType,
   }) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _fetchDevCustomers(
         showroomId: showroomId,
         search: search,
@@ -1040,6 +1041,7 @@ class CustomerManagementService {
   /// Fetch a single customer by ID
   Future<CustomerEntity?> fetchCustomerById(String id) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _customers.cast<CustomerEntity?>().firstWhere((c) => c!.id == id, orElse: () => null);
     }
     try {
@@ -1125,6 +1127,7 @@ class CustomerManagementService {
   /// Fetch documents for a customer
   Future<List<CustomerDocumentEntity>> fetchCustomerDocuments(String customerId) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _documents.where((d) => d.customerId == customerId).toList();
     }
     try {
@@ -1219,6 +1222,7 @@ class CustomerManagementService {
     String? search,
   }) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _fetchDevLeads(
         showroomId: showroomId,
         status: status,
@@ -1265,6 +1269,7 @@ class CustomerManagementService {
   /// Fetch a single lead by ID
   Future<LeadEntity?> fetchLeadById(String id) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _leads.cast<LeadEntity?>().firstWhere((l) => l!.id == id, orElse: () => null);
     }
     try {
@@ -1301,6 +1306,7 @@ class CustomerManagementService {
   /// Fetch lead activities
   Future<List<LeadActivityEntity>> fetchLeadActivities(String leadId) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _activities.where((a) => a.leadId == leadId).toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     }
@@ -1358,6 +1364,7 @@ class CustomerManagementService {
     String? search,
   }) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _fetchDevBookings(
         showroomId: showroomId,
         status: status,
@@ -1400,6 +1407,7 @@ class CustomerManagementService {
   /// Fetch a single booking by ID
   Future<BookingEntity?> fetchBookingById(String id) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _bookings.cast<BookingEntity?>().firstWhere((b) => b!.id == id, orElse: () => null);
     }
     try {

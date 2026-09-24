@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="MYBIKE">
+  <rect width="1024" height="1024" fill="#171717"/>
+  <path d="M232 722V302l280 266 280-266v420"
+        fill="none" stroke="#F9C846" stroke-width="126"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

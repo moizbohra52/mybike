@@ -1,6 +1,7 @@
 import '../../features/documents/data/models/dealership_document_model.dart';
 import '../../features/documents/domain/entities/dealership_document_entity.dart';
 import '../../features/documents/domain/entities/document_filter_criteria.dart';
+import 'supabase_service.dart';
 
 /// Central Dealership Document Management (DMS) Service
 class DocumentManagementService {
@@ -19,6 +20,7 @@ class DocumentManagementService {
   // ─────────────────────────────────────────────────────────
 
   Future<List<DealershipDocumentEntity>> fetchDocuments(DocumentFilterCriteria criteria) async {
+    await SupabaseService.devLatency();
     List<DealershipDocumentEntity> results = List.from(_documents);
 
     if (criteria.showroomId != null) {

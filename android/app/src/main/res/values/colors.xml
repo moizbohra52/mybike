@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MYBIKE brand background (AppColors.primaryBlack). Used for the launcher
+         icon background layer and the launch screen, so start-up goes black
+         instead of flashing white before the first Flutter frame. -->
+    <color name="brand_background">#FF171717</color>
+</resources>

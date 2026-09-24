@@ -218,6 +218,7 @@ class ShowroomManagementService {
     }
 
     // ─── In-Memory Dev Mode ───
+    await SupabaseService.devLatency();
     _initDevData();
     var list = List<ShowroomModel>.from(_devShowrooms!);
 
@@ -273,6 +274,7 @@ class ShowroomManagementService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     final matches = _devShowrooms!.where((s) => s.id == showroomId);
     return matches.isNotEmpty ? matches.first : null;
@@ -470,6 +472,7 @@ class ShowroomManagementService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     return _devSequences!.where((seq) => seq.showroomId == showroomId).toList();
   }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Screen and Controller information model
@@ -321,9 +320,8 @@ class AppScreenLogger {
       final pattern = entry.key;
       if (!pattern.contains(':')) continue;
 
-      final regexPattern = '^' +
-          pattern.replaceAllMapped(RegExp(r':([a-zA-Z0-9_]+)'), (m) => r'[^/]+') +
-          r'$';
+      final regexPattern =
+          '^${pattern.replaceAllMapped(RegExp(r':([a-zA-Z0-9_]+)'), (m) => r'[^/]+')}\$';
       if (RegExp(regexPattern).hasMatch(cleanPath)) {
         return entry.value;
       }

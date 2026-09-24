@@ -104,35 +104,37 @@ class AppConfig {
 
   /// Resolve initial configuration based on compile-time `--dart-define` or default to `development`
   static AppConfig _resolveInitialConfig() {
-    if (_envDefine.isNotEmpty) {
-      final env = Environment.fromString(_envDefine);
-      final base = switch (env) {
+    // Credentials on their own are enough to leave demo mode: supplying
+    // SUPABASE_URL / SUPABASE_ANON_KEY must not also require MYBIKE_ENV. This
+    // used to be gated behind `_envDefine.isNotEmpty`, so the documented
+    // `--dart-define=SUPABASE_URL=...` overrides were silently ignored and the
+    // app kept running on the placeholder URL (local demo data) regardless.
+    final env = _envDefine.isNotEmpty
+        ? Environment.fromString(_envDefine)
+        : Environment.development;
+    final base = _presetFor(env);
+
+    return AppConfig(
+      environment: env,
+      supabaseUrl: _urlDefine.isNotEmpty ? _urlDefine : base.supabaseUrl,
+      supabaseAnonKey: _anonKeyDefine.isNotEmpty ? _anonKeyDefine : base.supabaseAnonKey,
+      appName: base.appName,
+      fcmProjectId: _fcmDefine.isNotEmpty ? _fcmDefine : base.fcmProjectId,
+      minLogLevel: base.minLogLevel,
+      enableDevOfflineFallback: base.enableDevOfflineFallback,
+      enableAuditLogTelemetry: base.enableAuditLogTelemetry,
+    );
+  }
+
+  static AppConfig _presetFor(Environment env) => switch (env) {
         Environment.production => production,
         Environment.staging => staging,
         Environment.development => development,
       };
 
-      return AppConfig(
-        environment: env,
-        supabaseUrl: _urlDefine.isNotEmpty ? _urlDefine : base.supabaseUrl,
-        supabaseAnonKey: _anonKeyDefine.isNotEmpty ? _anonKeyDefine : base.supabaseAnonKey,
-        appName: base.appName,
-        fcmProjectId: _fcmDefine.isNotEmpty ? _fcmDefine : base.fcmProjectId,
-        minLogLevel: base.minLogLevel,
-        enableDevOfflineFallback: base.enableDevOfflineFallback,
-        enableAuditLogTelemetry: base.enableAuditLogTelemetry,
-      );
-    }
-    return development;
-  }
-
   /// Switch active environment dynamically at runtime (useful for testing & switching profiles)
   static void setEnvironment(Environment env, {String? customUrl, String? customAnonKey}) {
-    final base = switch (env) {
-      Environment.production => production,
-      Environment.staging => staging,
-      Environment.development => development,
-    };
+    final base = _presetFor(env);
 
     current = AppConfig(
       environment: env,

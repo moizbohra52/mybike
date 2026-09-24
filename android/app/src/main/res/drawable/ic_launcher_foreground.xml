@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- MYBIKE "M" monogram on the transparent adaptive-icon foreground layer.
+         Stroked, not filled, so it reads at launcher size. The whole mark sits
+         inside the 66dp safe circle every launcher mask is guaranteed to keep,
+         so no shape clips it. -->
+    <path
+        android:pathData="M34,69 V39 L54,58 L74,39 V69"
+        android:strokeColor="#F9C846"
+        android:strokeWidth="9"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

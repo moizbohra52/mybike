@@ -577,6 +577,7 @@ class AccountingManagementService {
     String? search,
   }) async {
     if (!_isSupabaseLive) {
+      await SupabaseService.devLatency();
       return _filterDevAccounts(showroomId: showroomId, accountType: accountType, search: search);
     }
     try {
@@ -657,6 +658,7 @@ class AccountingManagementService {
     DateTime? toDate,
     String? search,
   }) async {
+    await SupabaseService.devLatency();
     var result = List<JournalEntryEntity>.from(_journals);
     if (showroomId != null && showroomId.isNotEmpty) {
       result = result.where((j) => j.showroomId == showroomId).toList();
