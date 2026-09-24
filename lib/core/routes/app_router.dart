@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'app_screen_logger.dart';
 import 'route_names.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
@@ -62,6 +63,13 @@ class AppRouter {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: false,
+    observers: [
+      AppScreenNavigatorObserver(),
+    ],
+    redirect: (context, state) {
+      AppScreenLogger.logRoute(state.matchedLocation);
+      return null;
+    },
     routes: _routes,
     errorBuilder: (context, state) => Scaffold(
       body: AppErrorState(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/bloc/app_bloc_observer.dart';
 import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
@@ -11,6 +12,9 @@ import 'features/auth/presentation/cubit/auth_cubit.dart';
 /// MYBIKE Application Entry Point
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Register Global Bloc & Controller Observer
+  Bloc.observer = AppBlocObserver();
 
   // Initialize performance optimizations & ImageCache memory bounds
   await PerformanceOptimizer.initialize();
