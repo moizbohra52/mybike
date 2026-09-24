@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>MYBIKE</string>
+	<string>MYBIKE ERP</string>
 	<key>NSCameraUsageDescription</key>
 	<string>MYBIKE ERP requires camera access to capture customer KYC identity proofs and vehicle PDI inspection photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

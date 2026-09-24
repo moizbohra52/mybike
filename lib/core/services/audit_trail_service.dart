@@ -2,6 +2,7 @@ import '../../features/audit/data/models/audit_log_model.dart';
 import '../../features/audit/domain/entities/audit_filter_criteria.dart';
 import '../../features/audit/domain/entities/audit_log_entity.dart';
 import 'spreadsheet_export_builder.dart';
+import 'supabase_service.dart';
 
 /// Central Dealership Audit Trail & Compliance Service
 class AuditTrailService {
@@ -20,6 +21,7 @@ class AuditTrailService {
   // ─────────────────────────────────────────────────────────
 
   Future<List<AuditLogEntity>> fetchLogs(AuditFilterCriteria criteria) async {
+    await SupabaseService.devLatency();
     List<AuditLogEntity> results = List.from(_logs);
 
     // Showroom filter

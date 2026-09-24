@@ -34,15 +34,17 @@ class SupabaseService {
   /// Quick query builder for any table
   static SupabaseQueryBuilder? from(String table) => client?.from(table);
 
-  /// Check connectivity to Supabase backend
-  static Future<bool> checkConnection() async {
-    if (!SupabaseConfig.isConfigured) return false;
-    try {
-      final res = await client?.from('settings').select('key').limit(1);
-      return res != null;
-    } catch (e) {
-      debugPrint('Supabase connection check failed: $e');
-      return false;
-    }
+  /// Stands in for the round-trip Supabase would have taken.
+  ///
+  /// Every service falls back to seeded in-memory data when [client] is null.
+  /// That resolves in a microtask, so a cubit's `isLoading` state is emitted and
+  /// replaced *before the next frame* — the skeleton never paints and the page
+  /// looks like it has no loading state at all. Awaiting this in a demo-data
+  /// branch restores the frame boundary a real network call provides, so the
+  /// loading UI is actually reachable while developing.
+  ///
+  /// Debug-only: a release build must never be slowed down by it.
+  static Future<void> devLatency() async {
+    if (kDebugMode) await Future<void>.delayed(const Duration(milliseconds: 450));
   }
 }

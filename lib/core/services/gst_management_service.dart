@@ -142,6 +142,7 @@ class GstManagementService {
       }
     }
 
+    await SupabaseService.devLatency();
     if (activeOnly) {
       return _devRates.where((r) => r.isActive).toList();
     }

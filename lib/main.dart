@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/bloc/app_bloc_observer.dart';
+import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
@@ -42,7 +43,7 @@ class MyBikeApp extends StatelessWidget {
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
           return MaterialApp.router(
-            title: 'MYBIKE',
+            title: AppVersion.appName,
             debugShowCheckedModeBanner: false,
 
             // ─── Theme ───

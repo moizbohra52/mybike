@@ -1,4 +1,5 @@
 import 'accounting_management_service.dart';
+import 'supabase_service.dart';
 import '../../features/finance/domain/entities/finance_voucher_entity.dart';
 import '../../features/finance/domain/entities/party_outstanding_entity.dart';
 import '../../features/accounting/domain/entities/journal_entry_entity.dart';
@@ -412,6 +413,7 @@ class FinanceManagementService {
     String? status,
     String? search,
   }) async {
+    await SupabaseService.devLatency();
     var result = List<FinanceVoucherEntity>.from(_vouchers);
 
     if (showroomId != null && showroomId.isNotEmpty) {
@@ -640,6 +642,7 @@ class FinanceManagementService {
 
   /// Fetch Customer Receivables (Sundry Debtors) with Aging breakdown
   Future<List<PartyOutstandingEntity>> fetchCustomerReceivables({String? showroomId}) async {
+    await SupabaseService.devLatency();
     var list = List<PartyOutstandingEntity>.from(_customers);
     if (showroomId != null && showroomId.isNotEmpty) {
       list = list.where((p) => p.showroomId == null || p.showroomId == showroomId).toList();
@@ -650,6 +653,7 @@ class FinanceManagementService {
 
   /// Fetch Supplier/OEM Payables (Sundry Creditors) with Aging breakdown
   Future<List<PartyOutstandingEntity>> fetchSupplierPayables({String? showroomId}) async {
+    await SupabaseService.devLatency();
     var list = List<PartyOutstandingEntity>.from(_suppliers);
     if (showroomId != null && showroomId.isNotEmpty) {
       list = list.where((p) => p.showroomId == null || p.showroomId == showroomId).toList();

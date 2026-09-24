@@ -694,6 +694,7 @@ class VehicleMasterService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devBrands!;
     if (isActive != null) {
@@ -790,6 +791,7 @@ class VehicleMasterService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devModels!;
     if (brandId != null) {
@@ -912,6 +914,7 @@ class VehicleMasterService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devVariants!;
     if (modelId != null) {
@@ -1003,6 +1006,7 @@ class VehicleMasterService {
       }
     }
 
+    await SupabaseService.devLatency();
     _initDevData();
     var list = _devColors!;
     if (modelId != null) {
